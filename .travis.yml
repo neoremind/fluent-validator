@@ -1,4 +1,4 @@
 language: java
 
-install:
-    mvn test
+after_success:
+  - mvn jacoco:report coveralls:report
