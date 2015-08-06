@@ -1,0 +1,11 @@
+/target
+/bin
+
+# Eclipse
+/.classpath
+/.project
+/.settings
+
+# Idea
+*.iml
+.idea
