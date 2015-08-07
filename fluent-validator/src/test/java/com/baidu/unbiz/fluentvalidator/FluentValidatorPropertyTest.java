@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import com.baidu.unbiz.fluentvalidator.dto.Car;
 import com.baidu.unbiz.fluentvalidator.error.CarError;
+import com.baidu.unbiz.fluentvalidator.exception.CustomException;
 import com.baidu.unbiz.fluentvalidator.validator.CarLicensePlateValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarManufacturerValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarSeatCountValidator;
@@ -166,7 +167,7 @@ public class FluentValidatorPropertyTest {
         assertThat(ref[0], is("all ok!"));
     }
 
-    @Test
+    @Test(expected = CustomException.class)
     public void testDoValidateCallbackOnFail() {
         Car car = getValidCar();
         car.setSeatCount(99);
@@ -181,6 +182,7 @@ public class FluentValidatorPropertyTest {
                     @Override
                     public void onFail(ValidatorElementList chained, List<String> errorMsgs) {
                         ref[0] = errorMsgs.size();
+                        throw new CustomException("ERROR HERE");
                     }
                 });
         System.out.println(ret);
@@ -193,16 +195,15 @@ public class FluentValidatorPropertyTest {
         Car car = getValidCar();
         car.setLicensePlate("YYYY");
 
-        Result ret = null;
         try {
-            ret = FluentValidator.checkAll().failFast()
+            Result ret = FluentValidator.checkAll().failFast()
                     .on(car.getLicensePlate(), new CarLicensePlateValidator())
                     .on(car.getManufacturer(), new CarManufacturerValidator())
                     .on(car.getSeatCount(), new CarSeatCountValidator())
                     .doValidate(new DefaulValidateCallback() {
                         @Override
-                        public void onUncaughtException(Validator validator, Throwable t, Object target)
-                                throws Throwable {
+                        public void onUncaughtException(Validator validator, Exception e, Object target)
+                                throws Exception {
                             System.err.println("Fetal here!");
                         }
                     });

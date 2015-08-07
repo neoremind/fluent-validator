@@ -2,36 +2,27 @@ package com.baidu.unbiz.fluentvalidator;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
+ * 默认验证回调
+ * <p/>
+ * 如果不想实现{@link ValidateCallback}所有方法，可以使用这个默认实现，仅覆盖自己需要实现的方法
+ *
  * @author zhangxu
+ * @see ValidateCallback
  */
 public class DefaulValidateCallback implements ValidateCallback {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaulValidateCallback.class);
-
     @Override
-    public void onSuccess(ValidatorElementList chained) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Validate on {} passed", chained);
-        }
+    public void onSuccess(ValidatorElementList validatorElementList) {
     }
 
     @Override
-    public void onFail(ValidatorElementList chained, List<String> errorMsgs) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Validate on {} failed due to {}", chained, errorMsgs);
-        }
+    public void onFail(ValidatorElementList validatorElementList, List<String> errorMsgs) {
     }
 
     @Override
-    public void onUncaughtException(Validator validator, Throwable t, Object target) throws Throwable {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Uncaught exception occurs on {} due to {} with target={}", validator, t.getMessage(), target);
-        }
-        throw t;
+    public void onUncaughtException(Validator validator, Exception e, Object target) throws Exception {
+        throw e;
     }
 
 }

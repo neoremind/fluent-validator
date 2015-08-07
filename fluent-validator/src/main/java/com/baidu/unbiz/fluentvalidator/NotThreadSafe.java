@@ -6,8 +6,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
+ * 非线程安全注解，装饰在类级别，仅仅用于标识
+ *
  * @author zhangxu
  */
 @Target({ElementType.TYPE})

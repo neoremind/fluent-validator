@@ -3,10 +3,15 @@ package com.baidu.unbiz.fluentvalidator;
 import java.util.LinkedList;
 
 /**
+ * 在{@link FluentValidator}内部调用使用的验证器链
+ *
  * @author zhangxu
  */
-class ValidatorElementList {
+public class ValidatorElementList {
 
+    /**
+     * 验证器链
+     */
     private LinkedList<ValidatorElement> list = new LinkedList<ValidatorElement>();
 
     public LinkedList<ValidatorElement> getList() {
