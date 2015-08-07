@@ -10,7 +10,11 @@ import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
+
+import com.baidu.unbiz.fluentvalidator.error.ErrorMsg;
+import com.baidu.unbiz.fluentvalidator.grouping.AddCompany;
 
 /**
  * 公司DTO
@@ -31,16 +35,20 @@ public class Company extends BaseObject {
     @Valid
     private List<Department> departmentList;
 
+    @Length(message = "Company CEO is not valid", min = 10, groups = {AddCompany.class})
+    private String ceo;
+
     public Company() {
         super();
     }
 
-    public Company(int id, String name, Date establishTime, List<Department> departmentList) {
+    public Company(int id, String name, Date establishTime, List<Department> departmentList, String ceo) {
         super();
         this.setId(id);
         this.name = name;
         this.establishTime = establishTime;
         this.departmentList = departmentList;
+        this.ceo = ceo;
     }
 
     public String getName() {
@@ -73,4 +81,11 @@ public class Company extends BaseObject {
                 .append("departmentList", departmentList).toString();
     }
 
+    public String getCeo() {
+        return ceo;
+    }
+
+    public void setCeo(String ceo) {
+        this.ceo = ceo;
+    }
 }

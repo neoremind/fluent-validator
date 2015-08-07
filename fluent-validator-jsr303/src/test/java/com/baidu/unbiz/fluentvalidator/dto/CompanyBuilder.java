@@ -23,7 +23,7 @@ public class CompanyBuilder {
             departmentList1.add(department104);
 
             Company company = new Company(88, "百度时代网络技术有限公司", dateFormat.parse("2000-11-11"),
-                    departmentList1);
+                    departmentList1, "Robin Li");
             return company;
         } catch (ParseException e) {
             e.printStackTrace();
@@ -52,9 +52,9 @@ public class CompanyBuilder {
             departmentList2.add(department202);
 
             Company company1 = new Company(88, "百度时代网络技术有限公司", dateFormat.parse("2000-11-11"),
-                    departmentList1);
+                    departmentList1, "Robin Li");
             Company company2 = new Company(99, "IBM China", dateFormat.parse("1956-5-6"),
-                    departmentList2);
+                    departmentList2, "Tom");
 
             ret.add(company1);
             ret.add(company2);

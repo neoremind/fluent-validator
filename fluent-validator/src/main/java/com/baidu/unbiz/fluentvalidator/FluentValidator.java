@@ -75,13 +75,13 @@ public class FluentValidator {
     /**
      * 私有构造方法，只能通过{@link #checkAll()}去创建对象
      */
-    private FluentValidator() {
+    protected FluentValidator() {
     }
 
     /**
      * 创建<tt>FluentValidator</tt>
      *
-     * @return
+     * @return FluentValidator
      */
     public static FluentValidator checkAll() {
         return new FluentValidator();
@@ -160,7 +160,7 @@ public class FluentValidator {
     /**
      * 默认验证回调
      */
-    ValidateCallback defaultCb = new DefaulValidateCallback();
+    protected ValidateCallback defaultCb = new DefaulValidateCallback();
 
     /**
      * 按照默认验证回调条件，开始使用验证

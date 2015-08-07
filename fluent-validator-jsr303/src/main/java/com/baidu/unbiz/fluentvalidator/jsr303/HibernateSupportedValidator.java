@@ -10,6 +10,8 @@ import com.baidu.unbiz.fluentvalidator.ValidatorContext;
 import com.baidu.unbiz.fluentvalidator.ValidatorHandler;
 
 /**
+ * 定制JSR303的实现<tt>Hibernate Validator</tt>验证器
+ *
  * @author zhangxu
  */
 @NotThreadSafe
@@ -28,9 +30,16 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
 
     @Override
     public boolean validate(ValidatorContext context, T t) {
-        Set<ConstraintViolation<T>> constraintViolations =
-                validator.validate(t);
-        if (constraintViolations.isEmpty()) {
+        Class[] grouping = GroupingHolder.getGrouping();
+        Set<ConstraintViolation<T>> constraintViolations;
+        if (grouping == null || grouping.length == 0) {
+            constraintViolations =
+                    validator.validate(t);
+        } else {
+            constraintViolations =
+                    validator.validate(t, grouping);
+        }
+        if (constraintViolations == null || constraintViolations.isEmpty()) {
             return true;
         } else {
             for (ConstraintViolation<T> constraintViolation : constraintViolations) {
@@ -54,4 +63,5 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
         HibernateSupportedValidator.validator = validator;
         return this;
     }
+
 }
