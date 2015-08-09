@@ -4,7 +4,7 @@
 
 Validating data is a common task that occurs throughout any application, especially the business logic layer. As for some quite complex scenarios, often the same or similar validation logic is scattered everywhere, thus it is hard to reuse code. 
 
-To avoid duplication and do validations as easy as possible, **Fluent Validator** provides the power to support validations with ease by leveraging the [fluent interface]() style and [JSR 303 - Bean Validation]() specification, and here we choose [Hibernate Validator]() as the implementation of this JSR which is the best known one.
+To avoid duplication and do validations as easy as possible, **Fluent Validator** provides the power to support validations with ease by leveraging the [fluent interface]() style and [JSR 303 - Bean Validation]() specification, and here we choose [Hibernate Validator]() which probably being the most well known one as the implementation of this JSR .
 
 
 ## 1. Quick Start
@@ -12,7 +12,7 @@ This chapter will show you how to get started with Fluent Validator.
 
 ### 1.1 Prerequisite
 
-Add the below dependency to pom.xml for a maven enabled project. There are no other dependencies for Fluent Validator, that means your project will not be overwhelmed by other unwanted libraries. 
+In order to use Fluent Validator within a Maven project, simply add the following dependency to your pom.xml. There are no other dependencies for Fluent Validator, that means your project will not be overwhelmed by other unwanted libraries. 
 
 	<dependency>
     	<groupId>com.baidu.beidou</groupId>
@@ -65,7 +65,7 @@ public class CarSeatCountValidator extends ValidatorHandler<Integer> implements 
 }
 ```
 
-To perform a validation of constraint, we have the class extending `ValidatorHandler` class and implementing `Validator` interface. CarSeatCountValidator is able to do validation on an primitive *int* value. 
+To perform a validation of constraint, we have the class extending `ValidatorHandler` class and implementing `Validator` interface. CarSeatCountValidator is able to do validation on a primitive *int* value. 
 
 If the seat count is less than two, it will return false and an error message is put into the context. If fail fast strategy is enbled, the result output would be:
 
@@ -81,20 +81,21 @@ More information about some other cool features of Fluent Validator, please go n
 
 ## 2. Basic validation step by step
 
-The FluentValiator is the main entry point to perform validation. FluentValiator is inspired by [Fluent Interface](http://www.martinfowler.com/bliki/FluentInterface.html) which defined an inner-DSL within Java language for programers to use. A fluent interface implies that its primary goal is to make it easy to SPEAK and UNDERSTAND. And that is what FluentValiator tries to do.
+Fluent Valiator is inspired by [Fluent Interface](http://www.martinfowler.com/bliki/FluentInterface.html) which defined an inner-DSL within Java language for programers to use. A fluent interface implies that its primary goal is to make it easy to SPEAK and UNDERSTAND. And that is what Fluent Valiator dedicated to do, to provide more readable code.
 
 
 ### 2.1 Obtain an FluentValidator instance
-The first step towards validating an entity instance is to get hold of a FluentValidator instance. The only way is to use the static FluentValidator.checkAll() method:
+
+The `FluentValiator` is the main entry point to perform validation. The first step towards validating an entity instance is to get hold of a FluentValidator instance. The only way is to use the static `FluentValidator.checkAll()` method:
 
     FluentValidator.checkAll();
 
 Afterwards we will learn how to use the different methods of the FluentValidator class.
 
 
-### 2.2 Validate value or instance
+### 2.2 Validate on fields or instances
 
-The FluentValidator class use on method to either validate entire entities or just a single properties of the entity. You can add as much targets and its speicifed validators as possible.
+The `FluentValidator` uses `on()` method to either validate entire entities or just a single properties of the entity. You can add as much targets and its speicifed validators as possible.
 
 The following shows validating on some properties of Car instance.
 
@@ -108,11 +109,11 @@ The following shows validating on Car instance.
     FluentValidator.checkAll()
                 .on(car, new CarValidator());
 
-Note that when checking all on something, it will not perform executing util doValidate method is called. So you can think of on method as some preparations.
+Note that when checking all on something, it will not perform executing until `doValidate()` method is called. So you can think of `on()` method as some preparations.
 
-### 2.3 Create Validator
+### 2.3 Create custom validator
 
-Create validator by implementing Validator interface. 
+Create validator by implementing `Validator` interface. 
 
     public interface Validator<T> {
 
@@ -124,13 +125,13 @@ Create validator by implementing Validator interface.
 
     }
 
-Accept method is where you can determine whether to perform validation on the target, thus if false is returned, the validate method will not be called. 
+`accept()` method is where you can determine whether to perform validation on the target, thus if false is returned, the validate method will not be called. 
 
-Validate method is where the main validation work stays. Returning true so that FluentValidator will go on to the next validator if there are any left. Returning false will probably stop the validation process only if fail fast strategy is enable. You can learn more about fail fast and fail over on the next episode.
+`validate()` method is where the main validation work stays. Returning true so that FluentValidator will go on to the next validator if there are any left. Returning false will probably stop the validation process only if fail fast strategy is enable. You can learn more about fail fast and fail over on the next episode.
 
-OnException method gives you the power to do some callback work whenever an exception is throwed on accept and validate method.
+`onException()` method gives you the power to do some callback works whenever an exception is throwed on accept() or validate() method.
 
-Note that if you do not want to implement all the methods for your validator, you can have your validator extends ValidatorHandler, like below:
+Note that if you do not want to implement all the methods for your validator, you can have custom validator extending `ValidatorHandler` like below:
 
     public class CarValidator extends ValidatorHandler<Car> implements Validator<Car> {
         //...
@@ -138,37 +139,43 @@ Note that if you do not want to implement all the methods for your validator, yo
 
 
 ### 2.4 Fail fast or fail over
-Use failFast() to prevent the processing from continuing if any validator returns false on validate method.
+Use `failFast()` method to prevent the processing from continuing if any validator returns false on validate method.
 
     FluentValidator.checkAll().failFast()
                 .on(car.getManufacturer(), new CarManufacturerValidator())
 
 
-Use failOver() to ignore the failures so that all the valiators will be performed.
+Use `failOver()` method to ignore the failures so that all the valiators will be performed.
 
     FluentValidator.checkAll().failOver()
                 .on(car.getManufacturer(), new CarManufacturerValidator())
  
 
-### 2.5 On what condtion to do validate
+### 2.5 On what condition to do validate
 
-Use when() on a specified regular expression to determine whether to do validation against the target. Note that the working scope is not applied to the preview valiator.
+Use `when()` method on a specified regular expression to determine whether to do validation against the target. Note that the working scope is only applied to the previous valiator or validator chain.
 
     FluentValidator.checkAll().failOver()
                 .on(car.getManufacturer(), new CarManufacturerValidator()).when(a == b)
 
-### 2.6 Do validation
-Once doValidate() method is called, it means to perform validation of all constraints of a given entity instance. This is where all the validators is really executed. And a result is returned which contains error messages if have.
+### 2.6 Execute validation
+Once `doValidate()` method is called, it means to perform validation of all constraints of the given entity instances or fields. This is where all the validators is really executed. And a result is returned which contains error messages if have.
 
     Result ret = FluentValidator.checkAll()
                 .on(car.getManufacturer(), new CarManufacturerValidator()).when(true)
                 .doValidate();
 
-### 2.7 Advance features
+### 2.7 Get result
 
-#### 2.7.1 ValidatorChain
+The following method can be called on `Result` to help you know the validation result.
+`getErrorMsgs()`,`hasError()`, `hasNoError()`,`getErrorNumber()`.
 
-In addition to validator, applying multiple constraints of the same instance or value is supported. You can wrap all the validators in one ValidatorChain. This is very useful when it comes to reuse some of the basic validators and composite them together to build one chain. Espeically if you are using [Spring](http://spring.io) framework, you will find it a good way to maintain the chain within the container.
+
+### 2.8 Advance features
+
+#### 2.8.1 ValidatorChain
+
+In addition to `Validator`, applying multiple constraints of the same instance or value is supported. You can wrap all the validators in one `ValidatorChain`. This is very useful when it comes to reuse some of the basic validators and composite them together to build one chain. Espeically if you are using [Spring](http://spring.io) framework, you will find it a good way to maintain the chain within the container.
 
     ValidatorChain chain = new ValidatorChain();
     List<Validator> validators = new ArrayList<Validator>();
@@ -178,10 +185,10 @@ In addition to validator, applying multiple constraints of the same instance or 
     Result ret = FluentValidator.checkAll().on(car, chain).doValidate();
     
 
-#### 2.7.2 putAttribute2Context
-Use putAttribute2Context(), it allows you to inject some of the properties to the validator from where the validation is performed.
+#### 2.8.2 putAttribute2Context
+Use `putAttribute2Context()` method, it allows you to inject some of the properties to the validator or validator chain from where validations are performed.
 
-For example, you can put ignoreManufacturer as true in the context and get the use by invoking context.getAttribute(key, class type) within any validator. 
+For example, you can put *ignoreManufacturer* as true in the context and get the value by invoking `context.getAttribute(key, class type)` within any validator. 
 
     FluentValidator.checkAll()
                 .putAttribute2Context("ignoreManufacturer", true)
@@ -206,10 +213,10 @@ public class CarManufacturerValidator extends ValidatorHandler<String> implement
 ```
 
 
-#### 2.7.3 putClosure2Context
-Use putClosure2Context(), it offers the clousre functionality. The classic situation is when you want to obtain an instance or value where it is get from within the validator in a really time-consuming or hard way. And you do not want to waste the time and any logic to get it again.
+#### 2.8.3 putClosure2Context
+Use `putClosure2Context()` method, it offers the clousre functionality. The classic situation is when the caller wants to obtain an instance or value where the invocation is delegated down to the validator to do real call later which can be a time-consuming and complex job. And you do not want to waste any time or any logic code to set it again from the caller.
 
-Below is an example of reuse the allManufacturers that is get from the vaidator.
+Below is an example of reuse the *allManufacturers* that is set by invoking `closure.executeAndGetResult()` method within the vaidator, notice that `manufacturerService.getAllManufacturers()` which may perform rpc call. And the caller of Fluent Validator can get the result by simply invoking `closure.getResult()` method.
 
     Car car = getValidCar();
 
@@ -263,12 +270,10 @@ public class CarValidator extends ValidatorHandler<Car> implements Validator<Car
 }
 ```
 
-For example, you can put ignoreManufacturer as true in the context and get the use by invoking context.getAttribute(key, class type) within any validator.
 
+#### 2.8.4 ValidateCallback
 
-#### 2.7.4 ValidateCallback
-
-Last but not least, a call back be placed on the doValidate() method like below:
+Last but not least, a callback be placed on the doValidate() method like below:
 
     Result ret = FluentValidator.checkAll().failOver()
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
@@ -281,7 +286,11 @@ Last but not least, a call back be placed on the doValidate() method like below:
                     }
                 });
         
-ValidateCallback is the argument interface that doValidate() method needs. onSuccess() method is called when everything goes well, onFail() is called when there is any failures occurrs, onUncaughtException() method is called once there is uncaught exception throwing during the valiation process.
+`ValidateCallback` is an optional argument that `doValidate()` method needs. 
+
+`onSuccess()` method is called when everything goes well. 
+`onFail()` is called when there is any failures occurrs.
+`onUncaughtException()` method is called once there is uncaught exception throwing during the valiation process.
 
     public interface ValidateCallback {
 
@@ -293,65 +302,141 @@ ValidateCallback is the argument interface that doValidate() method needs. onSuc
 
     }
     
-If you do not want to implement every method of the interface, you can simply use default DefaulValidateCallback just like the above example code.
+If you do not want to implement every method of the interface, you can simply use default `DefaulValidateCallback` just like the above example  and implement methods selectively.
 
-#### 2.7.5 RuntimeValidateException
+#### 2.8.5 RuntimeValidateException
 
-Note that a RuntimeValidateException will be thrown out containing the cause exception from the doValidate() method. You need to try-cath or handle it on your own.
-
-
+A RuntimeValidateException will be threw out containing the root cause exception from the `doValidate()` method. You can try-cath or handle it on your own.
 
 
+## 3. JSR 303 - Bean Validation support
+
+If you are wondering what JSR 303 - Bean Validation specification, please spend some time [here](http://beanvalidation.org/1.0/spec/) before proceeding further. And get some knowledge backgroud of what Hibernate Validator is via [this link](http://hibernate.org/validator/).
+
+JSR 303 - Bean Validation defines a metadata model and API for entity validation and Hibernate Validator is the best known implementation.
+
+The following paragraphs will guide you through the steps required to integrate Hibernate Validator with Fluent Validator.
+
+### 3.1 Prerequisite
+Add the following dependency to your pom.xml. 
+
+	<dependency>
+    	<groupId>com.baidu.beidou</groupId>
+    	<artifactId>fluent-validator-jsr303</artifactId>
+    	<version>1.0.0-SNAPSHOT</version>
+	</dependency>
+	
+By default, the following dependencies are what fluent-validator-jsr303 will bring into your project. 
+
+```	
+[INFO] +- com.baidu.unbiz:fluent-validator:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.hibernate:hibernate-validator:jar:5.2.1.Final:compile
+[INFO] |  +- javax.validation:validation-api:jar:1.1.0.Final:compile
+[INFO] |  +- org.jboss.logging:jboss-logging:jar:3.2.1.Final:compile
+[INFO] |  \- com.fasterxml:classmate:jar:1.1.0:compile
+[INFO] +- javax.el:javax.el-api:jar:2.2.4:compile
+[INFO] +- org.glassfish.web:javax.el:jar:2.2.4:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.7:compile
+[INFO] +- org.slf4j:slf4j-log4j12:jar:1.7.7:compile
+[INFO] |  \- log4j:log4j:jar:1.2.17:compile
+```
+
+You can exclude any of them but be sure to have *fluent-validator* left by configuring like below: 
+
+```
+<dependency>
+	<groupId>com.baidu.beidou</groupId>
+	<artifactId>fluent-validator-jsr303</artifactId>
+	<exclusions>
+		<exclusion>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+```
+		
+
+### 3.1 Validate by using Hibernate Validator
+
+Since using annotation-based constraints can be an easy way to do validation on an instance. Fluent Validator will definately leverage the useful feature provided by Hibernate Validator.
 
 
-Hibernate Validator also offers a custom, non standardized annotation - org.hibernate.validator.group.GroupSequenceProvider - which allows for dynamic redefinition of the default group sequence. Using the rental car scenario again, one could
-￼￼￼21
-￼Chapter 2. Validation step by...
-￼￼dynamically add the driver checks depending on whether the car is rented or not
+Below is an example of applying annotation-based contraints on Car instance. The @NotEmpty, @Pattern, @NotNull, @Size, @Length and @Valid annotations are used to declare the constraints. For more information please see [Hibernate Validator official documentation](http://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/).
+
+```
+public class Company {
+    @NotEmpty
+    @Pattern(regexp = "[0-9a-zA-Z\4e00-\u9fa5]+")
+    private String name;
+
+    @NotNull(message = "The establishTime must not be null")
+    private Date establishTime;
+
+    @NotNull
+    @Size(min = 0, max = 10)
+    @Valid
+    private List<Department> departmentList;
+
+    // getter and setter...
+}
+
+public class Department {
+    @NotNull
+    private Integer id;
+
+    @Length(max = 30)
+    private String name;
+    
+    // getter and setter...
+}
+    
+```
+
+To perform validation, one can use `FluentValidator` without any problem. Just use the `HibernateSupportedValidator` as one of the validators you want to apply on the target. 
+
+```
+Result ret = FluentValidator.checkAll()
+                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new CompanyCustomValidator())
+                .doValidate();
+        System.out.println(ret);
+```
+ 
+Note that HibernateSupportedValidator should first have `javax.validation.Validator` set into its specified property, otherwise HibernateSupportedValidator will not work noramlly. The following shows getting Hibernate implemented version of `javax.validation.Validator` and set it into HibernateSupportedValidator.
 
 
-Use the validate() method to perform validation of all constraints of a given entity instance
+    Locale.setDefault(Locale.ENGLISH); // speicify language
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    javax.validation.Validator validator = factory.getValidator();
 
-should accept expression/ closure and then populate the semantic model by executing the 
+When Company name is invalid, the result would be:
 
-Applying multiple constraints of the same type
+    Result{hasError=true, errorMsgs=[{name} must match "[0-9a-zA-Z\4e00-\u9fa5]+"]}
 
-validates that its target matches a specified regular expression
+Also HibernateSupportedValidator works well with other custom validators, you can add validators through `on()` as much as you want like below:
 
-Last but not least, a constraint can also be placed on class level. 
+    Result ret = FluentValidator.checkAll()
+                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new CompanyCustomValidator())
+                .doValidate();
 
-Field-level constraints
+### 3.2 FluentHibernateValidator can be a replacement
 
+Usually `FluentHibernateValidator` is the same as `FluentValidator`. But in case if one wants to do annotation-based validation by using [Grouping constraints](http://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#chapter-groups), FluentHibernateValidator is here to help. 
 
+For example, you add ceo field to Car class and specifying the group as AddCompany.class which you can define as an interface:
 
-## JSR 303-Bean Validation support
+    @Length(message = "Company CEO is not valid", min = 10, groups = {AddCompany.class})
+    private String ceo;
+    
+When using `FluentHibernateValidator.checkAll()` or `FluentValidator.checkAll()`, ceo will not be validated at all. Only when AddCompany.class acts as one member of the array argument that `FluentHibernateValidator.checkAll()` accepts, the @Length will work.
 
-We will first show how to obtain an Validator instance.
-
-
-If you are wondering what fluent interface, the please spend some time here before proceeding further.
-
-The same constraint type can belong to different groups and have spe- cific error messages depending on the targeted group.
-
-A Validator instance is thread-safe and may be reused multiple times. For this reason we store it as field of our test class. We can use the Validator now to validate the different car instances in the test methods.
-
-
-
-### Dependencies
-Navi-pbrpc tries to leverage minimum amount of dependency libraries, so that project built upon Navi-pbrpc will not be overwhelmed by other unwanted libraries. The following are the dependencies.
-
-
-    [INFO] +- commons-pool:commons-pool:jar:1.5.7:compile
-    [INFO] +- com.google.protobuf:protobuf-java:jar:2.5.0:compile
-    [INFO] +- io.netty:netty-all:jar:4.0.28.Final:compile
-    [INFO] +- org.javassist:javassist:jar:3.18.1-GA:compile
-    [INFO] +- org.slf4j:slf4j-api:jar:1.7.7:compile
-    [INFO] +- org.slf4j:slf4j-log4j12:jar:1.7.7:compile
-    [INFO] |  \- log4j:log4j:jar:1.2.17:compile
-
+    Result ret = FluentHibernateValidator.checkAll(AddCompany.class)
+                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new CompanyCustomValidator())
+                .doValidate();
 
 ### Supports 
 
 ![](http://neoremind.net/imgs/gmail.png)
-
-
