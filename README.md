@@ -289,7 +289,9 @@ Last but not least, a callback be placed on the doValidate() method like below:
 `ValidateCallback` is an optional argument that `doValidate()` method needs. 
 
 `onSuccess()` method is called when everything goes well. 
+
 `onFail()` is called when there is any failures occurs.
+
 `onUncaughtException()` method is called once there is uncaught exception throwing during the validation process.
 
     public interface ValidateCallback {
