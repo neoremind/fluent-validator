@@ -140,7 +140,7 @@ public class HiberateSupportedValidatorTest {
     }
 
     @Test(expected = MyException.class)
-    public void testC() {
+    public void testOnFailException() {
         Company company = CompanyBuilder.buildSimple();
         company.getDepartmentList().get(0).setId(null);
 
