@@ -2,9 +2,9 @@
 ![](https://travis-ci.org/neoremind/fluent-validator.svg?branch=master)
 ![](https://coveralls.io/repos/neoremind/fluent-validator/badge.svg?branch=master&service=github)
 
-Validating data is a common task that occurs throughout any application, especially the business logic layer. As for some quite complex scenarios, often the same or similar validation logic is scattered everywhere, thus it is hard to reuse. 
+Validating data is a common task that occurs throughout any application, especially the business logic layer. As for some quite complex scenarios, often the same or similar validation logic is scattered everywhere, thus it is hard to reuse code. 
 
-To avoid duplication and do validation related work as easy as possible, *Fluent Validator* provides the power to support validations with ease by leveraging the [fluent interface]() style and [JSR 303 - Bean Validation]() specification, and here we choose [Hibernate Validator]() which is the best implementation of this JSR.
+To avoid duplication and do validations as easy as possible, **Fluent Validator** provides the power to support validations with ease by leveraging the [fluent interface]() style and [JSR 303 - Bean Validation]() specification, and here we choose [Hibernate Validator]() as the implementation of this JSR which is the best known one.
 
 
 ## 1. Quick Start
@@ -12,7 +12,7 @@ This chapter will show you how to get started with Fluent Validator.
 
 ### 1.1 Prerequisite
 
-Add the below dependency to pom.xml for a maven enabled project. There are no other dependencies for fluent validator, that means your project will not be overwhelmed by other unwanted libraries. 
+Add the below dependency to pom.xml for a maven enabled project. There are no other dependencies for Fluent Validator, that means your project will not be overwhelmed by other unwanted libraries. 
 
 	<dependency>
     	<groupId>com.baidu.beidou</groupId>
@@ -23,7 +23,7 @@ Add the below dependency to pom.xml for a maven enabled project. There are no ot
 
 ### 1.2 Create a domain model
 
-Create a domain model or you can call it entity to be validated on later.
+Create a domain model or you can call it entity to be validated on later. For example, a Car class is created as below.
 
     public class Car {
         private String manufacturer;
@@ -36,7 +36,7 @@ Create a domain model or you can call it entity to be validated on later.
 
 
 ### 1.3 Applying constraints
-First off, get a valid Car instance and then use Fluent Validator to bind each of the license plate, manufacturer and seat count to some self implemented validators. At last, validating shall be applied to the fields of a Car instance in the sequence that they are added and a *Result* is returned which might contains the error messages.
+First, get a valid Car instance and then use `FluentValidator` to bind each of the license plate, manufacturer and seat count to some custom implemented validators. At last, validating shall be applied to the fields of a Car instance in the sequence that they are added by calling `on()` method and a `Result` is returned which contains the error messages.
 
     Car car = getValidCar();
 
@@ -49,7 +49,7 @@ First off, get a valid Car instance and then use Fluent Validator to bind each o
     System.out.println(ret);
 
 
-Let's take a look into one the these self implemented validators - CarSeatCountValidator. 
+Let's take a look into one the these custom implemented validators - CarSeatCountValidator. 
 
 ```
 public class CarSeatCountValidator extends ValidatorHandler<Integer> implements Validator<Integer> {
@@ -64,18 +64,19 @@ public class CarSeatCountValidator extends ValidatorHandler<Integer> implements 
     }
 }
 ```
-To perform a validation of constraint, we have the class extending ValidatorHandler class and implementing Validator interface. CarSeatCountValidator is able to do validation on an primitive *int* value. 
+
+To perform a validation of constraint, we have the class extending `ValidatorHandler` class and implementing `Validator` interface. CarSeatCountValidator is able to do validation on an primitive *int* value. 
 
 If the seat count is less than two, it will return false and an error message is put into the context. If fail fast strategy is enbled, the result output would be:
 
     Result{hasError=true, errorMsgs=[Seat count is not valid, invalid value=99]}
 
 
-If the seat count validates successfully, it will return true. So that the process goes to the next validator. It every fileds do not violate any constraint, the result output would be:
+If the seat count validates successfully, it will return true. So that the process goes to the next validator. If all the fileds do not violate any constraint, the result output would be:
 
     Result{hasError=false, errorMsgs=null}
 
-More information about some other cool features of fluent validator, please go next. You can continue exploring from the next chapter.
+More information about some other cool features of Fluent Validator, please go next. You can continue exploring from the next chapter.
 
 
 ## 2. Basic validation step by step
@@ -352,3 +353,5 @@ Navi-pbrpc tries to leverage minimum amount of dependency libraries, so that pro
 ### Supports 
 
 ![](http://neoremind.net/imgs/gmail.png)
+
+
