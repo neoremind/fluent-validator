@@ -1,10 +1,9 @@
 package com.baidu.unbiz.fluentvalidator.jsr303;
 
 /**
- * ClassName: ThreadHolder <br/>
- * Function: 线程执行的上下文内容
+ * 线程执行的上下文内容
  *
- * @author Zhang Xu
+ * @author zhangxu
  */
 public class GroupingHolder {
 

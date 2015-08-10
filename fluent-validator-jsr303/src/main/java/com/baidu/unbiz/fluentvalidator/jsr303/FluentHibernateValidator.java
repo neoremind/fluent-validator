@@ -5,10 +5,15 @@ import com.baidu.unbiz.fluentvalidator.Result;
 import com.baidu.unbiz.fluentvalidator.ValidateCallback;
 
 /**
+ * 为Hibernate Validator定制的FluentValidator
+ *
  * @author zhangxu
  */
 public class FluentHibernateValidator extends FluentValidator {
 
+    /**
+     * Groupings
+     */
     private Class[] groupingConstraints;
 
     /**

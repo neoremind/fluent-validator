@@ -13,7 +13,6 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.baidu.unbiz.fluentvalidator.error.ErrorMsg;
 import com.baidu.unbiz.fluentvalidator.grouping.AddCompany;
 
 /**
