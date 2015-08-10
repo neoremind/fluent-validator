@@ -4,7 +4,7 @@
 
 Validating data is a common task that occurs throughout any application, especially the business logic layer. As for some quite complex scenarios, often the same or similar validation logic is scattered everywhere, thus it is hard to reuse code. 
 
-To avoid duplication and do validations as easy as possible, **Fluent Validator** provides the power to support validations with ease by leveraging the [fluent interface]() style and [JSR 303 - Bean Validation]() specification, and here we choose [Hibernate Validator]() which probably being the most well known one as the implementation of this JSR .
+To avoid duplication and do validations as easy as possible, **Fluent Validator** provides the power to support validations with ease by leveraging the [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface) style and [JSR 303 - Bean Validation](http://beanvalidation.org/1.0/spec/) specification, and here we choose [Hibernate Validator](http://hibernate.org/validator/) which probably being the most well known one as the implementation of this JSR .
 
 
 ## 1. Quick Start
