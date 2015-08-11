@@ -21,6 +21,26 @@ are no other dependencies for Fluent Validator, which means other unwanted libra
     	<version>1.0.0-SNAPSHOT</version>
 	</dependency>
 
+	<dependencies>
+        <dependency>
+            <groupId>com.baidu.unbiz</groupId>
+            <artifactId>fluent-validator</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <!-- Note: please remove this after GA version is released -->
+    <repositories>
+        <repository>
+            <id>Sonatype</id>
+            <name>Sonatype's repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
 *Currently GA version has not been released but the snapshot version is able to work normally. See more on [sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/baidu/unbiz/).*
 
 
