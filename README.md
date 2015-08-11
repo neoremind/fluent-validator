@@ -21,13 +21,9 @@ are no other dependencies for Fluent Validator, which means other unwanted libra
     	<version>1.0.0-SNAPSHOT</version>
 	</dependency>
 
-	<dependencies>
-        <dependency>
-            <groupId>com.baidu.unbiz</groupId>
-            <artifactId>fluent-validator</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+*Currently GA version has not been released but the snapshot version is able to work normally. Please add the
+following repository to your repositories if possible. See more on
+[sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/baidu/unbiz/).*
 
     <!-- Note: please remove this after GA version is released -->
     <repositories>
@@ -40,9 +36,6 @@ are no other dependencies for Fluent Validator, which means other unwanted libra
             </snapshots>
         </repository>
     </repositories>
-
-*Currently GA version has not been released but the snapshot version is able to work normally. See more on [sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/baidu/unbiz/).*
-
 
 ### 1.2 Create a domain model
 
