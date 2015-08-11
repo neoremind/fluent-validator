@@ -199,8 +199,8 @@ public class FluentValidator {
                     }
                 }
             } catch (Exception e) {
-                v.onException(e, context, target);
                 try {
+                    v.onException(e, context, target);
                     cb.onUncaughtException(v, e, target);
                 } catch (Exception e1) {
                     throw new RuntimeValidateException(e1);

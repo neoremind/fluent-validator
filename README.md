@@ -137,6 +137,11 @@ Note that if you do not want to implement all the methods for your validator, yo
         //...
     }
 
+When there are errors, one should add error messages and return false like below:
+
+    context.addErrorMsg(String.format(CarError.MANUFACTURER_ERROR.msg(), target));
+    return false;
+
 
 ### 2.4 Fail fast or fail over
 Use `failFast()` method to prevent the following validators from getting validated if any validator fails and returns false on validate() method. 
