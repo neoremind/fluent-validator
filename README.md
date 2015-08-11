@@ -16,7 +16,7 @@ In order to use Fluent Validator within a Maven project, simply add the followin
 are no other dependencies for Fluent Validator, which means other unwanted libraries will not overwhelm your project. 
 
 	<dependency>
-    	<groupId>com.baidu.beidou</groupId>
+    	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator</artifactId>
     	<version>1.0.0-SNAPSHOT</version>
 	</dependency>
@@ -343,7 +343,7 @@ The following paragraphs will guide you through the steps required to integrate 
 Add the following dependency to your pom.xml. 
 
 	<dependency>
-    	<groupId>com.baidu.beidou</groupId>
+    	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator-jsr303</artifactId>
     	<version>1.0.0-SNAPSHOT</version>
 	</dependency>
@@ -367,7 +367,7 @@ You can exclude any of them but be sure to have *fluent-validator* left by confi
 
 ```
 <dependency>
-	<groupId>com.baidu.beidou</groupId>
+	<groupId>com.baidu.unbiz</groupId>
 	<artifactId>fluent-validator-jsr303</artifactId>
 	<exclusions>
 		<exclusion>
