@@ -33,10 +33,4 @@ public class RuntimeValidateException extends RuntimeException {
         super(cause);
     }
 
-    public RuntimeValidateException(String message,
-                                    Throwable cause,
-                                    boolean enableSuppression,
-                                    boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

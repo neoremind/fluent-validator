@@ -12,13 +12,16 @@ This chapter will show you how to get started with Fluent Validator.
 
 ### 1.1 Prerequisite
 
-In order to use Fluent Validator within a Maven project, simply add the following dependency to your pom.xml. There are no other dependencies for Fluent Validator, which means other unwanted libraries will not overwhelm your project. 
+In order to use Fluent Validator within a Maven project, simply add the following dependency to your pom.xml. There
+are no other dependencies for Fluent Validator, which means other unwanted libraries will not overwhelm your project. 
 
 	<dependency>
     	<groupId>com.baidu.beidou</groupId>
     	<artifactId>fluent-validator</artifactId>
     	<version>1.0.0-SNAPSHOT</version>
 	</dependency>
+
+*Currently GA version has not been released but the snapshot version is able to work normally. See more on [sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/baidu/unbiz/).*
 
 
 ### 1.2 Create a domain model
