@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 结合框架工具类
+ * 集合框架工具类
  *
  * @author zhangxu
  */
