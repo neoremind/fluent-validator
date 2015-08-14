@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * 反射工具类
+ *
  * @author zhangxu
  */
 public class ReflectionUtil {

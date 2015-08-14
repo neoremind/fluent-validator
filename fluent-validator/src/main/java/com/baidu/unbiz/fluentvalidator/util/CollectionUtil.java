@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * 结合框架工具类
+ *
  * @author zhangxu
  */
 public class CollectionUtil {
@@ -73,12 +75,14 @@ public class CollectionUtil {
     }
 
     /**
-     * List转换
+     * 列表转换
      *
-     * @param fromList
-     * @param function
+     * @param fromList 源列表
+     * @param function 转换函数
      *
-     * @return
+     * @return 新列表
+     *
+     * @see Function
      */
     public static <F, T> List<T> transform(List<F> fromList, Function<? super F, ? extends T> function) {
         if (CollectionUtil.isEmpty(fromList)) {
