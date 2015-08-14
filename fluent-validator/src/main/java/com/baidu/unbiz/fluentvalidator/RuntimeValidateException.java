@@ -8,7 +8,7 @@ package com.baidu.unbiz.fluentvalidator;
  *     try {
  *         Result ret = FluentValidator.checkAll().failFast()
  *             .on(car.getLicensePlate(), new CarLicensePlateValidator())
- *             .doValidate();
+ *             .doValidate().result(toSimple());
  *     } catch (RuntimeValidateException e) {
  *         assertThat(e.getCause().getMessage(), is("Call Rpc failed"));
  *     }

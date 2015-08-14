@@ -1,5 +1,6 @@
 package com.baidu.unbiz.fluentvalidator;
 
+import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toSimple;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -22,7 +23,7 @@ public class FluentValidatorClassTest {
     private ManufacturerService manufacturerService = new ManufacturerServiceImpl();
 
     @Test
-    public void testCar() {
+    public void testPutClosure2Context() {
         Car car = getValidCar();
 
         Closure<List<String>> closure = new ClosureHandler<List<String>>() {
@@ -51,7 +52,7 @@ public class FluentValidatorClassTest {
         Result ret = FluentValidator.checkAll()
                 .putClosure2Context("manufacturerClosure", closure)
                 .on(car, chain)
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(true));
 

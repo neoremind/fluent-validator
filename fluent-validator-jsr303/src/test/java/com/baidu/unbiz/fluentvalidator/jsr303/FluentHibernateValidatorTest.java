@@ -1,5 +1,6 @@
 package com.baidu.unbiz.fluentvalidator.jsr303;
 
+import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toSimple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -42,7 +43,7 @@ public class FluentHibernateValidatorTest {
         Result ret = FluentHibernateValidator.checkAll()
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(true));
     }
@@ -55,11 +56,11 @@ public class FluentHibernateValidatorTest {
         Result ret = FluentHibernateValidator.checkAll(AddCompany.class)
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrorMsgs().get(0), is("{ceo} Company CEO is not valid"));
+        assertThat(ret.getErrors().get(0), is("{ceo} Company CEO is not valid"));
     }
 
     @Test
@@ -70,7 +71,7 @@ public class FluentHibernateValidatorTest {
         Result ret = FluentHibernateValidator.checkAll(Default.class, AddCompany.class)
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(2));
@@ -84,11 +85,11 @@ public class FluentHibernateValidatorTest {
         Result ret = FluentHibernateValidator.checkAll(GroupingCheck.class)
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrorMsgs().get(0), is("{ceo} Company CEO is not valid"));
+        assertThat(ret.getErrors().get(0), is("{ceo} Company CEO is not valid"));
     }
 
     @Test
@@ -99,11 +100,11 @@ public class FluentHibernateValidatorTest {
         Result ret = FluentHibernateValidator.checkAll(GroupingCheck2.class)
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrorMsgs().get(0).startsWith("{name} must match \"[0-9a-zA-Z"), is(true));
+        assertThat(ret.getErrors().get(0).startsWith("{name} must match \"[0-9a-zA-Z"), is(true));
     }
 
 }

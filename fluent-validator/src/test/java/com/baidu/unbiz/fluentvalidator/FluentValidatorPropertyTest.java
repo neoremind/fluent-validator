@@ -1,5 +1,6 @@
 package com.baidu.unbiz.fluentvalidator;
 
+import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toSimple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -27,7 +28,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getManufacturer(), new CarManufacturerValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(true));
     }
@@ -41,11 +42,11 @@ public class FluentValidatorPropertyTest {
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getManufacturer(), new CarManufacturerValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator()).failFast()
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrorMsgs().get(0), is(String.format(CarError.SEATCOUNT_ERROR.msg(), 99)));
+        assertThat(ret.getErrors().get(0), is(String.format(CarError.SEATCOUNT_ERROR.msg(), 99)));
     }
 
     @Test
@@ -57,15 +58,15 @@ public class FluentValidatorPropertyTest {
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getManufacturer(), new CarManufacturerValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrorMsgs().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
+        assertThat(ret.getErrors().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
     }
 
     @Test
-    public void testCarPutContext() {
+    public void testCarPutAttribute2Context() {
         Car car = getValidCar();
         car.setManufacturer("XXXX");
 
@@ -74,7 +75,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getManufacturer(), new CarManufacturerValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(true));
     }
@@ -88,11 +89,11 @@ public class FluentValidatorPropertyTest {
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getManufacturer(), new CarManufacturerValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrorMsgs().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
+        assertThat(ret.getErrors().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
     }
 
     @Test
@@ -104,11 +105,11 @@ public class FluentValidatorPropertyTest {
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getManufacturer(), new CarManufacturerValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator()).failFast()
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrorMsgs().get(0), is(String.format(CarError.LICENSEPLATE_ERROR.msg(), "BEIJING")));
+        assertThat(ret.getErrors().get(0), is(String.format(CarError.LICENSEPLATE_ERROR.msg(), "BEIJING")));
     }
 
     @Test
@@ -122,11 +123,11 @@ public class FluentValidatorPropertyTest {
                 .on(car.getManufacturer(), new CarManufacturerValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(3));
-        assertThat(ret.getErrorMsgs().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
+        assertThat(ret.getErrors().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
     }
 
     @Test
@@ -140,11 +141,11 @@ public class FluentValidatorPropertyTest {
                 .on(car.getManufacturer(), new CarManufacturerValidator()).when(true)
                 .on(car.getSeatCount(), new CarSeatCountValidator())
                 .on(car.getLicensePlate(), new CarLicensePlateValidator()).when(false)
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(2));
-        assertThat(ret.getErrorMsgs().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
+        assertThat(ret.getErrors().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
     }
 
     @Test
@@ -161,7 +162,7 @@ public class FluentValidatorPropertyTest {
                     public void onSuccess(ValidatorElementList chained) {
                         ref[0] = "all ok!";
                     }
-                });
+                }).result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(true));
         assertThat(ref[0], is("all ok!"));
@@ -180,11 +181,11 @@ public class FluentValidatorPropertyTest {
                 .on(car.getSeatCount(), new CarSeatCountValidator())
                 .doValidate(new DefaulValidateCallback() {
                     @Override
-                    public void onFail(ValidatorElementList chained, List<String> errorMsgs) {
-                        ref[0] = errorMsgs.size();
+                    public void onFail(ValidatorElementList chained, List<ValidationError> errors) {
+                        ref[0] = errors.size();
                         throw new CustomException("ERROR HERE");
                     }
-                });
+                }).result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ref[0], is(2));
@@ -195,6 +196,7 @@ public class FluentValidatorPropertyTest {
         Car car = getValidCar();
         car.setLicensePlate("YYYY");
 
+        final StringBuilder uncaughtMsg = new StringBuilder();
         try {
             Result ret = FluentValidator.checkAll().failFast()
                     .on(car.getLicensePlate(), new CarLicensePlateValidator())
@@ -204,11 +206,16 @@ public class FluentValidatorPropertyTest {
                         @Override
                         public void onUncaughtException(Validator validator, Exception e, Object target)
                                 throws Exception {
-                            System.err.println("Fetal here!");
+                            uncaughtMsg.append(String.format("Fetal here on %s when validating %s ending error of %s",
+                                    validator, target, e.getMessage()));
                         }
-                    });
+                    }).result(toSimple());
             System.out.println(ret);
         } catch (RuntimeValidateException e) {
+            System.out.println(uncaughtMsg.toString());
+            assertThat(uncaughtMsg.toString(),
+                    is("Fetal here on CarLicensePlateValidator when validating YYYY ending error of "
+                            + "Call Rpc failed"));
             assertThat(e.getCause().getMessage(), is("Call Rpc failed"));
         }
     }

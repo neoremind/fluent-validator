@@ -1,5 +1,7 @@
 package com.baidu.unbiz.fluentvalidator.validator;
 
+import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toSimple;
+
 import java.util.List;
 
 import com.baidu.unbiz.fluentvalidator.Closure;
@@ -28,7 +30,7 @@ public class CarValidator extends ValidatorHandler<Car> implements Validator<Car
         return FluentValidator.checkAll()
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
-                .doValidate().hasError();
+                .doValidate().result(toSimple()).hasError();
     }
 
 }

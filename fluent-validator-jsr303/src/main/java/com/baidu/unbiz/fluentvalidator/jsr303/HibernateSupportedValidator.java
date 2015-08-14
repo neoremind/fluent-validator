@@ -4,7 +4,7 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import com.baidu.unbiz.fluentvalidator.NotThreadSafe;
+import com.baidu.unbiz.fluentvalidator.annotation.NotThreadSafe;
 import com.baidu.unbiz.fluentvalidator.Validator;
 import com.baidu.unbiz.fluentvalidator.ValidatorContext;
 import com.baidu.unbiz.fluentvalidator.ValidatorHandler;

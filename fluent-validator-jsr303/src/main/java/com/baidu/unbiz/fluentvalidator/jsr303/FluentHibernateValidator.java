@@ -28,9 +28,9 @@ public class FluentHibernateValidator extends FluentValidator {
     /**
      * 按照默认验证回调条件，开始使用验证
      *
-     * @return 结果对象
+     * @return FluentValidator
      */
-    public Result doValidate() {
+    public FluentValidator doValidate() {
         if (groupingConstraints == null) {
             return doValidate(defaultCb);
         }
@@ -48,11 +48,11 @@ public class FluentHibernateValidator extends FluentValidator {
      *
      * @param cb 验证回调
      *
-     * @return 结果对象
+     * @return FluentValidator
      *
      * @see ValidateCallback
      */
-    public Result doValidate(ValidateCallback cb) {
+    public FluentValidator doValidate(ValidateCallback cb) {
         if (groupingConstraints == null) {
             return doValidate(cb);
         }

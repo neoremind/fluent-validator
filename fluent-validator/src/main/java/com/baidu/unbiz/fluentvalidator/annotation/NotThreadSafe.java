@@ -1,4 +1,4 @@
-package com.baidu.unbiz.fluentvalidator;
+package com.baidu.unbiz.fluentvalidator.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 非线程安全注解，装饰在类级别，仅仅用于标识
+ * 标记为非线程安全的注解，标示类或者方法不是必须线程安全实现的
  *
  * @author zhangxu
  */

@@ -9,7 +9,6 @@ package com.baidu.unbiz.fluentvalidator;
  *
  * @author zhangxu
  */
-@NotThreadSafe
 public abstract class ClosureHandler<T> implements Closure<T> {
 
     /**

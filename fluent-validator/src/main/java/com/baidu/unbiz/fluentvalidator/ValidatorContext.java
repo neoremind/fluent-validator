@@ -1,7 +1,8 @@
 package com.baidu.unbiz.fluentvalidator;
 
-import java.util.HashMap;
 import java.util.Map;
+
+import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 
 /**
  * 验证器执行调用中的上下文
@@ -33,7 +34,25 @@ public class ValidatorContext {
     /**
      * 调用结果对象
      */
-    public Result result;
+    public ValidationResult result;
+
+    /**
+     * 添加错误信息
+     *
+     * @param msg 错误信息
+     */
+    public void addErrorMsg(String msg) {
+        result.addError(ValidationError.create(msg));
+    }
+
+    /**
+     * 添加错误信息
+     *
+     * @param validationError 验证错误
+     */
+    public void addError(ValidationError validationError) {
+        result.addError(validationError);
+    }
 
     /**
      * 获取属性
@@ -63,36 +82,9 @@ public class ValidatorContext {
 
     public void setAttribute(String key, Object value) {
         if (attributes == null) {
-            attributes = new HashMap<String, Object>(1 << 3);
+            attributes = CollectionUtil.createHashMap(Const.INITIAL_CAPACITY);
         }
         attributes.put(key, value);
-    }
-
-    /**
-     * 添加错误信息
-     *
-     * @param msg 错误信息
-     */
-    public void addErrorMsg(String msg) {
-        result.addErrorMsg(msg);
-    }
-
-    /**
-     * 获取结果对象
-     *
-     * @return 结果对象
-     */
-    public Result getResult() {
-        return result;
-    }
-
-    /**
-     * 设置结果对象
-     *
-     * @param result 结果对象
-     */
-    public void setResult(Result result) {
-        this.result = result;
     }
 
     /**
@@ -117,9 +109,17 @@ public class ValidatorContext {
      */
     public void setClosure(String key, Closure closure) {
         if (closures == null) {
-            closures = new HashMap<String, Closure>(1 << 3);
+            closures = CollectionUtil.createHashMap(Const.INITIAL_CAPACITY);
         }
         closures.put(key, closure);
     }
 
+    /**
+     * 设置验证结果
+     *
+     * @param result 验证结果
+     */
+    public void setResult(ValidationResult result) {
+        this.result = result;
+    }
 }

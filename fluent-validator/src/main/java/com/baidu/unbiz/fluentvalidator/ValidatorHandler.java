@@ -1,5 +1,7 @@
 package com.baidu.unbiz.fluentvalidator;
 
+import com.baidu.unbiz.fluentvalidator.annotation.ThreadSafe;
+
 /**
  * 验证器默认实现
  * <p/>

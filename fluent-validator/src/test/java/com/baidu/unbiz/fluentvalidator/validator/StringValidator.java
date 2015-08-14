@@ -1,5 +1,6 @@
 package com.baidu.unbiz.fluentvalidator.validator;
 
+import com.baidu.unbiz.fluentvalidator.ValidationError;
 import com.baidu.unbiz.fluentvalidator.Validator;
 import com.baidu.unbiz.fluentvalidator.ValidatorContext;
 import com.baidu.unbiz.fluentvalidator.ValidatorHandler;
@@ -7,7 +8,7 @@ import com.baidu.unbiz.fluentvalidator.ValidatorHandler;
 /**
  * @author zhangxu
  */
-class StringValidator extends ValidatorHandler<String> implements Validator<String> {
+public class StringValidator extends ValidatorHandler<String> implements Validator<String> {
 
     @Override
     public boolean accept(ValidatorContext context, String s) {
@@ -22,8 +23,9 @@ class StringValidator extends ValidatorHandler<String> implements Validator<Stri
             return true;
         }
         System.out.println("check " + t);
-        if (!t.startsWith("123")) {
-            context.addErrorMsg("value is invalid for " + t);
+        if (!t.startsWith("abc")) {
+            context.addError(ValidationError.create("string should be abc").setErrorCode(100).setField("str")
+                    .setInvalidValue(t));
             return false;
         }
         return true;

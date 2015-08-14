@@ -1,5 +1,6 @@
 package com.baidu.unbiz.fluentvalidator.jsr303;
 
+import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toSimple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -16,6 +17,7 @@ import org.junit.Test;
 import com.baidu.unbiz.fluentvalidator.DefaulValidateCallback;
 import com.baidu.unbiz.fluentvalidator.FluentValidator;
 import com.baidu.unbiz.fluentvalidator.Result;
+import com.baidu.unbiz.fluentvalidator.ValidationError;
 import com.baidu.unbiz.fluentvalidator.ValidatorElementList;
 import com.baidu.unbiz.fluentvalidator.dto.Company;
 import com.baidu.unbiz.fluentvalidator.dto.CompanyBuilder;
@@ -45,7 +47,7 @@ public class HiberateSupportedValidatorTest {
         Result ret = FluentValidator.checkAll()
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(true));
     }
@@ -57,11 +59,11 @@ public class HiberateSupportedValidatorTest {
 
         Result ret = FluentValidator.checkAll()
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrorMsgs().get(0).startsWith("{name} must match \"[0-9a-zA-Z"), is(true));
+        assertThat(ret.getErrors().get(0).startsWith("{name} must match \"[0-9a-zA-Z"), is(true));
     }
 
     @Test
@@ -71,7 +73,7 @@ public class HiberateSupportedValidatorTest {
 
         Result ret = FluentValidator.checkAll()
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(2));
@@ -86,11 +88,11 @@ public class HiberateSupportedValidatorTest {
 
         Result ret = FluentValidator.checkAll()
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrorMsgs().get(0), is("{departmentList} size must be between 0 and 10"));
+        assertThat(ret.getErrors().get(0), is("{departmentList} size must be between 0 and 10"));
     }
 
     @Test
@@ -100,11 +102,11 @@ public class HiberateSupportedValidatorTest {
 
         Result ret = FluentValidator.checkAll()
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrorMsgs().get(0), is("{departmentList[0].name} length must be between 0 and 30"));
+        assertThat(ret.getErrors().get(0), is("{departmentList[0].name} length must be between 0 and 30"));
     }
 
     @Test
@@ -115,11 +117,11 @@ public class HiberateSupportedValidatorTest {
         Result ret = FluentValidator.checkAll()
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrorMsgs().get(0).startsWith("Company date is not valid"), is(true));
+        assertThat(ret.getErrors().get(0).startsWith("Company date is not valid"), is(true));
     }
 
     @Test
@@ -131,12 +133,12 @@ public class HiberateSupportedValidatorTest {
         Result ret = FluentValidator.checkAll().failOver()
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
         assertThat(ret.getErrorNumber(), is(2));
-        assertThat(ret.getErrorMsgs().get(0), is("{departmentList} may not be null"));
-        assertThat(ret.getErrorMsgs().get(1), is("Company id is not valid, invalid value=-1"));
+        assertThat(ret.getErrors().get(0), is("{departmentList} may not be null"));
+        assertThat(ret.getErrors().get(1), is("Company id is not valid, invalid value=-1"));
     }
 
     @Test(expected = MyException.class)
@@ -148,11 +150,11 @@ public class HiberateSupportedValidatorTest {
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .doValidate(new DefaulValidateCallback() {
                     @Override
-                    public void onFail(ValidatorElementList validatorElementList, List<String> errorMsgs) {
-                        System.err.println(errorMsgs);
+                    public void onFail(ValidatorElementList validatorElementList, List<ValidationError> errors) {
+                        System.err.println(errors);
                         throw new MyException("ERROR HERE!");
                     }
-                });
+                }).result(toSimple());
         System.out.println(ret);
     }
 

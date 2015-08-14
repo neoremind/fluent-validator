@@ -1,5 +1,10 @@
 package com.baidu.unbiz.fluentvalidator;
 
+import com.baidu.unbiz.fluentvalidator.annotation.NotStateless;
+import com.baidu.unbiz.fluentvalidator.annotation.NotThreadSafe;
+import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
+import com.baidu.unbiz.fluentvalidator.util.Preconditions;
+
 /**
  * 链式调用验证器
  * <p/>
@@ -11,11 +16,12 @@ package com.baidu.unbiz.fluentvalidator;
  *     .on(car.getLicensePlate(), new CarLicensePlateValidator())
  *     .on(car.getManufacturer(), new CarManufacturerValidator())
  *     .on(car.getSeatCount(), new CarSeatCountValidator())
- *     .doValidate();
+ *     .doValidate().result(toSimple());
  * System.out.println(ret);
  * </pre>
  */
 @NotThreadSafe
+@NotStateless
 public class FluentValidator {
 
     /**
@@ -34,6 +40,16 @@ public class FluentValidator {
      * 该<tt>context</tt>可以在所有验证器间共享
      */
     private ValidatorContext context = new ValidatorContext();
+
+    /**
+     * 验证结果
+     */
+    private ValidationResult result = new ValidationResult();
+
+    /**
+     * 默认验证回调
+     */
+    protected ValidateCallback defaultCb = new DefaulValidateCallback();
 
     /**
      * 记录上一次添加的验证器数量
@@ -116,6 +132,7 @@ public class FluentValidator {
      * @return FluentValidator
      */
     public <T> FluentValidator on(T t, Validator<T> v) {
+        Preconditions.checkNotNull(v, "Validator should not be NULL");
         validatorElementList.getList().add(new ValidatorElement(t, v));
         lastAddCount = 1;
         return this;
@@ -130,7 +147,8 @@ public class FluentValidator {
      * @return FluentValidator
      */
     public <T> FluentValidator on(T t, ValidatorChain chain) {
-        if (chain.getValidators() == null || chain.getValidators().isEmpty()) {
+        Preconditions.checkNotNull(chain, "ValidatorChain should not be NULL");
+        if (CollectionUtil.isEmpty(chain.getValidators())) {
             lastAddCount = 0;
             return this;
         }
@@ -158,16 +176,11 @@ public class FluentValidator {
     }
 
     /**
-     * 默认验证回调
-     */
-    protected ValidateCallback defaultCb = new DefaulValidateCallback();
-
-    /**
      * 按照默认验证回调条件，开始使用验证
      *
-     * @return 结果对象
+     * @return FluentValidator
      */
-    public Result doValidate() {
+    public FluentValidator doValidate() {
         return doValidate(defaultCb);
     }
 
@@ -176,44 +189,64 @@ public class FluentValidator {
      *
      * @param cb 验证回调
      *
-     * @return 结果对象
+     * @return FluentValidator
      *
      * @see ValidateCallback
      */
-    public Result doValidate(ValidateCallback cb) {
-        Result ret = new Result();
+    public FluentValidator doValidate(ValidateCallback cb) {
+        Preconditions.checkNotNull(cb, "ValidateCallback should not be NULL");
         if (validatorElementList.isEmpty()) {
-            return ret;
+            return this;
         }
-        context.setResult(ret);
+        context.setResult(result);
 
-        for (ValidatorElement element : validatorElementList.getList()) {
-            Object target = element.getTarget();
-            Validator v = element.getValidator();
-            try {
-                if (v.accept(context, target)) {
-                    if (!v.validate(context, target)) {
-                        if (isFailFast) {
-                            break;
+        long start = System.currentTimeMillis();
+        try {
+            for (ValidatorElement element : validatorElementList.getList()) {
+                Object target = element.getTarget();
+                Validator v = element.getValidator();
+                try {
+                    if (v.accept(context, target)) {
+                        if (!v.validate(context, target)) {
+                            if (isFailFast) {
+                                break;
+                            }
                         }
                     }
+                } catch (Exception e) {
+                    try {
+                        v.onException(e, context, target);
+                        cb.onUncaughtException(v, e, target);
+                    } catch (Exception e1) {
+                        throw new RuntimeValidateException(e1);
+                    }
+                    throw new RuntimeValidateException(e);
                 }
-            } catch (Exception e) {
-                try {
-                    v.onException(e, context, target);
-                    cb.onUncaughtException(v, e, target);
-                } catch (Exception e1) {
-                    throw new RuntimeValidateException(e1);
-                }
-                throw new RuntimeValidateException(e);
             }
-        }
 
-        if (ret.hasNoError()) {
-            cb.onSuccess(validatorElementList);
-        } else {
-            cb.onFail(validatorElementList, ret.getErrorMsgs());
+            if (result.hasNoError()) {
+                cb.onSuccess(validatorElementList);
+            } else {
+                cb.onFail(validatorElementList, result.getErrors());
+            }
+        } finally {
+            result.setTimeElapsed((int) (System.currentTimeMillis() - start));
         }
-        return ret;
+        return this;
     }
+
+    /**
+     * 转换为对外的验证结果，在<code>FluentValidator.on(..).on(..).doValidate()</code>这一连串“<a href="https://en.wikipedia
+     * .org/wiki/Lazy_evaluation">惰性求值</a>”计算后的“及时求值”收殓出口。
+     * <p/>
+     * &lt;T&gt;是验证结果的泛型
+     *
+     * @param resultCollector 验证结果收集器
+     *
+     * @return 对外验证结果
+     */
+    public <T> T result(ResultCollector<T> resultCollector) {
+        return resultCollector.toResult(result);
+    }
+
 }

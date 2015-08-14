@@ -22,9 +22,9 @@ public interface ValidateCallback {
      * 所有验证步骤结束，发现验证存在失败后
      *
      * @param validatorElementList 验证器list
-     * @param errorMsgs            错误消息
+     * @param errors               验证过程中发生的错误
      */
-    void onFail(ValidatorElementList validatorElementList, List<String> errorMsgs);
+    void onFail(ValidatorElementList validatorElementList, List<ValidationError> errors);
 
     /**
      * 执行验证过程中发生了异常后

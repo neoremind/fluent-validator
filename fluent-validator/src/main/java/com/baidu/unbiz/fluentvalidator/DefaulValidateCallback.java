@@ -17,7 +17,7 @@ public class DefaulValidateCallback implements ValidateCallback {
     }
 
     @Override
-    public void onFail(ValidatorElementList validatorElementList, List<String> errorMsgs) {
+    public void onFail(ValidatorElementList validatorElementList, List<ValidationError> errors) {
     }
 
     @Override

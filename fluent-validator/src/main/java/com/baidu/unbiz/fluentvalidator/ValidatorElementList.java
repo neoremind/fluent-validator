@@ -2,6 +2,8 @@ package com.baidu.unbiz.fluentvalidator;
 
 import java.util.LinkedList;
 
+import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
+
 /**
  * 在{@link FluentValidator}内部调用使用的验证器链
  *
@@ -12,12 +14,22 @@ public class ValidatorElementList {
     /**
      * 验证器链
      */
-    private LinkedList<ValidatorElement> list = new LinkedList<ValidatorElement>();
+    private LinkedList<ValidatorElement> list = CollectionUtil.createLinkedList();
 
+    /**
+     * 获取验证器链
+     *
+     * @return 验证器链
+     */
     public LinkedList<ValidatorElement> getList() {
         return list;
     }
 
+    /**
+     * 简单验证器链是否为空
+     *
+     * @return 是否为空
+     */
     public boolean isEmpty() {
         return list.isEmpty();
     }
@@ -31,4 +43,5 @@ public class ValidatorElementList {
         sb.append("NULL");
         return sb.toString();
     }
+
 }
