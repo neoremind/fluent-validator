@@ -32,4 +32,10 @@ public class ValidatorChain {
         this.validators = validators;
     }
 
+    @Override
+    public String toString() {
+        return "ValidatorChain{" +
+                "validators=" + validators +
+                '}';
+    }
 }

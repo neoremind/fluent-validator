@@ -1,4 +1,4 @@
-package com.baidu.unbiz.fluentvalidator;
+package com.baidu.unbiz.fluentvalidator.exception;
 
 /**
  * 验证器抛出运行时异常

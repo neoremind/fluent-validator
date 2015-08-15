@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.baidu.unbiz.fluentvalidator.dto.Car;
 import com.baidu.unbiz.fluentvalidator.error.CarError;
 import com.baidu.unbiz.fluentvalidator.exception.CustomException;
+import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
 import com.baidu.unbiz.fluentvalidator.validator.CarLicensePlateValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarManufacturerValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarSeatCountValidator;

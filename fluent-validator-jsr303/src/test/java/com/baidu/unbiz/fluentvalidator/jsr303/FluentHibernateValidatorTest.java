@@ -41,7 +41,7 @@ public class FluentHibernateValidatorTest {
         Company company = CompanyBuilder.buildSimple();
 
         Result ret = FluentHibernateValidator.checkAll()
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
@@ -54,7 +54,7 @@ public class FluentHibernateValidatorTest {
         company.setName("$%^$%^$%");
 
         Result ret = FluentHibernateValidator.checkAll(AddCompany.class)
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
@@ -69,7 +69,7 @@ public class FluentHibernateValidatorTest {
         company.setName("$%^$%^$%");
 
         Result ret = FluentHibernateValidator.checkAll(Default.class, AddCompany.class)
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
@@ -83,7 +83,7 @@ public class FluentHibernateValidatorTest {
         company.setName("$%^$%^$%");
 
         Result ret = FluentHibernateValidator.checkAll(GroupingCheck.class)
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
@@ -98,7 +98,7 @@ public class FluentHibernateValidatorTest {
         company.setName("$%^$%^$%");
 
         Result ret = FluentHibernateValidator.checkAll(GroupingCheck2.class)
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);

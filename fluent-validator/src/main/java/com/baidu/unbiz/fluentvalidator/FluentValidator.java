@@ -1,9 +1,17 @@
 package com.baidu.unbiz.fluentvalidator;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.baidu.unbiz.fluentvalidator.annotation.NotStateless;
 import com.baidu.unbiz.fluentvalidator.annotation.NotThreadSafe;
+import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
+import com.baidu.unbiz.fluentvalidator.registry.Registry;
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 import com.baidu.unbiz.fluentvalidator.util.Preconditions;
+import com.baidu.unbiz.fluentvalidator.util.ReflectionUtil;
 
 /**
  * 链式调用验证器
@@ -23,6 +31,8 @@ import com.baidu.unbiz.fluentvalidator.util.Preconditions;
 @NotThreadSafe
 @NotStateless
 public class FluentValidator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FluentValidator.class);
 
     /**
      * 验证器链
@@ -50,6 +60,11 @@ public class FluentValidator {
      * 默认验证回调
      */
     protected ValidateCallback defaultCb = new DefaulValidateCallback();
+
+    /**
+     * 如果启用通过{@link com.baidu.unbiz.fluentvalidator.annotation.FluentValidate}注解方式的验证，需要寻找验证器实例，这里为注册中心
+     */
+    private Registry registry;
 
     /**
      * 记录上一次添加的验证器数量
@@ -124,6 +139,51 @@ public class FluentValidator {
     }
 
     /**
+     * 如果启用通过{@link com.baidu.unbiz.fluentvalidator.annotation.FluentValidate}注解方式的验证，需要寻找验证器实例，这里配置注册中心的步骤
+     *
+     * @param registry 验证器注册查找器
+     *
+     * @return FluentValidator
+     */
+    public FluentValidator configure(Registry registry) {
+        Preconditions.checkNotNull(registry, "Registry should not be NULL");
+        this.registry = registry;
+        return this;
+    }
+
+    /**
+     * 在某个对象上通过{@link com.baidu.unbiz.fluentvalidator.annotation.FluentValidate}注解方式的验证，
+     * 需要保证{@link #configure(Registry)}已经先执行配置完毕<code>Registry</code>
+     *
+     * @param t 待验证对象
+     *
+     * @return FluentValidator
+     */
+    public <T> FluentValidator on(T t) {
+        if (registry == null) {
+            throw new RuntimeValidateException("When annotation-based validation enabled, one must use configure"
+                    + "(Registry) method to let FluentValidator know where to search and get validator instances");
+        }
+        int tmpLastAddCount = 0;
+        List<AnnotationValidator> anntValidators = AnnotationValidatorCache.getAnnotationValidator(registry, t);
+        if (!CollectionUtil.isEmpty(anntValidators)) {
+            for (AnnotationValidator anntValidator : anntValidators) {
+                if (!CollectionUtil.isEmpty(anntValidator.getValidators())) {
+                    LOGGER.debug(String.format("%s#%s on %s will be performed", t.getClass().getSimpleName(),
+                            anntValidator.getField().getName(), anntValidator));
+                    for (Validator v : anntValidator.getValidators()) {
+                        Object realTarget = ReflectionUtil.invokeMethod(anntValidator.getMethod(), t);
+                        validatorElementList.getList().add(new ValidatorElement(realTarget, v));
+                        tmpLastAddCount++;
+                    }
+                }
+            }
+        }
+        lastAddCount = tmpLastAddCount;
+        return this;
+    }
+
+    /**
      * 在待验证对象<tt>t</tt>上，使用<tt>v</tt>验证器进行验证
      *
      * @param t 待验证对象
@@ -135,6 +195,7 @@ public class FluentValidator {
         Preconditions.checkNotNull(v, "Validator should not be NULL");
         validatorElementList.getList().add(new ValidatorElement(t, v));
         lastAddCount = 1;
+        LOGGER.debug(String.format("%s on %s will be performed", t.getClass().getSimpleName(), v));
         return this;
     }
 
@@ -156,6 +217,7 @@ public class FluentValidator {
             validatorElementList.getList().add(new ValidatorElement(t, v));
         }
         lastAddCount = chain.getValidators().size();
+        LOGGER.debug(String.format("%s on %s will be performed", t.getClass().getSimpleName(), chain));
         return this;
     }
 
@@ -200,6 +262,7 @@ public class FluentValidator {
         }
         context.setResult(result);
 
+        LOGGER.debug("Start to validate through " + validatorElementList);
         long start = System.currentTimeMillis();
         try {
             for (ValidatorElement element : validatorElementList.getList()) {
@@ -218,7 +281,14 @@ public class FluentValidator {
                         v.onException(e, context, target);
                         cb.onUncaughtException(v, e, target);
                     } catch (Exception e1) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.error(v + " onException or onUncaughtException failed due to " + e1
+                                    .getMessage(), e1);
+                        }
                         throw new RuntimeValidateException(e1);
+                    }
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.error(v + " failed due to " + e.getMessage(), e);
                     }
                     throw new RuntimeValidateException(e);
                 }
@@ -230,7 +300,9 @@ public class FluentValidator {
                 cb.onFail(validatorElementList, result.getErrors());
             }
         } finally {
-            result.setTimeElapsed((int) (System.currentTimeMillis() - start));
+            int timeElapsed = (int) (System.currentTimeMillis() - start);
+            LOGGER.debug("End to validate through" + validatorElementList + " costing " + timeElapsed + "ms");
+            result.setTimeElapsed(timeElapsed);
         }
         return this;
     }

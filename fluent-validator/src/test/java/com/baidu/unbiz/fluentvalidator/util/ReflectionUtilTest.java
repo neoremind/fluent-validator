@@ -26,13 +26,14 @@ public class ReflectionUtilTest {
 
         Field[] fields =
                 ReflectionUtil.getAnnotationFields(AnnotationClass.class, AnnotationClass.TestAnnotation.class);
-
         assertThat(fields.length, is(2));
 
+        AnnotationClass.TestAnnotation anno =
+                ReflectionUtil.getAnnotation(fields[0], AnnotationClass.TestAnnotation.class);
+        assertThat(anno.value(), is("y"));
+
         fields = ReflectionUtil.getAnnotationFields(AnnotationClass.class, Test.class);
-
         assertThat(fields.length, is(0));
-
     }
 
 }

@@ -38,7 +38,11 @@ public class ValidatorElementList {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (ValidatorElement element : list) {
-            sb.append(element.getValidator()).append("->");
+            sb.append("[");
+            sb.append(element.getTarget().getClass().getSimpleName());
+            sb.append("@");
+            sb.append(element.getValidator());
+            sb.append("]->");
         }
         sb.append("NULL");
         return sb.toString();

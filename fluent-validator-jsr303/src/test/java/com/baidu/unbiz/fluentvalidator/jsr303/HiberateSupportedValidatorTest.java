@@ -1,6 +1,8 @@
 package com.baidu.unbiz.fluentvalidator.jsr303;
 
+import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toComplex;
 import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toSimple;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -14,6 +16,7 @@ import javax.validation.ValidatorFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.baidu.unbiz.fluentvalidator.ComplexResult;
 import com.baidu.unbiz.fluentvalidator.DefaulValidateCallback;
 import com.baidu.unbiz.fluentvalidator.FluentValidator;
 import com.baidu.unbiz.fluentvalidator.Result;
@@ -45,7 +48,7 @@ public class HiberateSupportedValidatorTest {
         Company company = CompanyBuilder.buildSimple();
 
         Result ret = FluentValidator.checkAll()
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
@@ -58,7 +61,7 @@ public class HiberateSupportedValidatorTest {
         company.setName("$%^$%^$%");
 
         Result ret = FluentValidator.checkAll()
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
@@ -72,7 +75,7 @@ public class HiberateSupportedValidatorTest {
         company.setName("");
 
         Result ret = FluentValidator.checkAll()
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
@@ -87,7 +90,7 @@ public class HiberateSupportedValidatorTest {
         }
 
         Result ret = FluentValidator.checkAll()
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
@@ -101,7 +104,7 @@ public class HiberateSupportedValidatorTest {
         company.getDepartmentList().get(0).setName("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
 
         Result ret = FluentValidator.checkAll()
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .doValidate().result(toSimple());
         System.out.println(ret);
         assertThat(ret.hasNoError(), is(false));
@@ -115,7 +118,7 @@ public class HiberateSupportedValidatorTest {
         company.setEstablishTime(DateUtil.getDate(2015, 1, 1));
 
         Result ret = FluentValidator.checkAll()
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
@@ -131,7 +134,7 @@ public class HiberateSupportedValidatorTest {
         company.setDepartmentList(null);
 
         Result ret = FluentValidator.checkAll().failOver()
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
@@ -141,13 +144,32 @@ public class HiberateSupportedValidatorTest {
         assertThat(ret.getErrors().get(1), is("Company id is not valid, invalid value=-1"));
     }
 
+    @Test
+    public void testMultirErrorComplexResult() {
+        Company company = CompanyBuilder.buildSimple();
+        company.setId(-1);
+        company.setDepartmentList(null);
+
+        ComplexResult ret = FluentValidator.checkAll().failOver()
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
+                .on(company, new CompanyCustomValidator())
+                .doValidate().result(toComplex());
+        System.out.println(ret);
+        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.getErrorNumber(), is(2));
+        assertThat(ret.getErrors().get(0).getErrorMsg(), is("{departmentList} may not be null"));
+        assertThat(ret.getErrors().get(0).getField(), is("departmentList"));
+        assertThat(ret.getErrors().get(0).getInvalidValue(), nullValue());
+        assertThat(ret.getErrors().get(1).getErrorMsg(), is("Company id is not valid, invalid value=-1"));
+    }
+
     @Test(expected = MyException.class)
     public void testOnFailException() {
         Company company = CompanyBuilder.buildSimple();
         company.getDepartmentList().get(0).setId(null);
 
         Result ret = FluentValidator.checkAll()
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHiberanteValidator(validator))
                 .doValidate(new DefaulValidateCallback() {
                     @Override
                     public void onFail(ValidatorElementList validatorElementList, List<ValidationError> errors) {

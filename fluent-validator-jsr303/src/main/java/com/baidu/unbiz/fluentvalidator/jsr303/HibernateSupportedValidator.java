@@ -4,10 +4,12 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
+import com.baidu.unbiz.fluentvalidator.ValidationError;
 import com.baidu.unbiz.fluentvalidator.annotation.NotThreadSafe;
 import com.baidu.unbiz.fluentvalidator.Validator;
 import com.baidu.unbiz.fluentvalidator.ValidatorContext;
 import com.baidu.unbiz.fluentvalidator.ValidatorHandler;
+import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 
 /**
  * 定制JSR303的实现<tt>Hibernate Validator</tt>验证器
@@ -21,7 +23,7 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
      * A Validator instance is thread-safe and may be reused multiple times. It thus can safely be stored in a static
      * field and be used in the test methods to validate the different Car instances.
      */
-    private static javax.validation.Validator validator;
+    private static javax.validation.Validator HIBERANTE_VALIDATOR;
 
     @Override
     public boolean accept(ValidatorContext context, T t) {
@@ -33,18 +35,18 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
         Class[] grouping = GroupingHolder.getGrouping();
         Set<ConstraintViolation<T>> constraintViolations;
         if (grouping == null || grouping.length == 0) {
-            constraintViolations =
-                    validator.validate(t);
+            constraintViolations = HIBERANTE_VALIDATOR.validate(t);
         } else {
-            constraintViolations =
-                    validator.validate(t, grouping);
+            constraintViolations = HIBERANTE_VALIDATOR.validate(t, grouping);
         }
-        if (constraintViolations == null || constraintViolations.isEmpty()) {
+        if (CollectionUtil.isEmpty(constraintViolations)) {
             return true;
         } else {
             for (ConstraintViolation<T> constraintViolation : constraintViolations) {
-                context.addErrorMsg("{" + constraintViolation.getPropertyPath() + "} " +
-                        constraintViolation.getMessage());
+                context.addError(ValidationError.create("{" + constraintViolation.getPropertyPath() + "} " +
+                        constraintViolation.getMessage())
+                        .setField(constraintViolation.getPropertyPath().toString())
+                        .setInvalidValue(constraintViolation.getInvalidValue()));
             }
             return false;
         }
@@ -55,12 +57,12 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
 
     }
 
-    public javax.validation.Validator getValidator() {
-        return validator;
+    public javax.validation.Validator getHiberanteValidator() {
+        return HIBERANTE_VALIDATOR;
     }
 
-    public HibernateSupportedValidator<T> setValidator(javax.validation.Validator validator) {
-        HibernateSupportedValidator.validator = validator;
+    public HibernateSupportedValidator<T> setHiberanteValidator(javax.validation.Validator validator) {
+        HibernateSupportedValidator.HIBERANTE_VALIDATOR = validator;
         return this;
     }
 
