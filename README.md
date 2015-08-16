@@ -76,7 +76,7 @@ First off, get a Car instance and then use `FluentValidator.checkAll()` to get a
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getManufacturer(), new CarManufacturerValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
-                .doValidate().result(toSimple());;
+                .doValidate().result(toSimple());
                 
     System.out.println(ret);
 
@@ -272,7 +272,7 @@ In addition to `Validator`, applying multiple constraints of the same instance o
     validators.add(new CarValidator());
     chain.setValidators(validators);
 
-    Result ret = FluentValidator.checkAll().on(car, chain).doValidate();
+    Result ret = FluentValidator.checkAll().on(car, chain).doValidate().result(toSimple());
     
 
 #### 2.8.2 Annotation based validation
@@ -392,7 +392,7 @@ For example, you can put *ignoreManufacturer* as true in the context and get the
     FluentValidator.checkAll()
                 .putAttribute2Context("ignoreManufacturer", true)
                 .on(car.getManufacturer(), new CarManufacturerValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
 
 ```
 public class CarManufacturerValidator extends ValidatorHandler<String> implements Validator<String> {
@@ -442,7 +442,7 @@ Below is an example of reusing the *allManufacturers* that is set by invoking `c
     Result ret = FluentValidator.checkAll()
             .putClosure2Context("manufacturerClosure", closure)
             .on(car, chain)
-            .doValidate();
+            .doValidate().result(toSimple());
 
     System.out.println(closure.getResult());
 
@@ -463,7 +463,7 @@ public class CarValidator extends ValidatorHandler<Car> implements Validator<Car
         return FluentValidator.checkAll()
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
-                .doValidate().hasError();
+                .doValidate().result(toSimple()).hasError();
     }
 
 }
@@ -483,7 +483,7 @@ So far we have been ignoring the optional argument `ValidateCallback` that `doVa
                     public void onFail(ValidatorElementList chained, List<String> errorMsgs) {
                         throw new CustomException("ERROR HERE");
                     }
-                });
+                }).result(toSimple());
  
 
 `onSuccess()` method is called when everything goes well. 
@@ -598,7 +598,7 @@ To perform validation, one can use `FluentValidator` without any problem. Just u
 Result ret = FluentValidator.checkAll()
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
         System.out.println(ret);
 ```
  
@@ -617,7 +617,7 @@ Also HibernateSupportedValidator works well with other custom validators, you ca
     Result ret = FluentValidator.checkAll()
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
 
 ### 3.2 FluentHibernateValidator can be a replacement
 
@@ -637,14 +637,14 @@ Below is an example if one just needs to validate the ceo property.
     Result ret = FluentHibernateValidator.checkAll(AddCompany.class)
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
 
 Below is another example if one needs to validate both the ceo property and other default annotation-based properties. By default, constraints are evaluated in no particular order, regardless of which groups they belong to.
 
     Result ret = FluentHibernateValidator.checkAll(Default.class, AddCompany.class)
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
-                .doValidate();
+                .doValidate().result(toSimple());
 
 If you would like to sepecify the validation order you just need to define an interface and annotate it with @GroupSequence like below. So contraints will applied on AddCompany.class first and other properties next. Note that if at least one constraint fails in a sequenced group, none of the constraints of the following groups in the sequence get validated.
 
