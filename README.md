@@ -182,7 +182,7 @@ More recommended way to put error information into the context would be:
 
 Validation operations are divided into *intermediate operations* and *terminal operation*, and are combined to form something like fluent interface style or pipelines. 
 
-Intermediate operations are always lazy, executing an intermediate operation such as `on()` does not actually perform any validation until terminal operation `doValidate()` is called.
+Intermediate operations are always [lazy](https://en.wikipedia.org/wiki/Lazy_evaluation), executing an intermediate operation such as `on()` does not actually perform any validation until terminal operation `doValidate()` is called.
 
 Terminal operation, such as `doValidate()` or `toResult()` may do real validation or produce a result. After the terminal operation is performed, the validation work is considered done.
 
@@ -652,6 +652,15 @@ If you would like to sepecify the validation order you just need to define an in
         public interface GroupingCheck {
     }
 
+## Examples
+
+All test cases or samples can be found from the below links:
+
+[Basic usage](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator/src/test/java/com/baidu/unbiz/fluentvalidator)
+
+[JSR 303 - Hibernate validator supported usage](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator-jsr303/src/test/java/com/baidu/unbiz/fluentvalidator/jsr303)
+
+[Annotation-based with Spring validator bean detection supported usage](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-spring/src/test/java/com/baidu/unbiz/fluentvalidator/registry/impl/SpringApplicationContextRegistryTest.java)
 
 ## Supports 
 
