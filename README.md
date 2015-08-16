@@ -18,7 +18,7 @@ In order to use Fluent Validator within a Maven project, simply add the followin
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator</artifactId>
-    	<version>1.0.0-SNAPSHOT</version>
+    	<version>1.0.0</version>
 	</dependency>
 	
 By default, *org.slf4j:slf4j-api:jar:1.7.7* and *org.slf4j:slf4j-log4j12:jar:1.7.7* are used as logger.
@@ -38,8 +38,8 @@ You can switch to other slf4j implementation such as logback and exclude log4j l
 </dependency>
 ```
 
-*Currently GA version has not been released but the snapshot version is able to work normally. Please add the
-following repository to your repositories if possible. See more on
+*Currently GA version has been released but the snapshot version is also able to work normally. Please add the
+following repository to your repositories if you are using the snapshot version. See more on
 [sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/baidu/unbiz/).*
 
     <!-- Note: please remove this after GA version is released -->
@@ -316,7 +316,7 @@ To use `SpringApplicationContextRegistry`, add the following dependency to your 
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator-spring</artifactId>
-    	<version>1.0.0-SNAPSHOT</version>
+    	<version>1.0.0</version>
 	</dependency>
 	
 By default, the following dependencies are what fluent-validator-spring will bring into your project. 
@@ -524,7 +524,7 @@ Add the following dependency to your pom.xml.
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator-jsr303</artifactId>
-    	<version>1.0.0-SNAPSHOT</version>
+    	<version>1.0.0</version>
 	</dependency>
 	
 By default, the following dependencies are what fluent-validator-jsr303 will bring into your project. 
