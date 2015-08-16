@@ -160,7 +160,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getSeatCount(), new CarSeatCountValidator())
                 .doValidate(new DefaulValidateCallback() {
                     @Override
-                    public void onSuccess(ValidatorElementList chained) {
+                    public void onSuccess(ValidatorElementList validatorElementList) {
                         ref[0] = "all ok!";
                     }
                 }).result(toSimple());
@@ -182,7 +182,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getSeatCount(), new CarSeatCountValidator())
                 .doValidate(new DefaulValidateCallback() {
                     @Override
-                    public void onFail(ValidatorElementList chained, List<ValidationError> errors) {
+                    public void onFail(ValidatorElementList validatorElementList, List<ValidationError> errors) {
                         ref[0] = errors.size();
                         throw new CustomException("ERROR HERE");
                     }
