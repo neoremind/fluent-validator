@@ -5,7 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.baidu.unbiz.fluentvalidator.annotation.NotStateless;
+import com.baidu.unbiz.fluentvalidator.annotation.Stateful;
 import com.baidu.unbiz.fluentvalidator.annotation.NotThreadSafe;
 import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
 import com.baidu.unbiz.fluentvalidator.registry.Registry;
@@ -29,7 +29,7 @@ import com.baidu.unbiz.fluentvalidator.util.ReflectionUtil;
  * </pre>
  */
 @NotThreadSafe
-@NotStateless
+@Stateful
 public class FluentValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FluentValidator.class);
