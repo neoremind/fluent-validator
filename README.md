@@ -475,7 +475,7 @@ public class CarValidator extends ValidatorHandler<Car> implements Validator<Car
         return FluentValidator.checkAll()
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
-                .doValidate().result(toSimple()).hasError();
+                .doValidate().result(toSimple()).isSuccess();
     }
 
 }
@@ -626,7 +626,7 @@ Note that HibernateSupportedValidator should first have `javax.validation.Valida
 
 For example, when Company name is invalid, the result would be:
 
-    Result{hasError=true, errorMsgs=[{name} must match "[0-9a-zA-Z\4e00-\u9fa5]+"]}
+    Result{isSuccess=false, errors=[{name} must match "[0-9a-zA-Z\4e00-\u9fa5]+"]}
 
 Also HibernateSupportedValidator works well with other custom validators, you can add validators through `on()` as much as you want like below:
 
@@ -672,7 +672,8 @@ If you would like to sepecify the validation order you just need to define an in
 
 All test cases or samples can be found from the below links:
 
-[Samples](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator/src/test/java/com/baidu/unbiz/fluentvalidator)
+[Samples](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-demo/src/test/java/com/baidu
+/unbiz/fluentvalidator/demo/service/impl/GarageServiceImplTest.java)
 
 [Basic test cases](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator/src/test/java/com/baidu/unbiz/fluentvalidator)
 
