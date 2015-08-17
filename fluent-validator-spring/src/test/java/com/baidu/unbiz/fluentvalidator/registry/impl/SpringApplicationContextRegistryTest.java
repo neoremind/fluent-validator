@@ -37,7 +37,7 @@ public class SpringApplicationContextRegistryTest {
                 .doValidate()
                 .result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
         assertThat(ret.getErrors().get(0), is(String.format(CarError.SEATCOUNT_ERROR.msg(), 99)));
     }

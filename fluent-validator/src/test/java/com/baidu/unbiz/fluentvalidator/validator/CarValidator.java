@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.baidu.unbiz.fluentvalidator.Closure;
 import com.baidu.unbiz.fluentvalidator.FluentValidator;
+import com.baidu.unbiz.fluentvalidator.Result;
 import com.baidu.unbiz.fluentvalidator.Validator;
 import com.baidu.unbiz.fluentvalidator.ValidatorContext;
 import com.baidu.unbiz.fluentvalidator.ValidatorHandler;
@@ -20,17 +21,26 @@ public class CarValidator extends ValidatorHandler<Car> implements Validator<Car
     @Override
     public boolean validate(ValidatorContext context, Car car) {
         Closure<List<String>> closure = context.getClosure("manufacturerClosure");
-        List<String> manufacturers = closure.executeAndGetResult();
+        if (closure != null) {
+            List<String> manufacturers = closure.executeAndGetResult();
 
-        if (!manufacturers.contains(car.getManufacturer())) {
-            context.addErrorMsg(String.format(CarError.MANUFACTURER_ERROR.msg(), car.getManufacturer()));
-            return false;
+            if (!manufacturers.contains(car.getManufacturer())) {
+                context.addErrorMsg(String.format(CarError.MANUFACTURER_ERROR.msg(), car.getManufacturer()));
+                return false;
+            }
         }
 
-        return FluentValidator.checkAll()
+        Result result = FluentValidator.checkAll()
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
-                .doValidate().result(toSimple()).hasError();
+                .doValidate().result(toSimple());
+        if (!result.isSuccess()) {
+            for (String e : result.getErrors()) {
+                context.addErrorMsg(e);
+            }
+            return false;
+        }
+        return true;
     }
 
 }

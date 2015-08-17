@@ -15,6 +15,11 @@ import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 public class ValidationResult {
 
     /**
+     * 是否成功，一旦发生错误，即置为false，默认为{@value}
+     */
+    private boolean isSuccess = true;
+
+    /**
      * 验证错误
      */
     private List<ValidationError> errors;
@@ -24,24 +29,12 @@ public class ValidationResult {
      */
     private int timeElapsed;
 
-    /**
-     * 是否存在错误
-     *
-     * @return 是否存在错误
-     */
-    public boolean hasNoError() {
-        return CollectionUtil.isEmpty(errors);
+    public boolean isSuccess() {
+        return isSuccess;
     }
 
-    /**
-     * 是否存在错误
-     *
-     * @return 是否存在错误
-     *
-     * @see #hasNoError()
-     */
-    public boolean hasError() {
-        return !hasNoError();
+    public void setIsSuccess(boolean isSuccess) {
+        this.isSuccess = isSuccess;
     }
 
     /**

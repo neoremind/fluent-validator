@@ -54,7 +54,7 @@ public class FluentValidatorClassTest {
                 .on(car, chain)
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(true));
+        assertThat(ret.isSuccess(), is(true));
 
         System.out.println(closure.getResult());
         assertThat(closure.getResult().size(), is(3));

@@ -9,7 +9,8 @@ public class ComplexResult extends GenericResult<ValidationError> {
 
     @Override
     public String toString() {
-        return String.format("Result{hasError=%s, errors=%s, timeElapsed(ms)=%s}", hasError(), errors, timeElapsed);
+        return String.format("Result{isSuccess=%s, errors=%s, timeElapsedInMillis=%s}", isSuccess(), errors,
+                timeElapsed);
     }
 
     private int timeElapsed;

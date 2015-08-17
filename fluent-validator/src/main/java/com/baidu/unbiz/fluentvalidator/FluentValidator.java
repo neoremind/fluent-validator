@@ -1,6 +1,9 @@
 package com.baidu.unbiz.fluentvalidator;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,6 +163,80 @@ public class FluentValidator {
      * @return FluentValidator
      */
     public <T> FluentValidator on(T t) {
+        Set<String> logSet = new LinkedHashSet<String>();
+        lastAddCount = doOn(t, logSet);
+        if (!CollectionUtil.isEmpty(logSet)) {
+            for (String log : logSet) {
+                LOGGER.debug(log);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * 在某个数组对象上通过{@link com.baidu.unbiz.fluentvalidator.annotation.FluentValidate}注解方式的验证，
+     * 需要保证{@link #configure(Registry)}已经先执行配置完毕<code>Registry</code>
+     *
+     * @param t 待验证对象
+     *
+     * @return FluentValidator
+     */
+    public <T> FluentValidator onEach(T[] t) {
+        Preconditions.checkNotNull(t, "Array should not be NULL");
+        if (t.length == 0) {
+            return this;
+        }
+
+        Set<String> logSet = new LinkedHashSet<String>();
+        for (T element : t) {
+            lastAddCount += doOn(element, logSet);
+        }
+        if (!CollectionUtil.isEmpty(logSet)) {
+            for (String log : logSet) {
+                LOGGER.debug(log);
+            }
+        }
+        LOGGER.debug("To be validated array size is " + t.length);
+        return this;
+    }
+
+    /**
+     * 在某个集合对象上通过{@link com.baidu.unbiz.fluentvalidator.annotation.FluentValidate}注解方式的验证，
+     * 需要保证{@link #configure(Registry)}已经先执行配置完毕<code>Registry</code>
+     *
+     * @param t 待验证对象
+     *
+     * @return FluentValidator
+     */
+    public <T> FluentValidator onEach(Collection<T> t) {
+        Preconditions.checkNotNull(t, "Collection should not be NULL");
+        if (t.size() == 0) {
+            return this;
+        }
+
+        Set<String> logSet = new LinkedHashSet<String>();
+        for (T element : t) {
+            lastAddCount += doOn(element, logSet);
+        }
+        if (!CollectionUtil.isEmpty(logSet)) {
+            for (String log : logSet) {
+                LOGGER.debug(log);
+            }
+        }
+        LOGGER.debug("To be validated collection size is " + t.size());
+        return this;
+    }
+
+    /**
+     * 在某个对象上通过{@link com.baidu.unbiz.fluentvalidator.annotation.FluentValidate}注解方式的验证，
+     * 需要保证{@link #configure(Registry)}已经先执行配置完毕<code>Registry</code>
+     *
+     * @param t      待验证对象
+     * @param logSet 记录日志的set
+     *
+     * @return FluentValidator
+     */
+    private <T> int doOn(T t, Set<String> logSet) {
         if (registry == null) {
             throw new RuntimeValidateException("When annotation-based validation enabled, one must use configure"
                     + "(Registry) method to let FluentValidator know where to search and get validator instances");
@@ -169,7 +246,7 @@ public class FluentValidator {
         if (!CollectionUtil.isEmpty(anntValidators)) {
             for (AnnotationValidator anntValidator : anntValidators) {
                 if (!CollectionUtil.isEmpty(anntValidator.getValidators())) {
-                    LOGGER.debug(String.format("%s#%s on %s will be performed", t.getClass().getSimpleName(),
+                    logSet.add(String.format("%s#%s on %s will be performed", t.getClass().getSimpleName(),
                             anntValidator.getField().getName(), anntValidator));
                     for (Validator v : anntValidator.getValidators()) {
                         Object realTarget = ReflectionUtil.invokeMethod(anntValidator.getMethod(), t);
@@ -179,7 +256,56 @@ public class FluentValidator {
                 }
             }
         }
-        lastAddCount = tmpLastAddCount;
+        return tmpLastAddCount;
+    }
+
+    /**
+     * 在待验证对象数组<tt>t</tt>上，使用<tt>v</tt>验证器进行验证
+     *
+     * @param t 待验证对象数组
+     * @param v 验证器
+     *
+     * @return FluentValidator
+     */
+    public <T> FluentValidator onEach(T[] t, Validator<T> v) {
+        Preconditions.checkNotNull(v, "Validator should not be NULL");
+        Preconditions.checkNotNull(t, "Array should not be NULL");
+        if (t.length == 0) {
+            return this;
+        }
+
+        for (T element : t) {
+            doOn(element, v);
+        }
+        lastAddCount = t.length;
+        LOGGER.debug(String.format("%s on %s will be performed %d times",
+                t.getClass().getSimpleName(),
+                v, t.length));
+        return this;
+    }
+
+    /**
+     * 在待验证对象集合<tt>t</tt>上，使用<tt>v</tt>验证器进行验证
+     *
+     * @param t 待验证对象集合
+     * @param v 验证器
+     *
+     * @return FluentValidator
+     */
+    public <T> FluentValidator onEach(Collection<T> t, Validator<T> v) {
+        Preconditions.checkNotNull(v, "Validator should not be NULL");
+        Preconditions.checkNotNull(t, "Collection should not be NULL");
+        if (CollectionUtil.isEmpty(t)) {
+            return this;
+        }
+
+        for (T element : t) {
+            doOn(element, v);
+        }
+        lastAddCount = t.size();
+        LOGGER.debug(String.format("%s on %s will be performed %d times",
+                t.getClass().getSimpleName(),
+                v, t.size()));
         return this;
     }
 
@@ -193,7 +319,7 @@ public class FluentValidator {
      */
     public <T> FluentValidator on(T t, Validator<T> v) {
         Preconditions.checkNotNull(v, "Validator should not be NULL");
-        validatorElementList.getList().add(new ValidatorElement(t, v));
+        doOn(t, v);
         lastAddCount = 1;
         LOGGER.debug(String.format("%s on %s will be performed", t.getClass().getSimpleName(), v));
         return this;
@@ -211,14 +337,30 @@ public class FluentValidator {
         Preconditions.checkNotNull(chain, "ValidatorChain should not be NULL");
         if (CollectionUtil.isEmpty(chain.getValidators())) {
             lastAddCount = 0;
-            return this;
+        } else {
+            for (Validator v : chain.getValidators()) {
+                doOn(t, v);
+            }
+            lastAddCount = chain.getValidators().size();
+            LOGGER.debug(String.format("%s on %s will be performed", t.getClass().getSimpleName(), chain));
         }
-        for (Validator v : chain.getValidators()) {
-            validatorElementList.getList().add(new ValidatorElement(t, v));
-        }
-        lastAddCount = chain.getValidators().size();
-        LOGGER.debug(String.format("%s on %s will be performed", t.getClass().getSimpleName(), chain));
         return this;
+    }
+
+    /**
+     * 内部使用的验证单个元素的方法，供以下方法作为模板使用
+     * <ul>
+     * <li>{@link #on(Object, Validator)}</li>
+     * <li>{@link #on(Object, ValidatorChain)}</li>
+     * <li>{@link #onEach(Collection, Validator)}</li>
+     * <li>{@link #onEach(Object[], Validator)}</li>
+     * </ul>
+     *
+     * @param t 待验证对象
+     * @param v 验证器
+     */
+    private <T> void doOn(T t, Validator<T> v) {
+        validatorElementList.getList().add(new ValidatorElement(t, v));
     }
 
     /**
@@ -271,6 +413,7 @@ public class FluentValidator {
                 try {
                     if (v.accept(context, target)) {
                         if (!v.validate(context, target)) {
+                            result.setIsSuccess(false);
                             if (isFailFast) {
                                 break;
                             }
@@ -282,7 +425,7 @@ public class FluentValidator {
                         cb.onUncaughtException(v, e, target);
                     } catch (Exception e1) {
                         if (LOGGER.isDebugEnabled()) {
-                            LOGGER.error(v + " onException or onUncaughtException failed due to " + e1
+                            LOGGER.error(v + " onException or onUncaughtException throws exception due to " + e1
                                     .getMessage(), e1);
                         }
                         throw new RuntimeValidateException(e1);
@@ -294,7 +437,7 @@ public class FluentValidator {
                 }
             }
 
-            if (result.hasNoError()) {
+            if (result.isSuccess()) {
                 cb.onSuccess(validatorElementList);
             } else {
                 cb.onFail(validatorElementList, result.getErrors());

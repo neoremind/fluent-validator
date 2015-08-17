@@ -20,7 +20,10 @@ public class ResultCollectors {
         @Override
         public Result toResult(ValidationResult result) {
             Result ret = new Result();
-            if (result.hasError()) {
+            if (result.isSuccess()) {
+                ret.setIsSuccess(true);
+            } else {
+                ret.setIsSuccess(false);
                 ret.setErrors(CollectionUtil.transform(result.getErrors(), new Function<ValidationError, String>() {
                     @Override
                     public String apply(ValidationError input) {
@@ -41,7 +44,10 @@ public class ResultCollectors {
         @Override
         public ComplexResult toResult(ValidationResult result) {
             ComplexResult ret = new ComplexResult();
-            if (result.hasError()) {
+            if (result.isSuccess()) {
+                ret.setIsSuccess(true);
+            } else {
+                ret.setIsSuccess(false);
                 ret.setErrors(result.getErrors());
             }
 

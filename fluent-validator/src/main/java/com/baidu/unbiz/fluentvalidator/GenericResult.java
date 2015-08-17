@@ -14,13 +14,18 @@ import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 public abstract class GenericResult<T> {
 
     /**
+     * 是否验证成功，只要有一个失败就为false
+     */
+    private boolean isSuccess;
+
+    /**
      * 错误消息列表
      */
     protected List<T> errors;
 
     @Override
     public String toString() {
-        return String.format("Result{hasError=%s, errors=%s}", hasError(), errors);
+        return String.format("Result{isSuccess=%s, errors=%s}", isSuccess(), errors);
     }
 
     /**
@@ -32,24 +37,12 @@ public abstract class GenericResult<T> {
         return CollectionUtil.isEmpty(errors) ? 0 : errors.size();
     }
 
-    /**
-     * 是否存在错误
-     *
-     * @return 是否存在错误
-     */
-    public boolean hasNoError() {
-        return CollectionUtil.isEmpty(errors);
+    public boolean isSuccess() {
+        return isSuccess;
     }
 
-    /**
-     * 是否存在错误
-     *
-     * @return 是否存在错误
-     *
-     * @see #hasNoError()
-     */
-    public boolean hasError() {
-        return !hasNoError();
+    public void setIsSuccess(boolean isSuccess) {
+        this.isSuccess = isSuccess;
     }
 
     public List<T> getErrors() {

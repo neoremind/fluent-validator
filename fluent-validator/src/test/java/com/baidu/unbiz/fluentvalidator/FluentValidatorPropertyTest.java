@@ -31,7 +31,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getSeatCount(), new CarSeatCountValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(true));
+        assertThat(ret.isSuccess(), is(true));
     }
 
     @Test
@@ -45,7 +45,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getSeatCount(), new CarSeatCountValidator()).failFast()
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
         assertThat(ret.getErrors().get(0), is(String.format(CarError.SEATCOUNT_ERROR.msg(), 99)));
     }
@@ -61,7 +61,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getSeatCount(), new CarSeatCountValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
         assertThat(ret.getErrors().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
     }
@@ -78,7 +78,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getSeatCount(), new CarSeatCountValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(true));
+        assertThat(ret.isSuccess(), is(true));
     }
 
     @Test(expected = RuntimeValidateException.class)
@@ -92,7 +92,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getSeatCount(), new CarSeatCountValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
         assertThat(ret.getErrors().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
     }
@@ -108,7 +108,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getSeatCount(), new CarSeatCountValidator()).failFast()
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
         assertThat(ret.getErrors().get(0), is(String.format(CarError.LICENSEPLATE_ERROR.msg(), "BEIJING")));
     }
@@ -126,7 +126,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(3));
         assertThat(ret.getErrors().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
     }
@@ -144,7 +144,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getLicensePlate(), new CarLicensePlateValidator()).when(false)
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(2));
         assertThat(ret.getErrors().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
     }
@@ -165,7 +165,7 @@ public class FluentValidatorPropertyTest {
                     }
                 }).result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(true));
+        assertThat(ret.isSuccess(), is(true));
         assertThat(ref[0], is("all ok!"));
     }
 
@@ -188,7 +188,7 @@ public class FluentValidatorPropertyTest {
                     }
                 }).result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ref[0], is(2));
     }
 

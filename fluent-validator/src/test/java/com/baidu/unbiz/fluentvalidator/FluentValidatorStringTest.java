@@ -25,7 +25,7 @@ public class FluentValidatorStringTest {
                 .on(str, new StringValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(true));
+        assertThat(ret.isSuccess(), is(true));
     }
 
     @Test
@@ -35,7 +35,7 @@ public class FluentValidatorStringTest {
                 .on(str, new StringValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
         assertThat(ret.getErrors().get(0), is("string should be abc"));
     }
@@ -47,7 +47,7 @@ public class FluentValidatorStringTest {
                 .on(str, new StringValidator())
                 .doValidate().result(toComplex());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(true));
+        assertThat(ret.isSuccess(), is(true));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class FluentValidatorStringTest {
                 .doValidate().result(toComplex());
         System.out.println(ret);
         System.out.println(ret.getTimeElapsed());
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrors().get(0).getErrorCode(), is(100));
         assertThat(ret.getErrors().get(0).getErrorMsg(), is("string should be abc"));
         assertThat(ret.getErrors().get(0).getField(), is("str"));
@@ -74,7 +74,7 @@ public class FluentValidatorStringTest {
                     @Override
                     public MyResult toResult(ValidationResult result) {
                         MyResult ret = new MyResult();
-                        if (result.hasError()) {
+                        if (result.isSuccess()) {
                             ret.setErrors(CollectionUtil
                                     .transform(result.getErrors(), new Function<ValidationError, MyError>() {
                                         @Override
@@ -104,7 +104,7 @@ public class FluentValidatorStringTest {
                     @Override
                     public MyResult toResult(ValidationResult result) {
                         MyResult ret = new MyResult();
-                        if (result.hasError()) {
+                        if (!result.isSuccess()) {
                             ret.setErrors(CollectionUtil
                                     .transform(result.getErrors(), new Function<ValidationError, MyError>() {
                                         @Override

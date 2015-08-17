@@ -18,7 +18,7 @@ In order to use Fluent Validator within a Maven project, simply add the followin
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator</artifactId>
-    	<version>1.0.0</version>
+    	<version>1.0.1</version>
 	</dependency>
 	
 By default, *org.slf4j:slf4j-api:jar:1.7.7* and *org.slf4j:slf4j-log4j12:jar:1.7.7* are used as logger.
@@ -104,12 +104,12 @@ To perform validation of constraint, we have the class extending `ValidatorHandl
 
 If the seat count is less than two, it will return false and an error message is put into the context. If *fail fast* strategy is enabled, the result output would be:
 
-    Result{hasError=true, errorMsgs=[Seat count is not valid, invalid value=99]}
+    Result{isSuccess=false, errors=[Seat count is not valid, invalid value=99]}
 
 
 If the seat count validates successfully, it will return true. So that the process goes on to the next validator. If none of the fields violate any constraint, the result output would be:
 
-    Result{hasError=false, errorMsgs=null}
+    Result{isSuccess=true, errors=null}
 
 More information about some other cool features of Fluent Validator, please go next. You can continue exploring from the next chapter.
 
@@ -175,7 +175,7 @@ Simple way to handle error messages:
     
 More recommended way to put error information into the context would be:
 
-    context.addErrorMsg(ValidationError.create("Something is wrong about the car seat count!").setErrorCode(100).setField("seatCount").setInvalidValue(t));
+    context.addError(ValidationError.create("Something is wrong about the car seat count!").setErrorCode(100).setField("seatCount").setInvalidValue(t));
     return false;
     
 
@@ -201,6 +201,15 @@ The following shows validating on Car entity.
     FluentValidator.checkAll()
                 .on(car, new CarValidator());
 
+The following shows validating on a collection of Car entity.
+
+    FluentValidator.checkAll()
+                .onEach(Lists.newArrayList(new Car(), new Car()), new CarValidator());
+                
+The following shows validating on an array of Car entity.
+
+    FluentValidator.checkAll()
+                .onEach(new Car[]{}, new CarValidator());
 
 
 ### 2.4 Fail fast or fail over
@@ -245,7 +254,7 @@ Result ret = FluentValidator.checkAll()
 
 There are some helpful methods you can use on the validation result.
 
-`getErrorMsgs()`,`hasError()`, `hasNoError()`,`getErrorNumber()`.
+`isSuccess()`,`getErrorMsgs()`,`getErrorNumber()`.
 
 The following shows getting a more complex result which not only contains error messages but also enable you to know the field, the error code and the invalid value if you added them to the context.
 
@@ -258,7 +267,7 @@ ComplexResult ret = FluentValidator.checkAll().failOver()
 For example, ComplexResult output would be:
 
 ```
-Result{hasError=true, errors=[ValidationError{errorCode=101, errorMsg='{departmentList} may not be null', field='departmentList', invalidValue=null}, ValidationError{errorCode=99, errorMsg='Company id is not valid, invalid value=-1', field='id', invalidValue=8}], timeElapsed(ms)=164}
+Result{isSuccess=false, errors=[ValidationError{errorCode=101, errorMsg='{departmentList} may not be null', field='departmentList', invalidValue=null}, ValidationError{errorCode=99, errorMsg='Company id is not valid, invalid value=-1', field='id', invalidValue=8}], timeElapsed(ms)=164}
 ```
 
 
@@ -309,6 +318,8 @@ Next, you can use the method `configure(new SimpleRegistry())` which will allow 
                 .result(toSimple());
 ```
 
+Notice that you can use `onEach()` to validate through an array or collection.
+
 In the above example, `SimpleRegistry` helps to locate and create the validators by simply calling `newInstance()` method if class exists within the current class loader. You can make an explicit choice about which implementation to use. One alternative is to lookup instance from Spring IoC container by using `SpringApplicationContextRegistry`, that enables you to build some powerful validators such that maybe they rely on dependency beans like `JdbcTemplate`.
 
 To use `SpringApplicationContextRegistry`, add the following dependency to your pom.xml. 
@@ -316,7 +327,7 @@ To use `SpringApplicationContextRegistry`, add the following dependency to your 
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator-spring</artifactId>
-    	<version>1.0.0</version>
+    	<version>1.0.1</version>
 	</dependency>
 	
 By default, the following dependencies are what fluent-validator-spring will bring into your project. 
@@ -370,7 +381,7 @@ public class SpringApplicationContextRegistryTest {
                 .doValidate()
                 .result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
         assertThat(ret.getErrors().get(0), is(String.format(CarError.SEATCOUNT_ERROR.msg(), 99)));
     }
@@ -507,7 +518,11 @@ If you do not want to implement every method of the interface, you can simply us
 
 #### 2.8.6 RuntimeValidateException
 
-Last but not least, a RuntimeValidateException will be threw out containing the root cause exception from the `doValidate()` method. You can try-catch or handle it on your own.
+Last but not least, if there is any exception that is not handled, a RuntimeValidateException will be threw out containing the root cause exception from the `doValidate()` method. 
+
+If there is any exception that re-throw from `onException()` or `onUncaughtException()` method, a RuntimeValidateException wrapping the new cause will be threw out.
+
+You can try-catch or handle it with Spring AOP feature on your own.
 
 
 ## 3. JSR 303 - Bean Validation support
@@ -524,7 +539,7 @@ Add the following dependency to your pom.xml.
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator-jsr303</artifactId>
-    	<version>1.0.0</version>
+    	<version>1.0.1</version>
 	</dependency>
 	
 By default, the following dependencies are what fluent-validator-jsr303 will bring into your project. 
@@ -657,11 +672,13 @@ If you would like to sepecify the validation order you just need to define an in
 
 All test cases or samples can be found from the below links:
 
-[Basic usage](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator/src/test/java/com/baidu/unbiz/fluentvalidator)
+[Samples](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator/src/test/java/com/baidu/unbiz/fluentvalidator)
 
-[JSR 303 - Hibernate validator supported usage](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator-jsr303/src/test/java/com/baidu/unbiz/fluentvalidator/jsr303)
+[Basic test cases](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator/src/test/java/com/baidu/unbiz/fluentvalidator)
 
-[Annotation-based with Spring validator bean detection supported usage](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-spring/src/test/java/com/baidu/unbiz/fluentvalidator/registry/impl/SpringApplicationContextRegistryTest.java)
+[JSR 303 - Hibernate validator supported test cases](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator-jsr303/src/test/java/com/baidu/unbiz/fluentvalidator/jsr303)
+
+[Annotation-based with Spring validator bean detection supported test cases](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-spring/src/test/java/com/baidu/unbiz/fluentvalidator/registry/impl/SpringApplicationContextRegistryTest.java)
 
 ## Supports 
 

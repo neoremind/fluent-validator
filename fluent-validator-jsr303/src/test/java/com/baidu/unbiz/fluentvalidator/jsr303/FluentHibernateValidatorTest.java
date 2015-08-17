@@ -45,7 +45,7 @@ public class FluentHibernateValidatorTest {
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(true));
+        assertThat(ret.isSuccess(), is(true));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class FluentHibernateValidatorTest {
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
         assertThat(ret.getErrors().get(0), is("{ceo} Company CEO is not valid"));
     }
@@ -73,7 +73,7 @@ public class FluentHibernateValidatorTest {
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(2));
     }
 
@@ -87,7 +87,7 @@ public class FluentHibernateValidatorTest {
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
         assertThat(ret.getErrors().get(0), is("{ceo} Company CEO is not valid"));
     }
@@ -102,7 +102,7 @@ public class FluentHibernateValidatorTest {
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
-        assertThat(ret.hasNoError(), is(false));
+        assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
         assertThat(ret.getErrors().get(0).startsWith("{name} must match \"[0-9a-zA-Z"), is(true));
     }
