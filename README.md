@@ -183,11 +183,14 @@ More recommended way to put error information into the context would be:
 
 Validation operations are divided into *intermediate operations* and *terminal operation*, and are combined to form something like fluent interface style or pipelines. 
 
-Intermediate operations are always [lazy](https://en.wikipedia.org/wiki/Lazy_evaluation), executing an intermediate operation such as `on()` does not actually perform any validation until terminal operation `doValidate()` is called.
+Intermediate operations are always [lazy](https://en.wikipedia.org/wiki/Lazy_evaluation), executing an intermediate
+operation such as `on()` or `onEach()` does not actually perform any validation until terminal operation `doValidate
+()` is called.
 
 Terminal operation, such as `doValidate()` or `toResult()` may do real validation or produce a result. After the terminal operation is performed, the validation work is considered done.
 
-The `FluentValidator` uses `on()` method to either validate entire entities or just some properties of the entity. You can add as many targets and its specified validators as possible.
+The `FluentValidator` uses `on()` or `onEach()` method to either validate entire entities or just some properties of
+the entity. You can add as many targets and its specified validators as possible.
 
 The following shows validating on some properties of Car instance.
 
