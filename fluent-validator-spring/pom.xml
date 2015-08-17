@@ -7,12 +7,12 @@
         <groupId>com.baidu.unbiz</groupId>
         <artifactId>fluent-validator-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
 
     <groupId>com.baidu.unbiz</groupId>
     <artifactId>fluent-validator-spring</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>fluent-validator-spring</name>
     <description>A simple Java validation framework leveraging fluent interface style and JSR 303 specification
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.baidu.unbiz</groupId>
             <artifactId>fluent-validator</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>

@@ -672,8 +672,7 @@ If you would like to sepecify the validation order you just need to define an in
 
 All test cases or samples can be found from the below links:
 
-[Samples](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-demo/src/test/java/com/baidu
-/unbiz/fluentvalidator/demo/service/impl/GarageServiceImplTest.java)
+[Samples](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-demo/src/main/java/com/baidu/unbiz/fluentvalidator/demo/service/impl/GarageServiceImpl.java)
 
 [Basic test cases](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator/src/test/java/com/baidu/unbiz/fluentvalidator)
 
