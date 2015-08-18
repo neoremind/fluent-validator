@@ -42,7 +42,7 @@ You can switch to other slf4j implementation such as logback and exclude log4j l
 following repository to your repositories if you are using the snapshot version. See more on
 [sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/baidu/unbiz/).*
 
-    <!-- Note: please remove this after GA version is released -->
+    <!-- Note: add this if you are using SNAPSHOT version -->
     <repositories>
         <repository>
             <id>Sonatype</id>
