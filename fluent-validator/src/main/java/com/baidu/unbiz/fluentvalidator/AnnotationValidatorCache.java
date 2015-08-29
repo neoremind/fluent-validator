@@ -112,7 +112,6 @@ public class AnnotationValidatorCache {
                                     "Validator annotation class %s found multiple instances for %s#%s, so the first "
                                             + "one will be used",
                                     validatorClass.getSimpleName(), clazz.getSimpleName(), field.getName()));
-                            continue;
                         }
                         VALIDATOR_MAP.putIfAbsent(validatorClass, validatorsFound.get(0));
                         validators.add(VALIDATOR_MAP.get(validatorClass));

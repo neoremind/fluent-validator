@@ -6,7 +6,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author zhangxu
@@ -15,6 +17,13 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(value = "com.baidu.unbiz")
 @EnableAutoConfiguration
 public class Application {
+
+    @Bean
+    SpringApplicationContextRegistry springApplicationContextRegistry(ApplicationContext applicationContext) {
+        SpringApplicationContextRegistry s = new SpringApplicationContextRegistry();
+        s.setApplicationContext(applicationContext);
+        return s;
+    }
 
     public static void main(String[] args) {
         ApplicationContext ctx = SpringApplication.run(Application.class, args);

@@ -10,7 +10,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 
 import com.baidu.unbiz.fluentvalidator.registry.Registry;
 
@@ -19,7 +18,6 @@ import com.baidu.unbiz.fluentvalidator.registry.Registry;
  *
  * @author zhangxu
  */
-@Component
 public class SpringApplicationContextRegistry implements Registry, ApplicationContextAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SpringApplicationContextRegistry.class);

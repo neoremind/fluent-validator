@@ -10,15 +10,10 @@ import org.junit.Test;
 
 import com.baidu.unbiz.fluentvalidator.dto.Car;
 import com.baidu.unbiz.fluentvalidator.error.CarError;
-import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
 import com.baidu.unbiz.fluentvalidator.group.CheckManufacturer;
 import com.baidu.unbiz.fluentvalidator.registry.impl.SimpleRegistry;
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
-import com.baidu.unbiz.fluentvalidator.validator.CarValidator;
-import com.baidu.unbiz.fluentvalidator.validator.CarValidator2;
-import com.baidu.unbiz.fluentvalidator.validator.CarValidator3;
 import com.google.common.collect.Lists;
-import com.sun.tools.javac.comp.Check;
 
 /**
  * @author zhangxu

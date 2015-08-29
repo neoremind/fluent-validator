@@ -19,6 +19,15 @@ public class Car {
     @FluentValidate({CarSeatCountValidator.class})
     private int seatCount;
 
+    @Override
+    public String toString() {
+        return "Car{" +
+                "licensePlate='" + licensePlate + '\'' +
+                ", manufacturer='" + manufacturer + '\'' +
+                ", seatCount=" + seatCount +
+                '}';
+    }
+
     public Car(String manufacturer, String licencePlate, int seatCount) {
         this.manufacturer = manufacturer;
         this.licensePlate = licencePlate;

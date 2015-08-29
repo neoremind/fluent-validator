@@ -1,5 +1,7 @@
 package com.baidu.unbiz.fluentvalidator.util;
 
+import java.lang.reflect.Array;
+
 /**
  * 数组工具类
  *
@@ -81,6 +83,41 @@ public class ArrayUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * 将数组转变成数组，如果<code>froms</code>为<code>null</code>，则返回<code>null</code>。<br>
+     * 如果<code>froms</code>不为基本类型数组，则返回<code>null</code>
+     *
+     * @param froms 基本类型数组
+     *
+     * @return 包装类数组，如果<code>froms</code>为<code>null</code>，则返回<code>null</code>；<br>
+     * 如果<code>froms</code>不为基本类型数组，则返回<code>null</code>
+     */
+    public static <T> T[] toWrapperIfPrimitive(Object froms) {
+        if (froms == null) {
+            return null;
+        }
+
+        Class<?> type = froms.getClass().getComponentType();
+        if (!type.isPrimitive()) {
+            return (T[]) froms;
+        }
+
+        PrimitiveWrapperArray transformTo = PrimitiveWrapperArray.find(froms.getClass());
+        if (transformTo == null) {
+            return null;
+        }
+
+        int size = Array.getLength(froms);
+        T[] result = (T[]) Array.newInstance(ClassUtil.getWrapperTypeIfPrimitive(type), size);
+
+        for (int i = 0; i < size; i++) {
+            T value = (T) Array.get(froms, i);
+            result[i] = value;
+        }
+
+        return result;
     }
 
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <context:annotation-config/>
+    <context:component-scan base-package="com.baidu.unbiz"/>
+
+    <bean id="validateCarCallback" class="com.baidu.unbiz.fluentvalidator.interceptor.ValidateCarCallback"/>
+
+    <bean id="fluentValidateInterceptor"
+          class="com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor">
+        <property name="callback" ref="validateCarCallback"/>
+    </bean>
+
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames">
+            <list>
+                <value>*ServiceImpl</value>
+            </list>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>fluentValidateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+</beans>

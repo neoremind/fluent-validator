@@ -22,6 +22,7 @@ public class CarLicensePlateValidator extends ValidatorHandler<String> implement
         if (t.startsWith("NYC") || t.startsWith("LA") || t.startsWith("BEIJING")) {
             if (!normalMockRpcService.isValid(t)) {
                 context.addErrorMsg(String.format(CarError.LICENSEPLATE_ERROR.msg(), t));
+                return false;
             }
         } else {
             return abNormalMockRpcService.isValid(t);
