@@ -20,6 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
+import com.baidu.unbiz.fluentvalidator.registry.impl.SpringApplicationContextRegistry;
 
 /**
  * @author zhangxu
@@ -30,6 +31,13 @@ import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
 @Configuration
 @Aspect
 public class Application {
+
+    @Bean
+    SpringApplicationContextRegistry springApplicationContextRegistry(ApplicationContext applicationContext) {
+        SpringApplicationContextRegistry s = new SpringApplicationContextRegistry();
+        s.setApplicationContext(applicationContext);
+        return s;
+    }
 
     @Around("execution(* com.baidu.unbiz.fluentvalidator.demo.service.*.*(..))")
     public Object validateInterceptor(ProceedingJoinPoint pjp) throws Throwable {

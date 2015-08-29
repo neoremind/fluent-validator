@@ -1,7 +1,5 @@
 package com.baidu.unbiz.fluentvalidator.demo.dto;
 
-import javax.validation.Valid;
-
 import com.baidu.unbiz.fluentvalidator.annotation.FluentValidate;
 import com.baidu.unbiz.fluentvalidator.demo.validator.CarLicensePlateValidator;
 import com.baidu.unbiz.fluentvalidator.demo.validator.CarManufacturerValidator;

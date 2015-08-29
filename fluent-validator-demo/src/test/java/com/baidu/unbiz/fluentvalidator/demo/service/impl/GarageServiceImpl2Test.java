@@ -1,7 +1,6 @@
 package com.baidu.unbiz.fluentvalidator.demo.service.impl;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.AnyOf.anyOf;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -11,6 +10,8 @@ import javax.annotation.Resource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.baidu.unbiz.fluentvalidator.ComplexResult;
@@ -22,18 +23,22 @@ import com.baidu.unbiz.fluentvalidator.demo.dto.Owner;
 import com.baidu.unbiz.fluentvalidator.demo.error.CarError;
 import com.baidu.unbiz.fluentvalidator.demo.exception.CarException;
 import com.baidu.unbiz.fluentvalidator.demo.exception.RpcException;
+import com.baidu.unbiz.fluentvalidator.demo.rpc.ManufacturerService;
 import com.baidu.unbiz.fluentvalidator.demo.service.GarageService;
+import com.baidu.unbiz.fluentvalidator.demo.service.GarageService2;
 import com.google.common.collect.Lists;
 
 /**
  * @author zhangxu
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-public class GarageServiceImplTest {
+@ContextConfiguration(locations = {"classpath*:applicationContext.xml"})
+public class GarageServiceImpl2Test extends AbstractJUnit4SpringContextTests {
 
-    @Resource(name = "garageServiceImpl")
-    private GarageService garageService;
+    @Resource
+    private GarageService2 garageService;
+
+    @Resource
+    private ManufacturerService manufacturerService;
 
     // Test add multiple cars
 
@@ -59,6 +64,7 @@ public class GarageServiceImplTest {
     @Test
     public void testAddCarsUncaughtException() {
         try {
+            manufacturerService.setIsMockFail(true);
             List<Car> cars = getValidCars();
             cars.get(1).setManufacturer("XXX");
             garageService.addCarsThrowException(cars);
@@ -73,28 +79,27 @@ public class GarageServiceImplTest {
 
     @Test
     public void testAddCar() {
-        Result result = garageService.addCar(new Car("BMW", "LA1234", 5));
-        System.out.println(result);
-        assertThat(result.isSuccess(), is(true));
+        garageService.addCar(new Car("BMW", "LA1234", 5));
     }
 
     @Test
     public void testAddCarInvalidLicense() {
-        Result result = garageService.addCar(new Car("BMW", "XXXXX1234", 5));
-        System.out.println(result);
-        assertThat(result.isSuccess(), is(false));
-        assertThat(result.getErrorNumber(), is(1));
-        assertThat(result.getErrors().get(0), is(String.format(CarError.LICENSEPLATE_ERROR.msg(), "XXXXX1234")));
+        try {
+            garageService.addCar(new Car("BMW", "XXXXX1234", 5));
+        } catch (CarException e) {
+            assertThat(e.getClass().getName(), is(CarException.class.getName()));
+            assertThat(e.getMessage(), is(String.format(CarError.LICENSEPLATE_ERROR.msg(), "XXXXX1234")));
+        }
     }
 
     @Test
     public void testAddCarMultipleError() {
-        Result result = garageService.addCar(new Car("BMW", "XXXXX1234", 0));
-        System.out.println(result);
-        assertThat(result.isSuccess(), is(false));
-        assertThat(result.getErrorNumber(), is(2));
-        assertThat(result.getErrors().get(0), is(String.format(CarError.SEATCOUNT_ERROR.msg(), 0)));
-        assertThat(result.getErrors().get(1), is(String.format(CarError.LICENSEPLATE_ERROR.msg(), "XXXXX1234")));
+        try {
+            garageService.addCar(new Car("BMW", "XXXXX1234", 0));
+        } catch (CarException e) {
+            assertThat(e.getClass().getName(), is(CarException.class.getName()));
+            assertThat(e.getMessage(), is(String.format(CarError.LICENSEPLATE_ERROR.msg(), "XXXXX1234")));
+        }
     }
 
     // Test build garage
@@ -102,57 +107,32 @@ public class GarageServiceImplTest {
     @Test
     public void testBuildGarage() {
         Garage garage = getValidGarage();
-        ComplexResult result = garageService.buildGarage(garage);
-        System.out.println(result);
-        assertThat(result.isSuccess(), is(true));
+        garageService.buildGarage(garage);
     }
 
     @Test
     public void testBuildGarageInvalidName() {
-        Garage garage = getValidGarage();
-        garage.setName("abc");
-        ComplexResult result = garageService.buildGarage(garage);
-        System.out.println(result);
-        assertThat(result.isSuccess(), is(false));
-        assertThat(result.getErrorNumber(), is(1));
-        assertThat(result.getErrors().get(0).getErrorMsg(), is("{name} length is not valid"));
+        try {
+            Garage garage = getValidGarage();
+            garage.setName("abc");
+            garageService.buildGarage(garage);
+        } catch (CarException e) {
+            assertThat(e.getClass().getName(), is(CarException.class.getName()));
+            assertThat(e.getMessage(), is("{name} length is not valid"));
+        }
     }
 
     @Test
     public void testBuildGarageInvalidOwner() {
-        Garage garage = getValidGarage();
-        garage.getOwner().setId(0);
-        garage.getOwner().setName("hh");
-        ComplexResult result = garageService.buildGarage(garage);
-        System.out.println(result);
-        assertThat(result.isSuccess(), is(false));
-        assertThat(result.getErrorNumber(), is(2));
-    }
-
-    @Test
-    public void testBuildGarageCarNumExceed() {
-        Garage garage = getValidGarage();
-        List<Car> cars = Lists.newArrayList();
-        for (int i = 0; i < 100; i++) {
-            cars.add(new Car("BMW", "LA1234", 5));
+        try {
+            Garage garage = getValidGarage();
+            garage.getOwner().setId(0);
+            garage.getOwner().setName("hh");  // fail fast
+            garageService.buildGarage(garage);
+        } catch (CarException e) {
+            assertThat(e.getClass().getName(), is(CarException.class.getName()));
+            assertThat(e.getMessage(), is("{owner.name} length must be between 5 and 20"));
         }
-        garage.setCarList(cars);
-        ComplexResult result = garageService.buildGarage(garage);
-        System.out.println(result);
-        assertThat(result.isSuccess(), is(false));
-        assertThat(result.getErrorNumber(), is(1));
-        assertThat(result.getErrors().get(0).getErrorMsg(), is("Car number exceeds limit, max available num is 50"));
-    }
-
-    @Test
-    public void testBuildGarageInvalidCar() {
-        Garage garage = getValidGarage();
-        garage.getCarList().get(0).setLicensePlate("xxx");
-        ComplexResult result = garageService.buildGarage(garage);
-        System.out.println(result);
-        assertThat(result.isSuccess(), is(false));
-        assertThat(result.getErrorNumber(), is(1));
-        assertThat(result.getErrors().get(0).getErrorMsg(), is("License is not valid, invalid value=xxx"));
     }
 
     private Garage getValidGarage() {

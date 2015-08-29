@@ -5,6 +5,11 @@ import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toComplex;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Locale;
+
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -22,6 +27,7 @@ import com.baidu.unbiz.fluentvalidator.FluentValidator;
 import com.baidu.unbiz.fluentvalidator.ValidateCallback;
 import com.baidu.unbiz.fluentvalidator.annotation.FluentValid;
 import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
+import com.baidu.unbiz.fluentvalidator.jsr303.HibernateSupportedValidator;
 import com.baidu.unbiz.fluentvalidator.registry.impl.SpringApplicationContextRegistry;
 import com.baidu.unbiz.fluentvalidator.util.ArrayUtil;
 import com.baidu.unbiz.fluentvalidator.util.Preconditions;
@@ -40,10 +46,17 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
 
     private SpringApplicationContextRegistry registry;
 
+    private Validator validator;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         registry = new SpringApplicationContextRegistry();
         registry.setApplicationContext(applicationContext);
+
+        // init hibernate validator
+        Locale.setDefault(Locale.ENGLISH);
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @Override
@@ -75,16 +88,22 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
                             if (Collection.class.isAssignableFrom(parameterTypes[i])) {
                                 result = FluentValidator.checkAll().configure(registry)
                                         .onEach((Collection) arguments[i])
+                                        .onEach((Collection) arguments[i],
+                                                new HibernateSupportedValidator().setHiberanteValidator(validator))
                                         .doValidate(callback)
                                         .result(toComplex());
                             } else if (parameterTypes[i].isArray()) {
                                 result = FluentValidator.checkAll().configure(registry)
                                         .onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]))
+                                        .onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]),
+                                                new HibernateSupportedValidator().setHiberanteValidator(validator))
                                         .doValidate(callback)
                                         .result(toComplex());
                             } else {
                                 result = FluentValidator.checkAll().configure(registry)
                                         .on(arguments[i])
+                                        .on(arguments[i],
+                                                new HibernateSupportedValidator().setHiberanteValidator(validator))
                                         .doValidate(callback)
                                         .result(toComplex());
                             }
