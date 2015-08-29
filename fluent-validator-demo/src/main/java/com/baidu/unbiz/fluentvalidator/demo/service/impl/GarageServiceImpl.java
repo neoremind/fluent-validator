@@ -41,9 +41,6 @@ public class GarageServiceImpl implements GarageService {
     @Resource
     private javax.validation.Validator hibernateValidator;
 
-    @Resource
-    private ManufacturerService manufacturerService;
-
     @Override
     public Result addCars(List<Car> cars) {
         Preconditions.checkNotNull(cars, "car should not be null");
@@ -67,7 +64,6 @@ public class GarageServiceImpl implements GarageService {
 
     @Override
     public Result addCarsThrowException(List<Car> cars) {
-        manufacturerService.setIsMockFail(true);
         return addCars(cars);
     }
 

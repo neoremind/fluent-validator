@@ -8,6 +8,11 @@ import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.baidu.unbiz.fluentvalidator.annotation.FluentValidate;
+import com.baidu.unbiz.fluentvalidator.demo.validator.CarNotExceedLimitValidator;
+import com.baidu.unbiz.fluentvalidator.demo.validator.CarValidator;
+import com.baidu.unbiz.fluentvalidator.demo.validator.NotEmptyValidator;
+
 /**
  * @author zhangxu
  */
@@ -24,6 +29,7 @@ public class Garage {
     @Valid
     private Owner owner;
 
+    @FluentValidate({NotEmptyValidator.class, CarNotExceedLimitValidator.class, CarValidator.class})
     private List<Car> carList;
 
     @Override

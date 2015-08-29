@@ -6,12 +6,9 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import com.baidu.unbiz.fluentvalidator.ComplexResult;
-import com.baidu.unbiz.fluentvalidator.Result;
 import com.baidu.unbiz.fluentvalidator.annotation.FluentValid;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Car;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Garage;
-import com.baidu.unbiz.fluentvalidator.demo.exception.RpcException;
 import com.baidu.unbiz.fluentvalidator.demo.rpc.ManufacturerService;
 import com.baidu.unbiz.fluentvalidator.demo.service.GarageService2;
 

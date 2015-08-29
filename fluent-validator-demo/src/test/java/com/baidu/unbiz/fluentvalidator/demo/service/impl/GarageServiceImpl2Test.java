@@ -72,6 +72,8 @@ public class GarageServiceImpl2Test extends AbstractJUnit4SpringContextTests {
             assertThat(e.getClass().getName(), is(CarException.class.getName()));
             assertThat(e.getCause().getClass().getName(), is(RpcException.class.getName()));
             assertThat(e.getCause().getMessage(), is("Get all manufacturers failed"));
+        } finally {
+            manufacturerService.setIsMockFail(false);
         }
     }
 
@@ -131,7 +133,34 @@ public class GarageServiceImpl2Test extends AbstractJUnit4SpringContextTests {
             garageService.buildGarage(garage);
         } catch (CarException e) {
             assertThat(e.getClass().getName(), is(CarException.class.getName()));
-            assertThat(e.getMessage(), is("{owner.name} length must be between 5 and 20"));
+        }
+    }
+
+    @Test
+    public void testBuildGarageCarNumExceed() {
+        try {
+            Garage garage = getValidGarage();
+            List<Car> cars = Lists.newArrayList();
+            for (int i = 0; i < 100; i++) {
+                cars.add(new Car("BMW", "LA1234", 5));
+            }
+            garage.setCarList(cars);
+            garageService.buildGarage(garage);
+        } catch (CarException e) {
+            assertThat(e.getClass().getName(), is(CarException.class.getName()));
+            assertThat(e.getMessage(), is("Car number exceeds limit, max available num is 50"));
+        }
+    }
+
+    @Test
+    public void testBuildGarageInvalidCar() {
+        try {
+            Garage garage = getValidGarage();
+            garage.getCarList().get(0).setLicensePlate("xxx");
+            garageService.buildGarage(garage);
+        } catch (CarException e) {
+            assertThat(e.getClass().getName(), is(CarException.class.getName()));
+            assertThat(e.getMessage(), is("License is not valid, invalid value=xxx"));
         }
     }
 
