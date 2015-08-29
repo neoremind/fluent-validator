@@ -15,6 +15,7 @@ import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
 import com.baidu.unbiz.fluentvalidator.validator.CarLicensePlateValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarManufacturerValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarSeatCountValidator;
+import com.baidu.unbiz.fluentvalidator.validator.element.ValidatorElementList;
 
 /**
  * @author zhangxu
@@ -219,6 +220,25 @@ public class FluentValidatorPropertyTest {
                             + "Call Rpc failed"));
             assertThat(e.getCause().getMessage(), is("Call Rpc failed"));
         }
+    }
+
+    @Test
+    public void testCarNullProperty() {
+        Car car = getValidCar();
+        car.setLicensePlate(null);
+
+        try {
+            Result ret = FluentValidator.checkAll()
+                    .on(car.getLicensePlate(), new CarLicensePlateValidator())
+                    .on(car.getManufacturer(), new CarManufacturerValidator())
+                    .on(car.getSeatCount(), new CarSeatCountValidator())
+                    .doValidate().result(toSimple());
+            System.out.println(ret);
+            assertThat(ret.isSuccess(), is(true));
+        } catch (RuntimeValidateException e) {
+            assertThat(e.getCause().toString(), is("java.lang.NullPointerException"));
+        }
+
     }
 
     private Car getValidCar() {

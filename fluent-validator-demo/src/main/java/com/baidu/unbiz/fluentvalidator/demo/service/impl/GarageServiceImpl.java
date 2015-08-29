@@ -15,7 +15,7 @@ import com.baidu.unbiz.fluentvalidator.FluentValidator;
 import com.baidu.unbiz.fluentvalidator.Result;
 import com.baidu.unbiz.fluentvalidator.ValidationError;
 import com.baidu.unbiz.fluentvalidator.Validator;
-import com.baidu.unbiz.fluentvalidator.ValidatorElementList;
+import com.baidu.unbiz.fluentvalidator.validator.element.ValidatorElementList;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Car;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Garage;
 import com.baidu.unbiz.fluentvalidator.demo.exception.CarException;

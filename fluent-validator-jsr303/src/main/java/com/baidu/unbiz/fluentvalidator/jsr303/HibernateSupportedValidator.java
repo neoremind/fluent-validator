@@ -9,6 +9,8 @@ import com.baidu.unbiz.fluentvalidator.annotation.NotThreadSafe;
 import com.baidu.unbiz.fluentvalidator.Validator;
 import com.baidu.unbiz.fluentvalidator.ValidatorContext;
 import com.baidu.unbiz.fluentvalidator.ValidatorHandler;
+import com.baidu.unbiz.fluentvalidator.support.GroupingHolder;
+import com.baidu.unbiz.fluentvalidator.util.ArrayUtil;
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 
 /**
@@ -32,12 +34,12 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
 
     @Override
     public boolean validate(ValidatorContext context, T t) {
-        Class[] grouping = GroupingHolder.getGrouping();
+        Class<?>[] groups = GroupingHolder.getGrouping();
         Set<ConstraintViolation<T>> constraintViolations;
-        if (grouping == null || grouping.length == 0) {
+        if (ArrayUtil.isEmpty(groups)) {
             constraintViolations = HIBERANTE_VALIDATOR.validate(t);
         } else {
-            constraintViolations = HIBERANTE_VALIDATOR.validate(t, grouping);
+            constraintViolations = HIBERANTE_VALIDATOR.validate(t, groups);
         }
         if (CollectionUtil.isEmpty(constraintViolations)) {
             return true;

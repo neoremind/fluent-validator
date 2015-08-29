@@ -35,4 +35,11 @@ public @interface FluentValidate {
      */
     Class<? extends Validator>[] value() default {};
 
+    /**
+     * 分组验证，运行时只有在列表内的才验证
+     *
+     * @return 分组列表
+     */
+    Class<?>[] groups() default {};
+
 }

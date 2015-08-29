@@ -2,6 +2,8 @@ package com.baidu.unbiz.fluentvalidator;
 
 import java.util.List;
 
+import com.baidu.unbiz.fluentvalidator.validator.element.ValidatorElementList;
+
 /**
  * 验证回调接口
  * <p/>

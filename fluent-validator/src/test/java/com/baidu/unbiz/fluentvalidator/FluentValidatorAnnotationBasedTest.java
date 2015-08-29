@@ -11,9 +11,14 @@ import org.junit.Test;
 import com.baidu.unbiz.fluentvalidator.dto.Car;
 import com.baidu.unbiz.fluentvalidator.error.CarError;
 import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
+import com.baidu.unbiz.fluentvalidator.group.CheckManufacturer;
 import com.baidu.unbiz.fluentvalidator.registry.impl.SimpleRegistry;
+import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 import com.baidu.unbiz.fluentvalidator.validator.CarValidator;
+import com.baidu.unbiz.fluentvalidator.validator.CarValidator2;
+import com.baidu.unbiz.fluentvalidator.validator.CarValidator3;
 import com.google.common.collect.Lists;
+import com.sun.tools.javac.comp.Check;
 
 /**
  * @author zhangxu
@@ -47,12 +52,12 @@ public class FluentValidatorAnnotationBasedTest {
         assertThat(ret.getErrors().get(0), is(String.format(CarError.SEATCOUNT_ERROR.msg(), 99)));
     }
 
-    @Test(expected = RuntimeValidateException.class)
+    @Test(expected = NullPointerException.class)
     public void testCarNoRegistry() {
         Car car = getValidCar();
         car.setSeatCount(99);
 
-        Result ret = FluentValidator.checkAll()
+        Result ret = FluentValidator.checkAll().configure(null)
                 .on(car)
                 .doValidate()
                 .result(toSimple());
@@ -63,7 +68,8 @@ public class FluentValidatorAnnotationBasedTest {
     public void testCarCollection() {
         List<Car> cars = getValidCars();
 
-        Result ret = FluentValidator.checkAll().configure(new SimpleRegistry())
+        // by default with simple registry
+        Result ret = FluentValidator.checkAll()
                 .onEach(cars)
                 .doValidate()
                 .result(toSimple());
@@ -91,7 +97,7 @@ public class FluentValidatorAnnotationBasedTest {
         Car[] cars = getValidCars().toArray(new Car[] {});
 
         Result ret = FluentValidator.checkAll().configure(new SimpleRegistry())
-                .onEach(cars, new CarValidator())
+                .onEach(cars)
                 .doValidate()
                 .result(toSimple());
         System.out.println(ret);
@@ -104,13 +110,103 @@ public class FluentValidatorAnnotationBasedTest {
         cars[0].setSeatCount(0);
         cars[1].setLicensePlate("BEIJING123");
 
-        Result ret = FluentValidator.checkAll().failOver()
-                .onEach(cars, new CarValidator())
+        Result ret = FluentValidator.checkAll().configure(new SimpleRegistry())
+                .failOver()
+                .onEach(cars)
                 .doValidate()
                 .result(toSimple());
         System.out.println(ret);
         assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(2));
+    }
+
+    @Test
+    public void testCarCollectionNull() {
+        List<Car> cars = null;
+
+        // by default with simple registry
+        Result ret = FluentValidator.checkAll()
+                .onEach(cars)
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(true));
+    }
+
+    @Test
+    public void testCarCollectionTooMany() {
+        List<Car> cars = getValidCarsTooMany();
+
+        Result ret = FluentValidator.checkAll().configure(new SimpleRegistry())
+                .onEach(cars)
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(true));
+    }
+
+    private List<Car> getValidCarsTooMany() {
+        List<Car> ret = CollectionUtil.createArrayList();
+        for (int i = 0; i < 200; i++) {
+            ret.add(new Car("BMW", "LA1234", 5));
+        }
+        return ret;
+    }
+
+    @Test
+    public void testCarNull() {
+        Car car = null;
+
+        Result ret = FluentValidator.checkAll().configure(new SimpleRegistry())
+                .on(car)
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(true));
+    }
+
+    @Test
+    public void testCarGroup() {
+        Car car = getValidCar();
+        car.setManufacturer("XXXX");
+
+        Result ret = FluentValidator.checkAll(new Class<?>[] {CheckManufacturer.class})
+                .configure(new SimpleRegistry())
+                .on(car)
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(false));
+        assertThat(ret.getErrors().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
+    }
+
+    @Test
+    public void testCarGroupNoGroups() {
+        Car car = getValidCar();
+        car.setManufacturer("XXXX");
+
+        Result ret = FluentValidator.checkAll(new Class<?>[] {})
+                .configure(new SimpleRegistry())
+                .on(car)
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(false));
+        assertThat(ret.getErrors().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXXX")));
+    }
+
+    @Test
+    public void testCarGroupGroupNotMatch() {
+        Car car = getValidCar();
+        car.setSeatCount(11111);
+
+        Result ret = FluentValidator.checkAll(new Class<?>[] {CheckManufacturer.class})
+                .configure(new SimpleRegistry())
+                .on(car)
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(true));
     }
 
     private Car getValidCar() {

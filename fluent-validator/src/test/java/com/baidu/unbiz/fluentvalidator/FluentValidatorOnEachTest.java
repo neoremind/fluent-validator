@@ -10,12 +10,14 @@ import org.junit.Test;
 
 import com.baidu.unbiz.fluentvalidator.dto.Car;
 import com.baidu.unbiz.fluentvalidator.validator.CarValidator;
+import com.baidu.unbiz.fluentvalidator.validator.CarValidator2;
+import com.baidu.unbiz.fluentvalidator.validator.CarValidator3;
 import com.google.common.collect.Lists;
 
 /**
  * @author zhangxu
  */
-public class FluentValidatorArrayCollectionTest {
+public class FluentValidatorOnEachTest {
 
     @Test
     public void testCarCollection() {
@@ -23,6 +25,8 @@ public class FluentValidatorArrayCollectionTest {
 
         Result ret = FluentValidator.checkAll()
                 .onEach(cars, new CarValidator())
+                .onEach(cars, new CarValidator2())
+                .onEach(cars, new CarValidator3())
                 .doValidate()
                 .result(toSimple());
         System.out.println(ret);
@@ -33,10 +37,12 @@ public class FluentValidatorArrayCollectionTest {
     public void testCarCollectionNegative() {
         List<Car> cars = getValidCars();
         cars.get(0).setSeatCount(0);
-        cars.get(1).setLicensePlate("BEIJING123");
+        cars.get(1).setLicensePlate("hehe");
 
         Result ret = FluentValidator.checkAll().failOver()
                 .onEach(cars, new CarValidator())
+                .onEach(cars, new CarValidator2())
+                .onEach(cars, new CarValidator3())
                 .doValidate()
                 .result(toSimple());
         System.out.println(ret);
@@ -50,6 +56,8 @@ public class FluentValidatorArrayCollectionTest {
 
         Result ret = FluentValidator.checkAll()
                 .onEach(cars, new CarValidator())
+                .onEach(cars, new CarValidator2())
+                .onEach(cars, new CarValidator3())
                 .doValidate()
                 .result(toSimple());
         System.out.println(ret);
@@ -60,15 +68,31 @@ public class FluentValidatorArrayCollectionTest {
     public void testCarArrayNegative() {
         Car[] cars = getValidCars().toArray(new Car[] {});
         cars[0].setSeatCount(0);
-        cars[1].setLicensePlate("BEIJING123");
+        cars[1].setLicensePlate("hehe");
 
         Result ret = FluentValidator.checkAll().failOver()
                 .onEach(cars, new CarValidator())
+                .onEach(cars, new CarValidator2())
+                .onEach(cars, new CarValidator3())
                 .doValidate()
                 .result(toSimple());
         System.out.println(ret);
         assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(2));
+    }
+
+    @Test
+    public void testNull() {
+        List<Car> cars = null;
+
+        Result ret = FluentValidator.checkAll()
+                .onEach(cars, new CarValidator())
+                .onEach(cars, new CarValidator2())
+                .onEach(cars, new CarValidator3())
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(true));
     }
 
     private List<Car> getValidCars() {

@@ -21,7 +21,7 @@ import com.baidu.unbiz.fluentvalidator.DefaulValidateCallback;
 import com.baidu.unbiz.fluentvalidator.FluentValidator;
 import com.baidu.unbiz.fluentvalidator.Result;
 import com.baidu.unbiz.fluentvalidator.ValidationError;
-import com.baidu.unbiz.fluentvalidator.ValidatorElementList;
+import com.baidu.unbiz.fluentvalidator.validator.element.ValidatorElementList;
 import com.baidu.unbiz.fluentvalidator.dto.Company;
 import com.baidu.unbiz.fluentvalidator.dto.CompanyBuilder;
 import com.baidu.unbiz.fluentvalidator.dto.Department;

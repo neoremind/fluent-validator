@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 标记为有状态的
+ * 标记为有状态的，反义词为无状态的stateless
  *
  * @author zhangxu
  */
