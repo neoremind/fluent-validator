@@ -86,6 +86,7 @@ public class AnnotationValidatorCache {
                 FluentValidate fluentValidateAnnt = ReflectionUtil.getAnnotation(field, FluentValidate.class);
 
                 Class<? extends Validator>[] validatorClasses = fluentValidateAnnt.value();
+                Class<?>[] groups = fluentValidateAnnt.groups();
                 if (validatorClasses == null || validatorClasses.length == 0) {
                     LOGGER.warn(String.format("No validator annotation bound %s#%s", clazz.getSimpleName(),
                             field.getName()));
@@ -129,8 +130,9 @@ public class AnnotationValidatorCache {
                 av.setField(field);
                 av.setMethod(ReflectionUtil.getGetterMethod(clazz, field));
                 av.setValidators(validators);
+                av.setGroups(groups);
                 annotationValidators.add(av);
-                LOGGER.debug("Annotation-based validation added " + av);
+                LOGGER.trace("Annotation-based validation added " + av);
             }
 
             if (CollectionUtil.isEmpty(annotationValidators)) {
@@ -138,8 +140,9 @@ public class AnnotationValidatorCache {
                         clazz.getSimpleName(), annotationValidators));
             } else {
                 CLASS_2_ANNOTATION_VALIDATOR_MAP.putIfAbsent(clazz, annotationValidators);
-                LOGGER.info(String.format("Annotation-based validation added for %s, and to-do validators are %s", clazz
-                        .getSimpleName(), annotationValidators));
+                LOGGER.debug(
+                        String.format("Annotation-based validation added for %s, and to-do validators are %s", clazz
+                                .getSimpleName(), annotationValidators));
             }
         } catch (Exception e) {
             LOGGER.error("Failed to add annotation validators " + e.getMessage(), e);

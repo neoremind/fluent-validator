@@ -1,6 +1,7 @@
 package com.baidu.unbiz.fluentvalidator.dto;
 
 import com.baidu.unbiz.fluentvalidator.annotation.FluentValidate;
+import com.baidu.unbiz.fluentvalidator.group.CheckManufacturer;
 import com.baidu.unbiz.fluentvalidator.validator.CarLicensePlateValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarManufacturerValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarSeatCountValidator;
@@ -10,7 +11,7 @@ import com.baidu.unbiz.fluentvalidator.validator.CarSeatCountValidator;
  */
 public class Car {
 
-    @FluentValidate({CarManufacturerValidator.class})
+    @FluentValidate(value = {CarManufacturerValidator.class}, groups = {CheckManufacturer.class})
     private String manufacturer;
 
     @FluentValidate({CarLicensePlateValidator.class})

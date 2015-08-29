@@ -32,7 +32,7 @@ import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
 public class Application {
 
     @Around("execution(* com.baidu.unbiz.fluentvalidator.demo.service.*.*(..))")
-    public Object validate4AjaxQuery(ProceedingJoinPoint pjp) throws Throwable {
+    public Object validateInterceptor(ProceedingJoinPoint pjp) throws Throwable {
         try {
             return pjp.proceed();
         } catch (RuntimeValidateException e) {

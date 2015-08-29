@@ -84,7 +84,7 @@ public class CollectionUtil {
      *
      * @see Function
      */
-    public static <F, T> List<T> transform(List<F> fromList, Function<? super F, ? extends T> function) {
+    public static <F, T> List<T> transform(Collection<F> fromList, Function<? super F, ? extends T> function) {
         if (CollectionUtil.isEmpty(fromList)) {
             return Collections.emptyList();
         }

@@ -2,6 +2,7 @@ package com.baidu.unbiz.fluentvalidator;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,6 +23,11 @@ public class AnnotationValidator {
     private Method method;
 
     /**
+     * 分组标识，在该分组内的才执行验证
+     */
+    private Class<?>[] groups;
+
+    /**
      * 验证器
      */
     private List<Validator> validators;
@@ -29,8 +35,9 @@ public class AnnotationValidator {
     @Override
     public String toString() {
         return "AnnotationValidator{" +
-                "field=" + field.getName() +
-                ", method=" + method.getName() +
+                "field=" + field +
+                ", method=" + method +
+                ", grouping=" + Arrays.toString(groups) +
                 ", validators=" + validators +
                 '}';
     }
@@ -57,5 +64,13 @@ public class AnnotationValidator {
 
     public void setValidators(List<Validator> validators) {
         this.validators = validators;
+    }
+
+    public Class<?>[] getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Class<?>[] groups) {
+        this.groups = groups;
     }
 }
