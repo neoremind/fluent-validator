@@ -191,7 +191,7 @@ public class FluentValidatorAnnotationBasedTest {
     }
 
     @Test
-    public void testCarGroupGroupNotMatch() {
+    public void testCarGroupNotMatch() {
         Car car = getValidCar();
         car.setSeatCount(11111);
 

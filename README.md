@@ -204,7 +204,7 @@ The following shows validating on Car entity.
     FluentValidator.checkAll()
                 .on(car, new CarValidator());
 
-The following shows validating on a collection of Car entity.
+When applying constraints on an Iterable type argument, FluentValidator will validate each element. The following shows validating on a collection of Car entity, each of the elements will be validated.
 
     FluentValidator.checkAll()
                 .onEach(Lists.newArrayList(new Car(), new Car()), new CarValidator());
@@ -241,6 +241,7 @@ Once `doValidate()` method is called, it means to perform validation of all cons
     Result ret = FluentValidator.checkAll()
                 .on(car.getManufacturer(), new CarManufacturerValidator()).when(true)
                 .doValidate();
+
 
 ### 2.7 Get result
 
@@ -288,9 +289,9 @@ In addition to `Validator`, applying multiple constraints of the same instance o
     Result ret = FluentValidator.checkAll().on(car, chain).doValidate().result(toSimple());
     
 
-#### 2.8.2 Annotation based validation
+#### 2.8.2 Annotation-based validation
 
-Constraints can be expressed by annotating a field of a class of `@FluentValidate` which takes multiple classes implementing `Validator` interface. The following shows a field level configuration example:
+Constraints can be expressed by annotating a field of a class of `@FluentValidate` which takes multiple classes implementing `Validator` interface as value. The following shows a field level configuration example:
 
 ```
 public class Car {
@@ -310,7 +311,7 @@ public class Car {
 
 When using field level constraints, there must have getter methods for each of the annotated field.
 
-Next, you can use the method `configure(new SimpleRegistry())` which will allow you to configure where to lookup the annotated validators for FluentValidator instance:   
+Next, you can use the method `configure(new SimpleRegistry())` which will allow you to configure where to lookup the annotated validators for FluentValidator instance. By default `SimpleRegistry` is configured well, which means no need to configure it beforehand.   
 
 ```
     Car car = getCar();
@@ -321,85 +322,62 @@ Next, you can use the method `configure(new SimpleRegistry())` which will allow 
                 .result(toSimple());
 ```
 
-Notice that you can use `onEach()` to validate through an array or collection.
+Notice that you can use `onEach()` to validate through an array or a collection.
 
-In the above example, `SimpleRegistry` helps to locate and create the validators by simply calling `newInstance()` method if class exists within the current class loader. You can make an explicit choice about which implementation to use. One alternative is to lookup instance from Spring IoC container by using `SpringApplicationContextRegistry`, that enables you to build some powerful validators such that maybe they rely on dependency beans like `JdbcTemplate`.
+#### 2.8.3 Groups validation
 
-To use `SpringApplicationContextRegistry`, add the following dependency to your pom.xml. 
+Groups allow you to restrict the set of constraints applied during validation. 
 
-	<dependency>
-    	<groupId>com.baidu.unbiz</groupId>
-    	<artifactId>fluent-validator-spring</artifactId>
-    	<version>1.0.1</version>
-	</dependency>
-	
-By default, the following dependencies are what fluent-validator-spring will bring into your project. 
-
-```	
-[INFO] +- org.springframework:spring-context-support:jar:4.1.6.RELEASE:compile
-[INFO] |  +- org.springframework:spring-beans:jar:4.1.6.RELEASE:compile
-[INFO] |  +- org.springframework:spring-context:jar:4.1.6.RELEASE:compile
-[INFO] |  |  +- org.springframework:spring-aop:jar:4.1.6.RELEASE:compile
-[INFO] |  |  |  \- aopalliance:aopalliance:jar:1.0:compile
-[INFO] |  |  \- org.springframework:spring-expression:jar:4.1.6.RELEASE:compile
-[INFO] |  \- org.springframework:spring-core:jar:4.1.6.RELEASE:compile
-[INFO] +- org.slf4j:slf4j-api:jar:1.7.7:compile
-[INFO] +- org.slf4j:slf4j-log4j12:jar:1.7.7:compile
-[INFO] |  \- log4j:log4j:jar:1.2.17:compile
-```
-
-You can exclude any of them but be sure to have *fluent-validator* left by configuring like below: 
+For example, the class *Add* is in the groups of `@FluentValidate`.
 
 ```
-<dependency>
-	<groupId>com.baidu.unbiz</groupId>
-	<artifactId>fluent-validator-spring</artifactId>
-	<exclusions>
-		<exclusion>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-		</exclusion>
-	</exclusions>
-</dependency>
+public class Car {
+
+    @FluentValidate(value = {CarManufacturerValidator.class}, groups = {Add.class})
+    private String manufacturer;
+
+    @FluentValidate({CarLicensePlateValidator.class})
+    private String licensePlate;
+
+    @FluentValidate({CarSeatCountValidator.class})
+    private int seatCount;
+    
+}
 ```
 
-
-The usage is shown as below.
+Then when applying constraints like below, only manufacturer field is validated and the other two fields are skipped.
 
 ```
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-public class SpringApplicationContextRegistryTest {
-
-    @Resource
-    private Registry springApplicationContextRegistry;
-
-    @Test
-    public void testCarSeatContErrorFailFast() {
-        Car car = getValidCar();
-        car.setSeatCount(99);
-
-        Result ret = FluentValidator.checkAll().configure(springApplicationContextRegistry)
+Result ret = FluentValidator.checkAll(new Class<?>[] {Add.class})
                 .on(car)
                 .doValidate()
                 .result(toSimple());
-        System.out.println(ret);
-        assertThat(ret.isSuccess(), is(false));
-        assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrors().get(0), is(String.format(CarError.SEATCOUNT_ERROR.msg(), 99)));
-    }
+```
 
-    private Car getValidCar() {
-        return new Car("BMW", "LA1234", 5);
-    }
+When applying constraints like before with no parameters in `checkAll()` method, all constraints are applied on Car class.
 
-}
 
+#### 2.8.4 Cascade validation
+
+FluentValidator not only allows you to validate single class instances but also complete cascaded validation (object graphs). To do so, just annotate a field or property representing a reference to another object with `@FluentValid` as demonstrated below.
 
 ```
-    
+public class Garage {
 
-#### 2.8.3 putAttribute2Context
+    @FluentValidate({CarNotExceedLimitValidator.class})
+    @FluentValid
+    private List<Car> carList;
+}
+```
+
+The referenced *List<Car>* object will be validated as well, as the *carList* field is annotated with `@FluentValid`. Note that cascade validation also works for collection-typed fields. That means each contained element can be validated. Also, `@FluentValid` and `@FluentValidate` can work well together.
+
+Cascade validation is recursive, i.e. if a reference marked for cascaded validation points to an object which itself has properties annotated with `@FluentValid`, these references will be followed up by the validation engine as well. 
+
+Note that the validation engine currently will NOT ensure that no infinite loops occur during cascaded validation, for example if two objects hold references to each other.
+
+
+#### 2.8.5 putAttribute2Context
 Use `putAttribute2Context()` method, it allows you to inject some of the properties to the validator or validator chain from the caller - where validations are performed.
 
 For example, you can put *ignoreManufacturer* as true in the context and get the value by invoking `context.getAttribute(key, class type)` within any validator. 
@@ -427,7 +405,7 @@ public class CarManufacturerValidator extends ValidatorHandler<String> implement
 ```
 
 
-#### 2.8.4 putClosure2Context
+#### 2.8.6 putClosure2Context
 Use `putClosure2Context()` method, it offers the closure functionality. In some situations, when the caller wants to obtain an instance or value where the invocation is delegated down to the validator to do real call later which can be a time-consuming and complex job, and you do not want to waste any time or any logic code to set it again from the caller, it is the best place to use putClosure2Context().
 
 Below is an example of reusing the *allManufacturers* that is set by invoking `closure.executeAndGetResult()` method within the validator, notice that `manufacturerService.getAllManufacturers()` may perform rpc call. And the caller can get the result by simply invoking `closure.getResult()` method.
@@ -485,7 +463,7 @@ public class CarValidator extends ValidatorHandler<Car> implements Validator<Car
 ```
 
 
-#### 2.8.5 ValidateCallback
+#### 2.8.7 ValidateCallback
 
 So far we have been ignoring the optional argument `ValidateCallback` that `doValidate()` method takes, but it is time to have a closer look. A callback can be placed on the `doValidate()` method like below:
 
@@ -519,13 +497,14 @@ So far we have been ignoring the optional argument `ValidateCallback` that `doVa
     
 If you do not want to implement every method of the interface, you can simply use `DefaulValidateCallback` just like the above example and implement methods selectively.
 
-#### 2.8.6 RuntimeValidateException
+#### 2.8.8 RuntimeValidateException
 
 Last but not least, if there is any exception that is not handled, a RuntimeValidateException will be threw out containing the root cause exception from the `doValidate()` method. 
 
 If there is any exception that re-throw from `onException()` or `onUncaughtException()` method, a RuntimeValidateException wrapping the new cause will be threw out.
 
 You can try-catch or handle it with Spring AOP feature on your own.
+
 
 
 ## 3. JSR 303 - Bean Validation support
@@ -575,7 +554,7 @@ You can exclude any of them but be sure to have *fluent-validator* left by confi
 ```
 		
 
-### 3.1 Validate by using Hibernate Validator
+### 3.2 Validate by using Hibernate Validator
 
 Since using annotation-based constraints can be an easy way to do validation on an instance. Fluent Validator will definitely leverage the useful feature provided by Hibernate Validator.
 
@@ -638,9 +617,9 @@ Also HibernateSupportedValidator works well with other custom validators, you ca
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
 
-### 3.2 FluentHibernateValidator can be a replacement
+### 3.3 Use group and group sequence
 
-Usually `FluentHibernateValidator` is the same as `FluentValidator`. But in case if one wants to do annotation-based validation by using [Grouping constraints](http://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#chapter-groups), FluentHibernateValidator is here to help, `checkAll()` method takes a var-arg argument groups.
+In case if one wants to do annotation-based validation by using [Grouping constraints](http://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#chapter-groups), FluentValidator is also capable, `checkAll()` method takes a var-arg argument groups.
 
 In the above example of Company class, since no group is specified for any annotation, the default group javax.validation.groups.Default is assumed.
 
@@ -649,27 +628,180 @@ If a ceo property is added to Company class and specifying the group as AddCompa
     @Length(message = "Company CEO is not valid", min = 10, groups = {AddCompany.class})
     private String ceo;
     
-When using `FluentHibernateValidator.checkAll()` or `FluentValidator.checkAll()`, ceo will not be validated at all. Only when AddCompany.class acts as one member of the var-arg argument that `FluentHibernateValidator.checkAll()` accepts, the @Length will work but the other default constraints will not be working.
+When using `FluentValidator.checkAll()`, ceo will not be validated at all. Only when AddCompany.class acts as one member of the var-arg argument that `FluentValidator.checkAll()` accepts, the @Length will work but the other default constraints will not be working.
 
 Below is an example if one just needs to validate the ceo property.
 
-    Result ret = FluentHibernateValidator.checkAll(AddCompany.class)
+    Result ret = FluentValidator.checkAll(AddCompany.class)
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
 
 Below is another example if one needs to validate both the ceo property and other default annotation-based properties. By default, constraints are evaluated in no particular order, regardless of which groups they belong to.
 
-    Result ret = FluentHibernateValidator.checkAll(Default.class, AddCompany.class)
+    Result ret = FluentValidator.checkAll(Default.class, AddCompany.class)
                 .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
 
-If you would like to sepecify the validation order you just need to define an interface and annotate it with @GroupSequence like below. So contraints will applied on AddCompany.class first and other properties next. Note that if at least one constraint fails in a sequenced group, none of the constraints of the following groups in the sequence get validated.
+If you would like to sepecify the validation order you just need to define an interface and annotate it with `@GroupSequence` like below. So contraints will applied on AddCompany.class first and other properties next. Note that if at least one constraint fails in a sequenced group, none of the constraints of the following groups in the sequence get validated.
 
     @GroupSequence({AddCompany.class, Default.class})
         public interface GroupingCheck {
     }
+
+
+## 4. Spring support
+
+### 4.1 Use Spring IoC container to locate validators
+
+As constraints can be expressed by annotating a field of a class of `@FluentValidate` which takes multiple classes implementing `Validator` interface as value. In the above chapter, `SimpleRegistry` helps to locate and create the validators by simply calling `newInstance()` method if class exists within the current class loader. You can make an explicit choice about which implementation to use. One alternative is to lookup instance from Spring IoC container by using `SpringApplicationContextRegistry`, that enables you to build some powerful validators such that maybe they rely on dependency beans like `JdbcTemplate`.
+
+To use `SpringApplicationContextRegistry`, add the following dependency to your pom.xml. 
+
+	<dependency>
+    	<groupId>com.baidu.unbiz</groupId>
+    	<artifactId>fluent-validator-spring</artifactId>
+    	<version>1.0.1</version>
+	</dependency>
+	
+By default, the following dependencies are what fluent-validator-spring will bring into your project. 
+
+```	
+[INFO] +- org.springframework:spring-context-support:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-beans:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-context:jar:4.1.6.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-aop:jar:4.1.6.RELEASE:compile
+[INFO] |  |  |  \- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  |  \- org.springframework:spring-expression:jar:4.1.6.RELEASE:compile
+[INFO] |  \- org.springframework:spring-core:jar:4.1.6.RELEASE:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.7:compile
+[INFO] +- org.slf4j:slf4j-log4j12:jar:1.7.7:compile
+[INFO] |  \- log4j:log4j:jar:1.2.17:compile
+```
+
+You can exclude any of them but be sure to have *fluent-validator* left by configuring like below: 
+
+```
+<dependency>
+	<groupId>com.baidu.unbiz</groupId>
+	<artifactId>fluent-validator-spring</artifactId>
+	<exclusions>
+		<exclusion>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+```
+
+The usage is shown as below.
+
+```
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = Application.class)
+public class SpringApplicationContextRegistryTest {
+
+    @Resource
+    private Registry springApplicationContextRegistry;
+
+    @Test
+    public void testCarSeatContErrorFailFast() {
+        Car car = getValidCar();
+        car.setSeatCount(99);
+
+        Result ret = FluentValidator.checkAll().configure(springApplicationContextRegistry)
+                .on(car)
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(false));
+        assertThat(ret.getErrorNumber(), is(1));
+        assertThat(ret.getErrors().get(0), is(String.format(CarError.SEATCOUNT_ERROR.msg(), 99)));
+    }
+
+    private Car getValidCar() {
+        return new Car("BMW", "LA1234", 5);
+    }
+
+}
+
+### 4.2 Use FluentValidateInterceptor 
+FluentValidator provides you an useful interceptor to work with your existing Spring framework supported project, so that `FluentValidator` API is no longer needed to perform validation explicitly. What you should do is to focusing on the core business logic stuff and leave the validation work to FluentValidator by using `@FluentValid` annotation on the speicific argument. Examples are shown below:
+
+```
+@Service
+public class GarageServiceImpl implements GarageService {
+
+    @Override
+    public List<Car> addCars(@FluentValid List<Car> cars) {
+        // do biz here...
+        return cars;
+    }
+}
+```
+
+Spring configuration goes like below, it has *GarageServiceImpl* intercepted with *fluentValidateInterceptor* and *fluentValidateInterceptor* has a callback that handles what to do when there is failure or uncaught exception threw.
+
+```
+    <bean id="validateCarCallback" class="com.baidu.unbiz.fluentvalidator.demo.callback.ValidateCarCallback"/>
+
+    <bean id="fluentValidateInterceptor"
+          class="com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor">
+        <property name="callback" ref="validateCarCallback"/>
+    </bean>
+
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames">
+            <list>
+                <value>*ServiceImpl</value>
+            </list>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>fluentValidateInterceptor</value>
+            </list>
+        </property>
+    </bean>
+</beans>
+```
+
+*ValidateCarCallback* implementation is shown as below: 
+
+```
+public class ValidateCarCallback extends DefaulValidateCallback implements ValidateCallback {
+
+    @Override
+    public void onFail(ValidatorElementList validatorElementList, List<ValidationError> errors) {
+        throw new CarException(errors.get(0).getErrorMsg());
+    }
+
+    @Override
+    public void onSuccess(ValidatorElementList validatorElementList) {
+        System.out.println("Everything works fine!");
+    }
+
+    @Override
+    public void onUncaughtException(Validator validator, Exception e, Object target) throws Exception {
+        throw new CarException(e);
+    }
+}
+```
+
+Test case is shown as below:
+
+    @Test
+    public void testAddCarsFail() {
+        try {
+            List<Car> cars = getValidCars();
+            cars.get(0).setLicensePlate("xxx123"); // fail fast
+            garageService.addCars(cars);
+        } catch (CarException e) {
+            assertThat(e.getClass().getName(), is(CarException.class.getName()));
+            assertThat(e.getMessage(), is(String.format(CarError.LICENSEPLATE_ERROR.msg(), "xxx123")));
+        }
+    }
+
 
 ## Examples
 
@@ -677,11 +809,13 @@ All test cases or samples can be found from the below links:
 
 [Samples](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-demo/src/main/java/com/baidu/unbiz/fluentvalidator/demo/service/impl/GarageServiceImpl.java)
 
+[Spring support Samples](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-demo/src/main/java/com/baidu/unbiz/fluentvalidator/demo/service/impl/GarageServiceImpl2.java)
+
 [Basic test cases](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator/src/test/java/com/baidu/unbiz/fluentvalidator)
 
 [JSR 303 - Hibernate validator supported test cases](https://github.com/neoremind/fluent-validator/tree/master/fluent-validator-jsr303/src/test/java/com/baidu/unbiz/fluentvalidator/jsr303)
 
-[Annotation-based with Spring validator bean detection supported test cases](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-spring/src/test/java/com/baidu/unbiz/fluentvalidator/registry/impl/SpringApplicationContextRegistryTest.java)
+[Spring registry usage](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-spring/src/test/java/com/baidu/unbiz/fluentvalidator/registry/impl/SpringApplicationContextRegistryTest.java)
 
 ## Supports 
 
