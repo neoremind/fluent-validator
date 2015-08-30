@@ -1,5 +1,6 @@
 package com.baidu.unbiz.fluentvalidator;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -271,27 +272,37 @@ public class FluentValidator {
 
         List<ValidatorElement> elementList = CollectionUtil.createArrayList();
         for (final AnnotationValidator anntValidatorOfOneField : anntValidatorsOfAllFields) {
-            if (CollectionUtil.isEmpty(anntValidatorOfOneField.getValidators())) {
-                // annotation had but no validators
-                continue;
+            Object realTarget = ReflectionUtil.invokeMethod(anntValidatorOfOneField.getMethod(), t);
+
+            if (!CollectionUtil.isEmpty(anntValidatorOfOneField.getValidators())) {
+                if (!ArrayUtil.hasIntersection(anntValidatorOfOneField.getGroups(), groups)) {
+                    // groups have no intersection
+                    LOGGER.debug(String.format("Current groups: %s not match %s", Arrays.toString(groups),
+                            anntValidatorOfOneField));
+                    continue;
+                }
+
+                for (final Validator v : anntValidatorOfOneField.getValidators()) {
+                    elementList.add(new ValidatorElement(realTarget, v, new ToStringable() {
+                        @Override
+                        public String toString() {
+                            return String.format("%s#%s@%s", t.getClass().getSimpleName(),
+                                    anntValidatorOfOneField.getField().getName(), v);
+                        }
+                    }));
+                }
             }
 
-            if (!ArrayUtil.hasIntersection(anntValidatorOfOneField.getGroups(), groups)) {
-                // groups have no intersection
-                LOGGER.debug(String.format("Current groups: %s not match %s", Arrays.toString(groups),
-                        anntValidatorOfOneField));
-                continue;
-            }
-
-            for (final Validator v : anntValidatorOfOneField.getValidators()) {
-                Object realTarget = ReflectionUtil.invokeMethod(anntValidatorOfOneField.getMethod(), t);
-                elementList.add(new ValidatorElement(realTarget, v, new ToStringable() {
-                    @Override
-                    public String toString() {
-                        return String.format("%s#%s@%s", t.getClass().getSimpleName(),
-                                anntValidatorOfOneField.getField().getName(), v);
-                    }
-                }));
+            // cascade handle
+            if (anntValidatorOfOneField.isCascade()) {
+                Field field = anntValidatorOfOneField.getField();
+                if (Collection.class.isAssignableFrom(field.getType())) {
+                    onEach((Collection) realTarget);
+                } else if (field.getType().isArray()) {
+                    onEach(ArrayUtil.toWrapperIfPrimitive(realTarget));
+                } else {
+                    on(realTarget);
+                }
             }
         }
         MultiValidatorElement m = new MultiValidatorElement(elementList);

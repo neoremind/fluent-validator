@@ -5,7 +5,6 @@ import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toComplex;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Locale;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -34,6 +33,8 @@ import com.baidu.unbiz.fluentvalidator.util.Preconditions;
 import com.baidu.unbiz.fluentvalidator.util.ReflectionUtil;
 
 /**
+ * 与Spring集成的拦截器，结合{@link FluentValid}注解装饰在参数前面，可以利用AOP来拦截请求，对参数进行校验
+ *
  * @author zhangxu
  */
 public class FluentValidateInterceptor implements MethodInterceptor, InitializingBean, ApplicationContextAware {
@@ -46,6 +47,9 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
 
     private SpringApplicationContextRegistry registry;
 
+    /**
+     * hibernate validator
+     */
     private Validator validator;
 
     @Override
@@ -54,11 +58,27 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
         registry.setApplicationContext(applicationContext);
 
         // init hibernate validator
-        Locale.setDefault(Locale.ENGLISH);
+        // Locale.setDefault(Locale.ENGLISH);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
+    /**
+     * 拦截方法进行验证，如果参数前面存在{@link FluentValid}注解，则进行校验，分一下三中情况：
+     * <ul>
+     * <li>1. 普通对象，直接验证</li>
+     * <li>2. 列表对象，onEach验证</li>
+     * <li>3. 数组对象，onEach验证</li>
+     * </ul>
+     * <p/>
+     * 注：另外hibernate validator优先校验
+     *
+     * @param invocation 调用
+     *
+     * @return 返回对象
+     *
+     * @throws Throwable
+     */
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         // Work out the target class: may be <code>null</code>.
@@ -87,23 +107,24 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
                             ComplexResult result = null;
                             if (Collection.class.isAssignableFrom(parameterTypes[i])) {
                                 result = FluentValidator.checkAll().configure(registry)
-                                        .onEach((Collection) arguments[i])
                                         .onEach((Collection) arguments[i],
                                                 new HibernateSupportedValidator().setHiberanteValidator(validator))
+                                        .onEach((Collection) arguments[i])
                                         .doValidate(callback)
                                         .result(toComplex());
                             } else if (parameterTypes[i].isArray()) {
                                 result = FluentValidator.checkAll().configure(registry)
-                                        .onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]))
                                         .onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]),
                                                 new HibernateSupportedValidator().setHiberanteValidator(validator))
+
+                                        .onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]))
                                         .doValidate(callback)
                                         .result(toComplex());
                             } else {
                                 result = FluentValidator.checkAll().configure(registry)
-                                        .on(arguments[i])
                                         .on(arguments[i],
                                                 new HibernateSupportedValidator().setHiberanteValidator(validator))
+                                        .on(arguments[i])
                                         .doValidate(callback)
                                         .result(toComplex());
                             }

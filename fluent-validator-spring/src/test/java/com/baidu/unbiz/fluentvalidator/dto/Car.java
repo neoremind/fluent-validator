@@ -1,5 +1,7 @@
 package com.baidu.unbiz.fluentvalidator.dto;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.baidu.unbiz.fluentvalidator.annotation.FluentValidate;
 import com.baidu.unbiz.fluentvalidator.validator.CarLicensePlateValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarManufacturerValidator;
@@ -11,6 +13,7 @@ import com.baidu.unbiz.fluentvalidator.validator.CarSeatCountValidator;
 public class Car {
 
     @FluentValidate({CarManufacturerValidator.class})
+    @NotBlank
     private String manufacturer;
 
     @FluentValidate({CarLicensePlateValidator.class})

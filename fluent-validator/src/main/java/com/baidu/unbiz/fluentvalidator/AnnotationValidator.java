@@ -28,6 +28,11 @@ public class AnnotationValidator {
     private Class<?>[] groups;
 
     /**
+     * 是否需要级联到类或者集合、数组泛型内部类做验证
+     */
+    private boolean isCascade;
+
+    /**
      * 验证器
      */
     private List<Validator> validators;
@@ -37,7 +42,8 @@ public class AnnotationValidator {
         return "AnnotationValidator{" +
                 "field=" + field +
                 ", method=" + method +
-                ", grouping=" + Arrays.toString(groups) +
+                ", groups=" + Arrays.toString(groups) +
+                ", isCascade=" + isCascade +
                 ", validators=" + validators +
                 '}';
     }
@@ -72,5 +78,13 @@ public class AnnotationValidator {
 
     public void setGroups(Class<?>[] groups) {
         this.groups = groups;
+    }
+
+    public boolean isCascade() {
+        return isCascade;
+    }
+
+    public void setIsCascade(boolean isCascade) {
+        this.isCascade = isCascade;
     }
 }

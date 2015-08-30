@@ -77,6 +77,13 @@ public class FluentValidateInterceptorTest extends AbstractJUnit4SpringContextTe
         carService.addCar(car);
     }
 
+    @Test(expected = CarException.class)
+    public void testAddCarJsr303() {
+        Car car = getValidCar();
+        car.setManufacturer("");
+        carService.addCar(car);
+    }
+
     private Car getValidCar() {
         return new Car("BMW", "LA1234", 5);
     }

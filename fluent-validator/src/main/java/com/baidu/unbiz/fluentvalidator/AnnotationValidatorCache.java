@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.baidu.unbiz.fluentvalidator.annotation.FluentValid;
 import com.baidu.unbiz.fluentvalidator.annotation.FluentValidate;
 import com.baidu.unbiz.fluentvalidator.registry.Registry;
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
@@ -76,63 +77,7 @@ public class AnnotationValidatorCache {
             if (CLASS_2_ANNOTATION_VALIDATOR_MAP.contains(clazz)) {
                 return;
             }
-
-            Field[] fields = ReflectionUtil.getAnnotationFields(clazz, FluentValidate.class);
-
-            List<AnnotationValidator> annotationValidators = CollectionUtil.createArrayList();
-
-            for (int i = 0; i < fields.length; i++) {
-                Field field = fields[i];
-                FluentValidate fluentValidateAnnt = ReflectionUtil.getAnnotation(field, FluentValidate.class);
-
-                Class<? extends Validator>[] validatorClasses = fluentValidateAnnt.value();
-                Class<?>[] groups = fluentValidateAnnt.groups();
-                if (validatorClasses == null || validatorClasses.length == 0) {
-                    LOGGER.warn(String.format("No validator annotation bound %s#%s", clazz.getSimpleName(),
-                            field.getName()));
-                    continue;
-                }
-
-                List<Validator> validators = CollectionUtil.createArrayList(4);
-                for (Class<? extends Validator> validatorClass : validatorClasses) {
-                    if (!Validator.class.isAssignableFrom(validatorClass)) {
-                        LOGGER.warn(String.format("Validator annotation class %s is not assignable from %s",
-                                validatorClass.getSimpleName(), Validator.class.getSimpleName()));
-                        continue;
-                    }
-                    if (!VALIDATOR_MAP.containsKey(validatorClass)) {
-                        List<? extends Validator> validatorsFound = registry.findByType(validatorClass);
-                        if (CollectionUtil.isEmpty(validatorsFound)) {
-                            LOGGER.warn(String.format("Validator annotation class %s not found or init failed for "
-                                    + "%s#%s", validatorClass.getSimpleName(), clazz.getSimpleName(), field.getName()));
-                            continue;
-                        }
-                        if (validatorsFound.size() > 1) {
-                            LOGGER.warn(String.format(
-                                    "Validator annotation class %s found multiple instances for %s#%s, so the first "
-                                            + "one will be used",
-                                    validatorClass.getSimpleName(), clazz.getSimpleName(), field.getName()));
-                        }
-                        VALIDATOR_MAP.putIfAbsent(validatorClass, validatorsFound.get(0));
-                        validators.add(VALIDATOR_MAP.get(validatorClass));
-                        LOGGER.info(String.format("Cached validator %s", validatorClass.getSimpleName()));
-                    }
-                }
-
-                if (CollectionUtil.isEmpty(validators)) {
-                    LOGGER.warn(String.format("Annotation-based validation enabled but none of the validators is "
-                            + "applicable for %s#%s", clazz.getSimpleName(), field.getName()));
-                    continue;
-                }
-
-                AnnotationValidator av = new AnnotationValidator();
-                av.setField(field);
-                av.setMethod(ReflectionUtil.getGetterMethod(clazz, field));
-                av.setValidators(validators);
-                av.setGroups(groups);
-                annotationValidators.add(av);
-                LOGGER.trace("Annotation-based validation added " + av);
-            }
+            List<AnnotationValidator> annotationValidators = getAllAnnotationValidators(registry, clazz);
 
             if (CollectionUtil.isEmpty(annotationValidators)) {
                 LOGGER.warn(String.format("Annotation-based validation enabled for %s, and to-do validators are empty",
@@ -146,6 +91,89 @@ public class AnnotationValidatorCache {
         } catch (Exception e) {
             LOGGER.error("Failed to add annotation validators " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * 根据注册器以及类获取所有需要被验证的属性，封装为<code>AnnotationValidator</code>列表返回
+     *
+     * @param registry 验证器对象寻找注册器
+     * @param clazz    待验证类定义
+     *
+     * @return <code>AnnotationValidator</code>列表
+     */
+    private static List<AnnotationValidator> getAllAnnotationValidators(Registry registry, Class<?> clazz) {
+        List<AnnotationValidator> annotationValidators = CollectionUtil.createArrayList();
+
+        Field[] fields = ReflectionUtil.getAnnotationFields(clazz, FluentValidate.class);
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            FluentValidate fluentValidateAnnt = ReflectionUtil.getAnnotation(field, FluentValidate.class);
+
+            Class<? extends Validator>[] validatorClasses = fluentValidateAnnt.value();
+            Class<?>[] groups = fluentValidateAnnt.groups();
+            if (validatorClasses == null || validatorClasses.length == 0) {
+                LOGGER.warn(String.format("No validator annotation bound %s#%s", clazz.getSimpleName(),
+                        field.getName()));
+                continue;
+            }
+
+            List<Validator> validators = CollectionUtil.createArrayList(4);
+            for (Class<? extends Validator> validatorClass : validatorClasses) {
+                if (!Validator.class.isAssignableFrom(validatorClass)) {
+                    LOGGER.warn(String.format("Validator annotation class %s is not assignable from %s",
+                            validatorClass.getSimpleName(), Validator.class.getSimpleName()));
+                    continue;
+                }
+                if (!VALIDATOR_MAP.containsKey(validatorClass)) {
+                    List<? extends Validator> validatorsFound = registry.findByType(validatorClass);
+                    if (CollectionUtil.isEmpty(validatorsFound)) {
+                        LOGGER.warn(String.format("Validator annotation class %s not found or init failed for "
+                                + "%s#%s", validatorClass.getSimpleName(), clazz.getSimpleName(), field.getName()));
+                        continue;
+                    }
+                    if (validatorsFound.size() > 1) {
+                        LOGGER.warn(String.format(
+                                "Validator annotation class %s found multiple instances for %s#%s, so the first "
+                                        + "one will be used",
+                                validatorClass.getSimpleName(), clazz.getSimpleName(), field.getName()));
+                    }
+                    VALIDATOR_MAP.putIfAbsent(validatorClass, validatorsFound.get(0));
+                    validators.add(VALIDATOR_MAP.get(validatorClass));
+                    LOGGER.info(String.format("Cached validator %s", validatorClass.getSimpleName()));
+                }
+            }
+
+            if (CollectionUtil.isEmpty(validators)) {
+                LOGGER.warn(String.format("Annotation-based validation enabled but none of the validators is "
+                        + "applicable for %s#%s", clazz.getSimpleName(), field.getName()));
+                continue;
+            }
+
+            AnnotationValidator av = new AnnotationValidator();
+            av.setField(field);
+            av.setMethod(ReflectionUtil.getGetterMethod(clazz, field));
+            av.setValidators(validators);
+            av.setGroups(groups);
+            annotationValidators.add(av);
+            LOGGER.trace("Annotation-based validation added " + av);
+        }
+
+        fields = ReflectionUtil.getAnnotationFields(clazz, FluentValid.class);
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            FluentValid cascadeAnnt = ReflectionUtil.getAnnotation(field, FluentValid.class);
+
+            AnnotationValidator av = new AnnotationValidator();
+            av.setField(field);
+            av.setMethod(ReflectionUtil.getGetterMethod(clazz, field));
+            av.setValidators(null);
+            av.setGroups(null);
+            av.setIsCascade(cascadeAnnt != null);
+            annotationValidators.add(av);
+            LOGGER.trace("Cascade annotation-based validation added " + av);
+        }
+
+        return annotationValidators;
     }
 
 }
