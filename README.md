@@ -744,7 +744,6 @@ public class GarageServiceImpl implements GarageService {
 
 Spring configuration goes like below, it has *GarageServiceImpl* intercepted with *fluentValidateInterceptor* and *fluentValidateInterceptor* has a callback that handles what to do when there is failure or uncaught exception threw.
 
-```
     <bean id="validateCarCallback" class="com.baidu.unbiz.fluentvalidator.demo.callback.ValidateCarCallback"/>
 
     <bean id="fluentValidateInterceptor"
@@ -764,8 +763,7 @@ Spring configuration goes like below, it has *GarageServiceImpl* intercepted wit
             </list>
         </property>
     </bean>
-</beans>
-```
+
 
 *ValidateCarCallback* implementation is shown as below: 
 
