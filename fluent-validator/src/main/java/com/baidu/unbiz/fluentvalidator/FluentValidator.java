@@ -489,7 +489,8 @@ public class FluentValidator {
         } finally {
             GroupingHolder.clean();
             int timeElapsed = (int) (System.currentTimeMillis() - start);
-            LOGGER.debug("End to validate through" + validatorElementList + " costing " + timeElapsed + "ms");
+            LOGGER.debug("End to validate through" + validatorElementList + " costing " + timeElapsed + "ms with "
+                    + "isSuccess=" + result.isSuccess());
             result.setTimeElapsed(timeElapsed);
         }
         return this;
