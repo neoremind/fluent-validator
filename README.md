@@ -725,6 +725,7 @@ public class SpringApplicationContextRegistryTest {
     }
 
 }
+```
 
 ### 4.2 Use FluentValidateInterceptor 
 FluentValidator provides you an useful interceptor to work with your existing Spring framework supported project, so that `FluentValidator` API is no longer needed to perform validation explicitly. What you should do is to focusing on the core business logic stuff and leave the validation work to FluentValidator by using `@FluentValid` annotation on the speicific argument. Examples are shown below:
