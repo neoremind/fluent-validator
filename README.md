@@ -21,7 +21,7 @@ In order to use Fluent Validator within a Maven project, simply add the followin
     	<version>1.0.3</version>
 	</dependency>
 
-*Check out the lastest version on [Maven Central](https://search.maven.org/#search%7Cga%7C1%7Cfluent-validator)*
+*Check out the lastest version on [Maven Central](https://search.maven.org/#search%7Cga%7C1%7Cfluent-validator).*
 
 By default, *org.slf4j:slf4j-api:jar:1.7.7* and *org.slf4j:slf4j-log4j12:jar:1.7.7* are used as logger.
 
