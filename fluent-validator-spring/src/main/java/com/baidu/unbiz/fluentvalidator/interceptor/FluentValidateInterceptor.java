@@ -57,10 +57,13 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
         registry = new SpringApplicationContextRegistry();
         registry.setApplicationContext(applicationContext);
 
-        // init hibernate validator
-        // Locale.setDefault(Locale.ENGLISH);
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        // 如果hibernate validator通过spring配置了，则不进行初始化
+        if (validator == null) {
+            // init hibernate validator
+            // Locale.setDefault(Locale.ENGLISH);
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            validator = factory.getValidator();
+        }
     }
 
     /**
@@ -104,7 +107,7 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
                             LOGGER.debug("Find @FluentValid annotation on index=[" + i + "] parameter and ready to "
                                     + "validate");
 
-                            ComplexResult result = null;
+                            ComplexResult result;
                             if (Collection.class.isAssignableFrom(parameterTypes[i])) {
                                 result = FluentValidator.checkAll().configure(registry)
                                         .onEach((Collection) arguments[i],
@@ -129,7 +132,10 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
                                         .result(toComplex());
                             }
 
-                            LOGGER.debug(result.toString());
+                            if (result != null) {
+                                LOGGER.debug(result.toString());
+                            }
+
                             continue start;
                         }
                     }
@@ -153,4 +159,7 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
         this.applicationContext = applicationContext;
     }
 
+    public void setValidator(Validator validator) {
+        this.validator = validator;
+    }
 }

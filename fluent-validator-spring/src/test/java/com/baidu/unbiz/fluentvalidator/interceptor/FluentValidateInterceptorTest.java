@@ -1,7 +1,11 @@
 package com.baidu.unbiz.fluentvalidator.interceptor;
 
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -63,25 +67,46 @@ public class FluentValidateInterceptorTest extends AbstractJUnit4SpringContextTe
         carService.addCars(cars, 9d);
     }
 
-    @Test(expected = CarException.class)
+    @Test
     public void testAddCarNegative() {
-        Car car = getValidCar();
-        car.setLicensePlate("BEIJING123");
-        carService.addCar(car);
+        try {
+            Car car = getValidCar();
+            car.setLicensePlate("BEIJING123");
+            carService.addCar(car);
+        } catch (CarException e) {
+            System.out.println(e.getMessage());
+            assertThat(e.getMessage(), Matchers.is("License is not valid, invalid value=BEIJING123"));
+            return;
+        }
+        fail();
     }
 
-    @Test(expected = CarException.class)
+    @Test
     public void testAddCarNegative2() {
-        Car car = getValidCar();
-        car.setLicensePlate("XXXX");
-        carService.addCar(car);
+        try {
+            Car car = getValidCar();
+            car.setLicensePlate("XXXX");
+            carService.addCar(car);
+        } catch (CarException e) {
+            System.out.println(e.getMessage());
+            assertThat(e.getCause().getMessage(), Matchers.is("Call Rpc failed"));
+            return;
+        }
+        fail();
     }
 
-    @Test(expected = CarException.class)
+    @Test
     public void testAddCarJsr303() {
-        Car car = getValidCar();
-        car.setManufacturer("");
-        carService.addCar(car);
+        try {
+            Car car = getValidCar();
+            car.setManufacturer("");
+            carService.addCar(car);
+        } catch (CarException e) {
+            System.out.println(e.getMessage());
+            assertThat(e.getMessage().contains("{manufacturer}"), Matchers.is(true));
+            return;
+        }
+        fail();
     }
 
     private Car getValidCar() {
