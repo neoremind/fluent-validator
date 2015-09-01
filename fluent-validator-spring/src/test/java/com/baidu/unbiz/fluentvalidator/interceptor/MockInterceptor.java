@@ -10,6 +10,8 @@ import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint;
 import org.springframework.stereotype.Component;
 
 /**
+ * 默认情况，使用AspectJ AOP，被代理的对象会在BeanNameAutoProxyCreator里面作为一个cglib代理处理过的target而存在
+ *
  * @author zhangxu
  */
 @Component
