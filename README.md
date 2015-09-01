@@ -18,7 +18,7 @@ In order to use Fluent Validator within a Maven project, simply add the followin
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator</artifactId>
-    	<version>1.0.1</version>
+    	<version>1.0.3</version>
 	</dependency>
 	
 By default, *org.slf4j:slf4j-api:jar:1.7.7* and *org.slf4j:slf4j-log4j12:jar:1.7.7* are used as logger.
@@ -521,7 +521,7 @@ Add the following dependency to your pom.xml.
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator-jsr303</artifactId>
-    	<version>1.0.1</version>
+    	<version>1.0.3</version>
 	</dependency>
 	
 By default, the following dependencies are what fluent-validator-jsr303 will bring into your project. 
@@ -662,7 +662,7 @@ To use `SpringApplicationContextRegistry`, add the following dependency to your 
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator-spring</artifactId>
-    	<version>1.0.1</version>
+    	<version>1.0.3</version>
 	</dependency>
 	
 By default, the following dependencies are what fluent-validator-spring will bring into your project. 
