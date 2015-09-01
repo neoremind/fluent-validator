@@ -20,7 +20,9 @@ In order to use Fluent Validator within a Maven project, simply add the followin
     	<artifactId>fluent-validator</artifactId>
     	<version>1.0.3</version>
 	</dependency>
-	
+
+*Check out the lastest version on [Maven Central](https://search.maven.org/#search%7Cga%7C1%7Cfluent-validator)*
+
 By default, *org.slf4j:slf4j-api:jar:1.7.7* and *org.slf4j:slf4j-log4j12:jar:1.7.7* are used as logger.
 
 You can switch to other slf4j implementation such as logback and exclude log4j like below: 
@@ -38,7 +40,7 @@ You can switch to other slf4j implementation such as logback and exclude log4j l
 </dependency>
 ```
 
-*Currently GA version has been released but the snapshot version is also able to work normally. Please add the
+*Snapshot version is also able to work normally. Please add the
 following repository to your repositories if you are using the snapshot version. See more on
 [sonatype](https://oss.sonatype.org/content/repositories/snapshots/com/baidu/unbiz/).*
 
