@@ -5,6 +5,7 @@ import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toComplex;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.List;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -24,11 +25,13 @@ import com.baidu.unbiz.fluentvalidator.ComplexResult;
 import com.baidu.unbiz.fluentvalidator.DefaulValidateCallback;
 import com.baidu.unbiz.fluentvalidator.FluentValidator;
 import com.baidu.unbiz.fluentvalidator.ValidateCallback;
+import com.baidu.unbiz.fluentvalidator.ValidatorChain;
 import com.baidu.unbiz.fluentvalidator.annotation.FluentValid;
 import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
 import com.baidu.unbiz.fluentvalidator.jsr303.HibernateSupportedValidator;
 import com.baidu.unbiz.fluentvalidator.registry.impl.SpringApplicationContextRegistry;
 import com.baidu.unbiz.fluentvalidator.util.ArrayUtil;
+import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 import com.baidu.unbiz.fluentvalidator.util.Preconditions;
 import com.baidu.unbiz.fluentvalidator.util.ReflectionUtil;
 
@@ -41,10 +44,19 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FluentValidateInterceptor.class);
 
+    /**
+     * Spring容器上下文
+     */
     private ApplicationContext applicationContext;
 
+    /**
+     * 验证回调
+     */
     private ValidateCallback callback = new DefaulValidateCallback();
 
+    /**
+     * 验证器查找registry
+     */
     private SpringApplicationContextRegistry registry;
 
     /**
@@ -74,7 +86,9 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
      * <li>3. 数组对象，onEach验证</li>
      * </ul>
      * <p/>
-     * 注：另外hibernate validator优先校验
+     * 注：<br/>
+     * 1) 如果参数上的注解{@link FluentValid}设置了value，则value上的验证器先验证。
+     * 2) hibernate validator次先校验，然后才是级联验证
      *
      * @param invocation 调用
      *
@@ -104,29 +118,36 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
                     }
                     for (int j = 0; j < paramAnnotation.length; i++) {
                         if (paramAnnotation[j].annotationType() == FluentValid.class) {
-                            LOGGER.debug("Find @FluentValid annotation on index=[" + i + "] parameter and ready to "
+                            LOGGER.debug("Find @FluentValid annotation on index[" + i + "] parameter and ready to "
                                     + "validate");
+                            ValidatorChain addOnValidatorChain =
+                                    getAddOnValidatorChain((FluentValid) paramAnnotation[j]);
 
                             ComplexResult result;
                             if (Collection.class.isAssignableFrom(parameterTypes[i])) {
                                 result = FluentValidator.checkAll().configure(registry)
+                                        .on(arguments[i], addOnValidatorChain)
                                         .onEach((Collection) arguments[i],
                                                 new HibernateSupportedValidator().setHiberanteValidator(validator))
+                                        .when(arguments[i] != null)
                                         .onEach((Collection) arguments[i])
                                         .doValidate(callback)
                                         .result(toComplex());
                             } else if (parameterTypes[i].isArray()) {
                                 result = FluentValidator.checkAll().configure(registry)
+                                        .on(arguments[i], addOnValidatorChain)
                                         .onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]),
                                                 new HibernateSupportedValidator().setHiberanteValidator(validator))
-
+                                        .when(arguments[i] != null)
                                         .onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]))
                                         .doValidate(callback)
                                         .result(toComplex());
                             } else {
                                 result = FluentValidator.checkAll().configure(registry)
+                                        .on(arguments[i], addOnValidatorChain)
                                         .on(arguments[i],
                                                 new HibernateSupportedValidator().setHiberanteValidator(validator))
+                                        .when(arguments[i] != null)
                                         .on(arguments[i])
                                         .doValidate(callback)
                                         .result(toComplex());
@@ -148,6 +169,44 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
         } catch (Throwable throwable) {
             throw throwable;
         }
+    }
+
+    /**
+     * 将需要额外验证的验证器封装为{@link ValidatorChain}
+     *
+     * @param fluentValid 参数上的注解装饰
+     *
+     * @return 验证器链
+     */
+    private ValidatorChain getAddOnValidatorChain(FluentValid fluentValid) {
+        ValidatorChain chain = new ValidatorChain();
+        chain.setValidators(getAddOnValidators(fluentValid));
+        return chain;
+    }
+
+    /**
+     * 将参数注解上的{@link FluentValid}内的<code>value</code>设置的{@link com.baidu.unbiz.fluentvalidator.Validator}在上下文中查询，返回列表
+     *
+     * @param fluentValid 参数上的注解装饰
+     *
+     * @return 验证器列表
+     */
+    private List<com.baidu.unbiz.fluentvalidator.Validator> getAddOnValidators(FluentValid fluentValid) {
+        Class<? extends com.baidu.unbiz.fluentvalidator.Validator>[] addOnValidatorClasses;
+        List<com.baidu.unbiz.fluentvalidator.Validator> addOnValidators = null;
+        if (!ArrayUtil.isEmpty(fluentValid.value())) {
+            LOGGER.debug(String.format("{} additional validators found"), fluentValid.value().length);
+            addOnValidatorClasses = fluentValid.value();
+            addOnValidators = CollectionUtil.createArrayList(fluentValid.value().length);
+            for (Class<? extends com.baidu.unbiz.fluentvalidator.Validator> addOnValidatorClass :
+                    addOnValidatorClasses) {
+                List<?> beans = registry.findByType(addOnValidatorClass);
+                if (!CollectionUtil.isEmpty(beans)) {
+                    addOnValidators.add((com.baidu.unbiz.fluentvalidator.Validator) beans.get(0));
+                }
+            }
+        }
+        return addOnValidators;
     }
 
     public void setCallback(ValidateCallback callback) {

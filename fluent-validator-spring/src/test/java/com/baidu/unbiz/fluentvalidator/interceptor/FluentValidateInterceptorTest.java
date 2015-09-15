@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 
 import com.baidu.unbiz.fluentvalidator.dto.Car;
+import com.baidu.unbiz.fluentvalidator.error.CarError;
 import com.baidu.unbiz.fluentvalidator.exception.CarException;
 import com.baidu.unbiz.fluentvalidator.service.CarService;
 import com.google.common.collect.Lists;
@@ -109,6 +110,38 @@ public class FluentValidateInterceptorTest extends AbstractJUnit4SpringContextTe
         fail();
     }
 
+    @Test
+    public void testAddCarNull() {
+        try {
+            List<Car> cars = getValidCars();
+            carService.addCarsWithAddOnChecks("abc", cars);
+
+            cars = null;
+            cars = carService.addCarsWithAddOnChecks("abc", cars);
+        } catch (CarException e) {
+            System.out.println(e.getMessage());
+            assertThat(e.getMessage(), Matchers.is(CarError.CAR_NULL.msg()));
+            return;
+        }
+        fail();
+    }
+
+    @Test
+    public void testAddCarSizeExceed() {
+        try {
+            List<Car> cars = getValidCars();
+            carService.addCarsWithAddOnChecks("abc", cars);
+
+            cars = getManyValidCars();
+            carService.addCarsWithAddOnChecks("abc", cars);
+        } catch (CarException e) {
+            System.out.println(e.getMessage());
+            assertThat(e.getMessage(), Matchers.is(CarError.CAR_SIZE_EXCEED.msg()));
+            return;
+        }
+        fail();
+    }
+
     private Car getValidCar() {
         return new Car("BMW", "LA1234", 5);
     }
@@ -117,6 +150,14 @@ public class FluentValidateInterceptorTest extends AbstractJUnit4SpringContextTe
         return Lists.newArrayList(new Car("BMW", "LA1234", 5),
                 new Car("Benz", "NYCuuu", 2),
                 new Car("Chevrolet", "LA1234", 7));
+    }
+
+    private List<Car> getManyValidCars() {
+        List<Car> ret = Lists.newArrayList();
+        for (int i = 0; i < 50; i++) {
+            ret.add(new Car("BMW", "LA1234", 5));
+        }
+        return ret;
     }
 
 }

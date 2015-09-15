@@ -2,6 +2,7 @@ package com.baidu.unbiz.fluentvalidator.demo.service.impl;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -59,6 +60,23 @@ public class GarageServiceImpl2Test extends AbstractJUnit4SpringContextTests {
             assertThat(e.getClass().getName(), is(CarException.class.getName()));
             assertThat(e.getMessage(), is(String.format(CarError.LICENSEPLATE_ERROR.msg(), "xxx123")));
         }
+    }
+
+    @Test
+    public void testAddCarsNegativeNull() {
+        try {
+            garageService.addCars(null);
+        } catch (CarException e) {
+            assertThat(e.getClass().getName(), is(CarException.class.getName()));
+            assertThat(e.getMessage(), is("Cars is empty"));
+            return;
+        }
+        fail();
+    }
+
+    @Test
+    public void testAddCarsPositiveNull() {
+        garageService.addCar(null);
     }
 
     @Test

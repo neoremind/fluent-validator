@@ -3,6 +3,8 @@ package com.baidu.unbiz.fluentvalidator.demo.service.impl;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import com.baidu.unbiz.fluentvalidator.demo.dto.Car;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Garage;
 import com.baidu.unbiz.fluentvalidator.demo.rpc.ManufacturerService;
 import com.baidu.unbiz.fluentvalidator.demo.service.GarageService2;
+import com.baidu.unbiz.fluentvalidator.demo.validator.NotEmptyValidator;
 
 /**
  * 使用拦截器做验证
@@ -20,11 +23,8 @@ import com.baidu.unbiz.fluentvalidator.demo.service.GarageService2;
 @Service
 public class GarageServiceImpl2 implements GarageService2 {
 
-    @Resource
-    private ManufacturerService manufacturerService;
-
     @Override
-    public List<Car> addCars(@FluentValid List<Car> cars) {
+    public List<Car> addCars(@FluentValid(NotEmptyValidator.class) List<Car> cars) {
         System.out.println(cars);
         return cars;
     }

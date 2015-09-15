@@ -12,12 +12,14 @@ public interface CarService {
 
     Car addCar(Car car);
 
-    Car addCar(int x, @FluentValid Car car);
+    Car addCar(int x, Car car);
 
-    Car addCar(@FluentValid String x, Long y, @FluentValid Car car);
+    Car addCar(String x, Long y, Car car);
 
-    List<Car> addCars(String x, @FluentValid List<Car> cars);
+    List<Car> addCars(String x, List<Car> cars);
 
     Car[] addCars(Car[] cars, Double d);
+
+    List<Car> addCarsWithAddOnChecks(String x, List<Car> cars);
 
 }

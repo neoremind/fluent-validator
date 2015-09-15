@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.baidu.unbiz.fluentvalidator.Validator;
+
 /**
  * 与Spring AOP配合，作用于参数用于表示验证。
  * <p/>
@@ -17,5 +19,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface FluentValid {
+
+    /**
+     * 验证器列表，接受{@link Validator}实现类的数组，除了级联外需要处理的额外验证
+     */
+    Class<? extends Validator>[] value() default {};
 
 }

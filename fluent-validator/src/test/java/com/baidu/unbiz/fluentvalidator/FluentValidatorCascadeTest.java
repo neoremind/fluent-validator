@@ -13,6 +13,7 @@ import com.baidu.unbiz.fluentvalidator.dto.Car;
 import com.baidu.unbiz.fluentvalidator.dto.Garage;
 import com.baidu.unbiz.fluentvalidator.error.CarError;
 import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
+import com.baidu.unbiz.fluentvalidator.validator.NotNullValidator;
 import com.google.common.collect.Lists;
 
 /**
@@ -136,6 +137,41 @@ public class FluentValidatorCascadeTest {
         assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
         assertThat(ret.getErrors().get(0), is(String.format(CarError.MANUFACTURER_ERROR.msg(), "XXX")));
+    }
+
+    @Test
+    public void testGarageNegativeNullListCar() {
+        Garage garage = getGarage();
+        garage.setCollectionCar(null);
+        garage.setArrayCar(null);
+        garage.setSingleCar(null);
+
+        Result ret = FluentValidator.checkAll()
+                .on(garage)
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(true));
+    }
+
+    @Test
+    public void testGarageNegativeNull() {
+        Garage garage = null;
+
+        Result ret = FluentValidator.checkAll()
+                .on(garage)
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(true));
+
+        ret = FluentValidator.checkAll()
+                .on(garage, new NotNullValidator())
+                .on(garage)
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(false));
     }
 
     private Garage getGarage() {

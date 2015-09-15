@@ -3,13 +3,17 @@ package com.baidu.unbiz.fluentvalidator;
 import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toSimple;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
 import org.junit.Test;
 
 import com.baidu.unbiz.fluentvalidator.dto.Car;
+import com.baidu.unbiz.fluentvalidator.dto.Person;
+import com.baidu.unbiz.fluentvalidator.dto.Person2;
 import com.baidu.unbiz.fluentvalidator.error.CarError;
+import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
 import com.baidu.unbiz.fluentvalidator.group.CheckManufacturer;
 import com.baidu.unbiz.fluentvalidator.registry.impl.SimpleRegistry;
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
@@ -204,6 +208,37 @@ public class FluentValidatorAnnotationBasedTest {
         assertThat(ret.isSuccess(), is(true));
     }
 
+    @Test
+    public void testAnnotationEmpty() {
+        Person person = getValidPerson();
+
+        Result ret = FluentValidator.checkAll()
+                .configure(new SimpleRegistry())
+                .on(person)
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(true));
+    }
+
+    @Test
+    public void testAnnotationTypeNotMatch() {
+        Person2 person = getValidPerson2();
+
+        try {
+            Result ret = FluentValidator.checkAll()
+                    .configure(new SimpleRegistry())
+                    .on(person)
+                    .doValidate()
+                    .result(toSimple());
+            System.out.println(ret);
+        } catch (RuntimeValidateException e) {
+            assertThat(e.getCause().getClass().getSimpleName(), is("ClassCastException"));
+            return;
+        }
+        fail();
+    }
+
     private Car getValidCar() {
         return new Car("BMW", "LA1234", 5);
     }
@@ -212,5 +247,13 @@ public class FluentValidatorAnnotationBasedTest {
         return Lists.newArrayList(new Car("BMW", "LA1234", 5),
                 new Car("Benz", "NYCuuu", 2),
                 new Car("Chevrolet", "LA1234", 7));
+    }
+
+    private Person getValidPerson() {
+        return new Person("Jack", "Johns", 5);
+    }
+
+    private Person2 getValidPerson2() {
+        return new Person2("Jack", "Johns", 5);
     }
 }

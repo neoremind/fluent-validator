@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import com.baidu.unbiz.fluentvalidator.annotation.FluentValid;
 import com.baidu.unbiz.fluentvalidator.dto.Car;
 import com.baidu.unbiz.fluentvalidator.service.CarService;
+import com.baidu.unbiz.fluentvalidator.validator.NotNullValidator;
+import com.baidu.unbiz.fluentvalidator.validator.SizeValidator;
 
 /**
  * @author zhangxu
@@ -40,6 +42,13 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public Car[] addCars(@FluentValid Car[] cars, Double d) {
+        System.out.println("Come on! " + cars);
+        return cars;
+    }
+
+    @Override
+    public List<Car> addCarsWithAddOnChecks(String x, @FluentValid({NotNullValidator.class, SizeValidator.class})
+    List<Car> cars) {
         System.out.println("Come on! " + cars);
         return cars;
     }
