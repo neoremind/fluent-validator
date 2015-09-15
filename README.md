@@ -803,6 +803,15 @@ Test case is shown as below:
         }
     }
 
+Moreover, one can configure some add-on validators within the @FluentValid annotation upon specific arguments, example is shown as below as NotEmptyValidator and SizeNotExceedValidator will be performed on cars beforehand, so that one can check if the cars argument violates not null or size limitation, all other validation works will be executed afterwards.
+ 
+    @Override
+    public List<Car> addCars(@FluentValid(NotEmptyValidator.class, SizeNotExceedValidator.class) List<Car> cars) {
+        // do biz here...
+        return cars;
+    }
+
+
 
 ## Examples
 
