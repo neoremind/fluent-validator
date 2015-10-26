@@ -15,6 +15,7 @@ import com.baidu.unbiz.fluentvalidator.dto.Car;
 import com.baidu.unbiz.fluentvalidator.error.CarError;
 import com.baidu.unbiz.fluentvalidator.exception.CarException;
 import com.baidu.unbiz.fluentvalidator.service.CarService;
+import com.baidu.unbiz.fluentvalidator.support.MessageSupport;
 import com.google.common.collect.Lists;
 
 /**
@@ -136,7 +137,7 @@ public class FluentValidateInterceptorTest extends AbstractJUnit4SpringContextTe
             carService.addCarsWithAddOnChecks("abc", cars);
         } catch (CarException e) {
             System.out.println(e.getMessage());
-            assertThat(e.getMessage(), Matchers.is(CarError.CAR_SIZE_EXCEED.msg()));
+            assertThat(e.getMessage(), Matchers.is(MessageSupport.getText(CarError.CAR_SIZE_EXCEED.msg())));
             return;
         }
         fail();

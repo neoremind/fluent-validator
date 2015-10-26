@@ -1,7 +1,6 @@
 package com.baidu.unbiz.fluentvalidator.demo.service.impl;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.AnyOf.anyOf;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -25,6 +24,7 @@ import com.baidu.unbiz.fluentvalidator.demo.exception.CarException;
 import com.baidu.unbiz.fluentvalidator.demo.exception.RpcException;
 import com.baidu.unbiz.fluentvalidator.demo.rpc.ManufacturerService;
 import com.baidu.unbiz.fluentvalidator.demo.service.GarageService;
+import com.baidu.unbiz.fluentvalidator.support.MessageSupport;
 import com.google.common.collect.Lists;
 
 /**
@@ -125,7 +125,7 @@ public class GarageServiceImplTest {
         System.out.println(result);
         assertThat(result.isSuccess(), is(false));
         assertThat(result.getErrorNumber(), is(1));
-        assertThat(result.getErrors().get(0).getErrorMsg(), is("{name} length is not valid"));
+        assertThat(result.getErrors().get(0).getErrorMsg(), is("{name} garage name length is invalid"));
     }
 
     @Test
@@ -151,7 +151,7 @@ public class GarageServiceImplTest {
         System.out.println(result);
         assertThat(result.isSuccess(), is(false));
         assertThat(result.getErrorNumber(), is(1));
-        assertThat(result.getErrors().get(0).getErrorMsg(), is("Car number exceeds limit, max available num is 50"));
+        assertThat(result.getErrors().get(0).getErrorMsg(), is(MessageSupport.getText("car.size.exceed", 50)));
     }
 
     @Test

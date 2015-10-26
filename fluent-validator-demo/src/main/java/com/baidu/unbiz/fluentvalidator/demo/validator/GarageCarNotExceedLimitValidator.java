@@ -5,8 +5,8 @@ import com.baidu.unbiz.fluentvalidator.Validator;
 import com.baidu.unbiz.fluentvalidator.ValidatorContext;
 import com.baidu.unbiz.fluentvalidator.ValidatorHandler;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Garage;
-import com.baidu.unbiz.fluentvalidator.demo.error.CarError;
 import com.baidu.unbiz.fluentvalidator.demo.error.GarageError;
+import com.baidu.unbiz.fluentvalidator.support.MessageSupport;
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 
 /**
@@ -21,7 +21,8 @@ public class GarageCarNotExceedLimitValidator extends ValidatorHandler<Garage> i
         if (!CollectionUtil.isEmpty(t.getCarList())) {
             if (t.getCarList().size() > MAX_CAR_NUM) {
                 context.addError(
-                        ValidationError.create(String.format(GarageError.CAR_NUM_EXCEED_LIMIT.msg(), MAX_CAR_NUM))
+                        ValidationError.create(MessageSupport.getText(GarageError.CAR_NUM_EXCEED_LIMIT.msg(),
+                                MAX_CAR_NUM))
                                 .setErrorCode(GarageError.CAR_NUM_EXCEED_LIMIT.code())
                                 .setField("garage.cars")
                                 .setInvalidValue(t.getCarList().size()));

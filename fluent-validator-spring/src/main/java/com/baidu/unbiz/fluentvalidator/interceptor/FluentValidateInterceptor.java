@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -32,6 +33,7 @@ import com.baidu.unbiz.fluentvalidator.jsr303.HibernateSupportedValidator;
 import com.baidu.unbiz.fluentvalidator.registry.impl.SpringApplicationContextRegistry;
 import com.baidu.unbiz.fluentvalidator.util.ArrayUtil;
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
+import com.baidu.unbiz.fluentvalidator.util.LocaleUtil;
 import com.baidu.unbiz.fluentvalidator.util.Preconditions;
 import com.baidu.unbiz.fluentvalidator.util.ReflectionUtil;
 
@@ -64,6 +66,11 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
      */
     private Validator validator;
 
+    /**
+     * 语言地区，主要为Hibernate Validator使用
+     */
+    private String locale;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         registry = new SpringApplicationContextRegistry();
@@ -72,10 +79,14 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
         // 如果hibernate validator通过spring配置了，则不进行初始化
         if (validator == null) {
             // init hibernate validator
-            // Locale.setDefault(Locale.ENGLISH);
+            if (locale != null) {
+                Locale.setDefault(LocaleUtil.parseLocale(locale));
+            }
             ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             validator = factory.getValidator();
         }
+
+        LOGGER.info("Place " + this.getClass().getSimpleName() + " as an interceptor");
     }
 
     /**
@@ -220,5 +231,9 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
 
     public void setValidator(Validator validator) {
         this.validator = validator;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 }

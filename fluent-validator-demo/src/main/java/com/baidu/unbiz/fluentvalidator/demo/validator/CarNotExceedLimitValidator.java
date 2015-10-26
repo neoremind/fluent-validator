@@ -7,9 +7,8 @@ import com.baidu.unbiz.fluentvalidator.Validator;
 import com.baidu.unbiz.fluentvalidator.ValidatorContext;
 import com.baidu.unbiz.fluentvalidator.ValidatorHandler;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Car;
-import com.baidu.unbiz.fluentvalidator.demo.dto.Garage;
 import com.baidu.unbiz.fluentvalidator.demo.error.GarageError;
-import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
+import com.baidu.unbiz.fluentvalidator.support.MessageSupport;
 
 /**
  * @author zhangxu
@@ -22,7 +21,8 @@ public class CarNotExceedLimitValidator extends ValidatorHandler<List<Car>> impl
     public boolean validate(ValidatorContext context, List<Car> cars) {
         if (cars.size() > MAX_CAR_NUM) {
             context.addError(
-                    ValidationError.create(String.format(GarageError.CAR_NUM_EXCEED_LIMIT.msg(), MAX_CAR_NUM))
+                    ValidationError.create(MessageSupport.getText(GarageError.CAR_NUM_EXCEED_LIMIT.msg(),
+                            MAX_CAR_NUM))
                             .setErrorCode(GarageError.CAR_NUM_EXCEED_LIMIT.code())
                             .setField("garage.cars")
                             .setInvalidValue(cars.size()));

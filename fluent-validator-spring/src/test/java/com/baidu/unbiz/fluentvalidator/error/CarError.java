@@ -8,7 +8,7 @@ public enum CarError {
     LICENSEPLATE_ERROR("License is not valid, invalid value=%s"),
     SEATCOUNT_ERROR("Seat count is not valid, invalid value=%s"),
     CAR_NULL("Car should not be null"),
-    CAR_SIZE_EXCEED("Car size exceeds");
+    CAR_SIZE_EXCEED("car.size.exceed");
 
     CarError(String msg) {
         this.msg = msg;

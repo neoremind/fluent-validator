@@ -24,7 +24,7 @@ public class Garage {
 
     @NotNull
     @Pattern(regexp = "[0-9a-zA-Z]+")
-    @Length(message = "length is not valid", min = 5)
+    @Length(message = "{garage.name.length}", min = 5)
     private String name;
 
     @Valid

@@ -9,15 +9,9 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.baidu.unbiz.fluentvalidator.ComplexResult;
-import com.baidu.unbiz.fluentvalidator.Result;
-import com.baidu.unbiz.fluentvalidator.demo.Application;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Car;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Garage;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Owner;
@@ -25,8 +19,8 @@ import com.baidu.unbiz.fluentvalidator.demo.error.CarError;
 import com.baidu.unbiz.fluentvalidator.demo.exception.CarException;
 import com.baidu.unbiz.fluentvalidator.demo.exception.RpcException;
 import com.baidu.unbiz.fluentvalidator.demo.rpc.ManufacturerService;
-import com.baidu.unbiz.fluentvalidator.demo.service.GarageService;
 import com.baidu.unbiz.fluentvalidator.demo.service.GarageService2;
+import com.baidu.unbiz.fluentvalidator.support.MessageSupport;
 import com.google.common.collect.Lists;
 
 /**
@@ -138,7 +132,7 @@ public class GarageServiceImpl2Test extends AbstractJUnit4SpringContextTests {
             garageService.buildGarage(garage);
         } catch (CarException e) {
             assertThat(e.getClass().getName(), is(CarException.class.getName()));
-            assertThat(e.getMessage(), is("{name} length is not valid"));
+            assertThat(e.getMessage(), is("{name} 车库名称长度非法"));
         }
     }
 
@@ -150,6 +144,7 @@ public class GarageServiceImpl2Test extends AbstractJUnit4SpringContextTests {
             garage.getOwner().setName("hh");  // fail fast
             garageService.buildGarage(garage);
         } catch (CarException e) {
+            System.out.println(e.getMessage());
             assertThat(e.getClass().getName(), is(CarException.class.getName()));
         }
     }
@@ -166,7 +161,7 @@ public class GarageServiceImpl2Test extends AbstractJUnit4SpringContextTests {
             garageService.buildGarage(garage);
         } catch (CarException e) {
             assertThat(e.getClass().getName(), is(CarException.class.getName()));
-            assertThat(e.getMessage(), is("Car number exceeds limit, max available num is 50"));
+            assertThat(e.getMessage(), is(MessageSupport.getText("car.size.exceed", 50)));
         }
     }
 

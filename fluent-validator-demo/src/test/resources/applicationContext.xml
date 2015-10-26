@@ -12,11 +12,27 @@
     <context:annotation-config/>
     <context:component-scan base-package="com.baidu.unbiz"/>
 
+    <bean id="messageSource"
+          class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>error-message</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="messageSupport"
+          class="com.baidu.unbiz.fluentvalidator.support.MessageSupport">
+        <property name="messageSource" ref="messageSource"/>
+        <property name="locale" value="zh_CN"/>
+    </bean>
+
     <bean id="validateCarCallback" class="com.baidu.unbiz.fluentvalidator.demo.callback.ValidateCarCallback"/>
 
     <bean id="fluentValidateInterceptor"
           class="com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor">
         <property name="callback" ref="validateCarCallback"/>
+        <property name="locale" value="zh_CN"/>
     </bean>
 
     <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">

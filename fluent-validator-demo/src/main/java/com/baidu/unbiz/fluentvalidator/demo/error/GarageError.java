@@ -5,7 +5,7 @@ package com.baidu.unbiz.fluentvalidator.demo.error;
  */
 public enum GarageError {
 
-    CAR_NUM_EXCEED_LIMIT(900, "Car number exceeds limit, max available num is %s");
+    CAR_NUM_EXCEED_LIMIT(900, "car.size.exceed");
 
     GarageError(int code, String msg) {
         this.code = code;

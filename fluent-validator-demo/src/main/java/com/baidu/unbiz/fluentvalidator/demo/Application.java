@@ -15,12 +15,15 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
 import com.baidu.unbiz.fluentvalidator.registry.impl.SpringApplicationContextRegistry;
+import com.baidu.unbiz.fluentvalidator.support.MessageSupport;
 
 /**
  * @author zhangxu
@@ -31,6 +34,21 @@ import com.baidu.unbiz.fluentvalidator.registry.impl.SpringApplicationContextReg
 @Configuration
 @Aspect
 public class Application {
+
+    @Bean
+    MessageSource messageSource() {
+        ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
+        resourceBundleMessageSource.setBasename("error-message");
+        return resourceBundleMessageSource;
+    }
+
+    @Bean
+    MessageSupport messageSupport(MessageSource messageSource) {
+        MessageSupport messageSupport = new MessageSupport();
+        messageSupport.setLocale("zh_CN");
+        messageSupport.setMessageSource(messageSource);
+        return messageSupport;
+    }
 
     @Bean
     SpringApplicationContextRegistry springApplicationContextRegistry(ApplicationContext applicationContext) {
@@ -50,7 +68,7 @@ public class Application {
 
     @Bean
     public Validator hibernateValidator() {
-        Locale.setDefault(Locale.ENGLISH);
+        Locale.setDefault(Locale.US);
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         return factory.getValidator();
     }
