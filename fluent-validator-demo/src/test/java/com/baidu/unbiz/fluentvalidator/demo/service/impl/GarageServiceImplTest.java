@@ -63,7 +63,6 @@ public class GarageServiceImplTest {
 
     @Test
     @Ignore
-    //TODO
     public void testAddCarsUncaughtException() {
         try {
             manufacturerService.setIsMockFail(true);
@@ -125,7 +124,7 @@ public class GarageServiceImplTest {
         System.out.println(result);
         assertThat(result.isSuccess(), is(false));
         assertThat(result.getErrorNumber(), is(1));
-        assertThat(result.getErrors().get(0).getErrorMsg(), is("{name} garage name length is invalid"));
+        assertThat(result.getErrors().get(0).getErrorMsg(), is("garage name length is invalid"));
     }
 
     @Test

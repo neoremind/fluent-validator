@@ -12,7 +12,7 @@ import com.baidu.unbiz.fluentvalidator.validator.element.ValidatorElementList;
  * @author zhangxu
  * @see ValidateCallback
  */
-public class DefaulValidateCallback implements ValidateCallback {
+public class DefaultValidateCallback implements ValidateCallback {
 
     @Override
     public void onSuccess(ValidatorElementList validatorElementList) {

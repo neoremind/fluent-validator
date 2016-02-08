@@ -23,7 +23,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import com.baidu.unbiz.fluentvalidator.ComplexResult;
-import com.baidu.unbiz.fluentvalidator.DefaulValidateCallback;
+import com.baidu.unbiz.fluentvalidator.DefaultValidateCallback;
 import com.baidu.unbiz.fluentvalidator.FluentValidator;
 import com.baidu.unbiz.fluentvalidator.ValidateCallback;
 import com.baidu.unbiz.fluentvalidator.ValidatorChain;
@@ -31,6 +31,7 @@ import com.baidu.unbiz.fluentvalidator.annotation.FluentValid;
 import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
 import com.baidu.unbiz.fluentvalidator.jsr303.HibernateSupportedValidator;
 import com.baidu.unbiz.fluentvalidator.registry.impl.SpringApplicationContextRegistry;
+import com.baidu.unbiz.fluentvalidator.support.FluentValidatorPostProcessor;
 import com.baidu.unbiz.fluentvalidator.util.ArrayUtil;
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 import com.baidu.unbiz.fluentvalidator.util.LocaleUtil;
@@ -54,12 +55,22 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
     /**
      * 验证回调
      */
-    private ValidateCallback callback = new DefaulValidateCallback();
+    private ValidateCallback callback = new DefaultValidateCallback();
 
     /**
      * 验证器查找registry
      */
     private SpringApplicationContextRegistry registry;
+
+    /**
+     * FluentValidator后置处理
+     * <p/>
+     * 一般情况用不到，除非需要自己在FluentValidator中加入一些操作，例如
+     * {@link FluentValidator#putAttribute2Context(String, Object)}
+     * <p/>
+     * 这里是做扩展使用的
+     */
+    private FluentValidatorPostProcessor fluentValidatorPostProcessor;
 
     /**
      * hibernate validator
@@ -70,6 +81,13 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
      * 语言地区，主要为Hibernate Validator使用
      */
     private String locale;
+
+    /**
+     * 如果是hibernate validator验证注解的错误，统一存在一个error code
+     * <p/>
+     * 如果是{@link com.baidu.unbiz.fluentvalidator.Validator}的则可以自定义error code
+     */
+    private int hibernateDefaultErrorCode;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -127,37 +145,53 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
                     if (ArrayUtil.isEmpty(paramAnnotation)) {
                         continue start;
                     }
-                    for (int j = 0; j < paramAnnotation.length; i++) {
+                    for (int j = 0; j < paramAnnotation.length; j++) {
                         if (paramAnnotation[j].annotationType() == FluentValid.class) {
                             LOGGER.debug("Find @FluentValid annotation on index[" + i + "] parameter and ready to "
-                                    + "validate");
+                                    + "validate for method " + implMethod);
                             ValidatorChain addOnValidatorChain =
                                     getAddOnValidatorChain((FluentValid) paramAnnotation[j]);
+                            Class<?>[] groups = ((FluentValid) paramAnnotation[j]).groups();
+                            Class<?>[] excludeGroups = ((FluentValid) paramAnnotation[j]).excludeGroups();
+                            boolean isFailFast = ((FluentValid) paramAnnotation[j]).isFailFast();
 
+                            FluentValidator fluentValidator = FluentValidator.checkAll(groups)
+                                    .setExcludeGroups(excludeGroups)
+                                    .configure(registry)
+                                    .setIsFailFast(isFailFast);
+                            if (fluentValidatorPostProcessor != null) {
+                                fluentValidatorPostProcessor.postProcessBeforeDoValidate(fluentValidator, invocation);
+                            }
                             ComplexResult result;
                             if (Collection.class.isAssignableFrom(parameterTypes[i])) {
-                                result = FluentValidator.checkAll().configure(registry)
+                                result = fluentValidator
                                         .on(arguments[i], addOnValidatorChain)
                                         .onEach((Collection) arguments[i],
-                                                new HibernateSupportedValidator().setHiberanteValidator(validator))
+                                                new HibernateSupportedValidator()
+                                                        .setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
+                                                        .setHiberanteValidator(validator))
                                         .when(arguments[i] != null)
                                         .onEach((Collection) arguments[i])
                                         .doValidate(callback)
                                         .result(toComplex());
                             } else if (parameterTypes[i].isArray()) {
-                                result = FluentValidator.checkAll().configure(registry)
+                                result = fluentValidator
                                         .on(arguments[i], addOnValidatorChain)
                                         .onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]),
-                                                new HibernateSupportedValidator().setHiberanteValidator(validator))
+                                                new HibernateSupportedValidator()
+                                                        .setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
+                                                        .setHiberanteValidator(validator))
                                         .when(arguments[i] != null)
                                         .onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]))
                                         .doValidate(callback)
                                         .result(toComplex());
                             } else {
-                                result = FluentValidator.checkAll().configure(registry)
+                                result = fluentValidator
                                         .on(arguments[i], addOnValidatorChain)
                                         .on(arguments[i],
-                                                new HibernateSupportedValidator().setHiberanteValidator(validator))
+                                                new HibernateSupportedValidator()
+                                                        .setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
+                                                        .setHiberanteValidator(validator))
                                         .when(arguments[i] != null)
                                         .on(arguments[i])
                                         .doValidate(callback)
@@ -235,5 +269,14 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public void setHibernateDefaultErrorCode(int hibernateDefaultErrorCode) {
+        this.hibernateDefaultErrorCode = hibernateDefaultErrorCode;
+    }
+
+    public void setFluentValidatorPostProcessor(
+            FluentValidatorPostProcessor fluentValidatorPostProcessor) {
+        this.fluentValidatorPostProcessor = fluentValidatorPostProcessor;
     }
 }

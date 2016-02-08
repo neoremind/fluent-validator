@@ -105,7 +105,7 @@ public class FluentValidateInterceptorTest extends AbstractJUnit4SpringContextTe
             carService.addCar(car);
         } catch (CarException e) {
             System.out.println(e.getMessage());
-            assertThat(e.getMessage().contains("{manufacturer}"), Matchers.is(true));
+            assertThat(e.getMessage().contains("空"), Matchers.is(true));
             return;
         }
         fail();
@@ -141,6 +141,78 @@ public class FluentValidateInterceptorTest extends AbstractJUnit4SpringContextTe
             return;
         }
         fail();
+    }
+
+    @Test
+    public void testAddCarsGroups() {
+        try {
+            List<Car> cars = getValidCars();
+            cars.get(0).setLicensePlate("BEIJING");
+
+            carService.addCarsWithGroups(cars);
+        } catch (CarException e) {
+            System.out.println(e.getMessage());
+            assertThat(e.getMessage(), Matchers.is(String.format(CarError.LICENSEPLATE_ERROR.msg(),
+                    "BEIJING")));
+            return;
+        }
+        fail();
+    }
+
+    @Test
+    public void testAddCarsGroupsIgnore() {
+        try {
+            List<Car> cars = getValidCars();
+            cars.get(0).setSeatCount(-1);
+
+            carService.addCarsWithGroups(cars);
+        } catch (CarException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
+    }
+
+    @Test
+    public void testAddCarsExcludeGroups1() {
+        try {
+            List<Car> cars = getValidCars();
+            cars.get(0).setLicensePlate("BEIJING");
+            // cars.get(0).setManufacturer("");
+            cars.get(1).setSeatCount(-1);
+            carService.addCarsWithExcludeGroups(cars);
+        } catch (CarException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+        fail();
+    }
+
+    @Test
+    public void testAddCarsExcludeGroups2() {
+        try {
+            List<Car> cars = getValidCars();
+            cars.get(0).setLicensePlate("BEIJING");
+            cars.get(0).setManufacturer("");
+            carService.addCarsWithExcludeGroups(cars);
+        } catch (CarException e) {
+            System.out.println(e.getMessage());
+            assertThat(e.getMessage().contains("空"), Matchers.is(true));
+            return;
+        }
+        fail();
+    }
+
+    @Test
+    public void testAddCarsExcludeGroupsIgnore() {
+        try {
+            List<Car> cars = getValidCars();
+            cars.get(0).setLicensePlate("BEIJING");
+
+            carService.addCarsWithExcludeGroups(cars);
+        } catch (CarException e) {
+            System.out.println(e.getMessage());
+            fail();
+        }
     }
 
     private Car getValidCar() {

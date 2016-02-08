@@ -132,7 +132,7 @@ public class GarageServiceImpl2Test extends AbstractJUnit4SpringContextTests {
             garageService.buildGarage(garage);
         } catch (CarException e) {
             assertThat(e.getClass().getName(), is(CarException.class.getName()));
-            assertThat(e.getMessage(), is("{name} 车库名称长度非法"));
+            assertThat(e.getMessage(), is("车库名称长度非法"));
         }
     }
 

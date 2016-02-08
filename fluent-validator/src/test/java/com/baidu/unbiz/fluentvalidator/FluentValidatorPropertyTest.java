@@ -159,7 +159,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getManufacturer(), new CarManufacturerValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
-                .doValidate(new DefaulValidateCallback() {
+                .doValidate(new DefaultValidateCallback() {
                     @Override
                     public void onSuccess(ValidatorElementList validatorElementList) {
                         ref[0] = "all ok!";
@@ -181,7 +181,7 @@ public class FluentValidatorPropertyTest {
                 .on(car.getLicensePlate(), new CarLicensePlateValidator())
                 .on(car.getManufacturer(), new CarManufacturerValidator())
                 .on(car.getSeatCount(), new CarSeatCountValidator())
-                .doValidate(new DefaulValidateCallback() {
+                .doValidate(new DefaultValidateCallback() {
                     @Override
                     public void onFail(ValidatorElementList validatorElementList, List<ValidationError> errors) {
                         ref[0] = errors.size();
@@ -204,7 +204,7 @@ public class FluentValidatorPropertyTest {
                     .on(car.getLicensePlate(), new CarLicensePlateValidator())
                     .on(car.getManufacturer(), new CarManufacturerValidator())
                     .on(car.getSeatCount(), new CarSeatCountValidator())
-                    .doValidate(new DefaulValidateCallback() {
+                    .doValidate(new DefaultValidateCallback() {
                         @Override
                         public void onUncaughtException(Validator validator, Exception e, Object target)
                                 throws Exception {

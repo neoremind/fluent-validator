@@ -61,7 +61,7 @@ public class FluentHibernateValidatorTest {
         System.out.println(ret);
         assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrors().get(0), is("{ceo} Company CEO is not valid"));
+        assertThat(ret.getErrors().get(0), is("Company CEO is not valid"));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class FluentHibernateValidatorTest {
         System.out.println(ret);
         assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrors().get(0), is("{ceo} Company CEO is not valid"));
+        assertThat(ret.getErrors().get(0), is("Company CEO is not valid"));
     }
 
     @Test
@@ -105,7 +105,7 @@ public class FluentHibernateValidatorTest {
         System.out.println(ret);
         assertThat(ret.isSuccess(), is(false));
         assertThat(ret.getErrorNumber(), is(1));
-        assertThat(ret.getErrors().get(0).startsWith("{name} must match \"[0-9a-zA-Z"), is(true));
+        assertThat(ret.getErrors().get(0).startsWith("must match \"[0-9a-zA-Z"), is(true));
     }
 
 }

@@ -2,7 +2,7 @@ package com.baidu.unbiz.fluentvalidator.demo.callback;
 
 import java.util.List;
 
-import com.baidu.unbiz.fluentvalidator.DefaulValidateCallback;
+import com.baidu.unbiz.fluentvalidator.DefaultValidateCallback;
 import com.baidu.unbiz.fluentvalidator.ValidateCallback;
 import com.baidu.unbiz.fluentvalidator.ValidationError;
 import com.baidu.unbiz.fluentvalidator.Validator;
@@ -12,7 +12,7 @@ import com.baidu.unbiz.fluentvalidator.validator.element.ValidatorElementList;
 /**
  * @author zhangxu
  */
-public class ValidateCarCallback extends DefaulValidateCallback implements ValidateCallback {
+public class ValidateCarCallback extends DefaultValidateCallback implements ValidateCallback {
 
     @Override
     public void onFail(ValidatorElementList validatorElementList, List<ValidationError> errors) {

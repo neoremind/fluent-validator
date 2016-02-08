@@ -27,6 +27,16 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
      */
     private static javax.validation.Validator HIBERANTE_VALIDATOR;
 
+    /**
+     * hibernate默认的错误码
+     */
+    private int hibernateDefaultErrorCode;
+
+    /**
+     * {@link ConstraintViolation}到{@link ValidationError}的转换器
+     */
+    private ConstraintViolationTransformer constraintViolationTransformer = new DefaultConstraintViolationTransformer();
+
     @Override
     public boolean accept(ValidatorContext context, T t) {
         return true;
@@ -45,10 +55,8 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
             return true;
         } else {
             for (ConstraintViolation<T> constraintViolation : constraintViolations) {
-                context.addError(ValidationError.create("{" + constraintViolation.getPropertyPath() + "} " +
-                        constraintViolation.getMessage())
-                        .setField(constraintViolation.getPropertyPath().toString())
-                        .setInvalidValue(constraintViolation.getInvalidValue()));
+                context.addError(constraintViolationTransformer.toValidationError(constraintViolation)
+                        .setErrorCode(hibernateDefaultErrorCode));
             }
             return false;
         }
@@ -68,4 +76,8 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
         return this;
     }
 
+    public HibernateSupportedValidator<T> setHibernateDefaultErrorCode(int hibernateDefaultErrorCode) {
+        this.hibernateDefaultErrorCode = hibernateDefaultErrorCode;
+        return this;
+    }
 }

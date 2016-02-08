@@ -1,8 +1,11 @@
 package com.baidu.unbiz.fluentvalidator.dto;
 
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.baidu.unbiz.fluentvalidator.annotation.FluentValidate;
+import com.baidu.unbiz.fluentvalidator.groups.Add;
 import com.baidu.unbiz.fluentvalidator.validator.CarLicensePlateValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarManufacturerValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarSeatCountValidator;
@@ -16,7 +19,8 @@ public class Car {
     @NotBlank
     private String manufacturer;
 
-    @FluentValidate({CarLicensePlateValidator.class})
+    @FluentValidate(value = {CarLicensePlateValidator.class}, groups = {Add.class})
+    @NotNull(groups = {Add.class})
     private String licensePlate;
 
     @FluentValidate({CarSeatCountValidator.class})

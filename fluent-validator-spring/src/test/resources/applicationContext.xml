@@ -28,9 +28,13 @@
 
     <bean id="validateCarCallback" class="com.baidu.unbiz.fluentvalidator.interceptor.ValidateCarCallback"/>
 
+    <bean id="fluentValidatorPostProcessor"
+          class="com.baidu.unbiz.fluentvalidator.support.MethodNameFluentValidatorPostProcessor"/>
+
     <bean id="fluentValidateInterceptor"
           class="com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor">
         <property name="callback" ref="validateCarCallback"/>
+        <property name="fluentValidatorPostProcessor" ref="fluentValidatorPostProcessor"/>
     </bean>
 
     <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">

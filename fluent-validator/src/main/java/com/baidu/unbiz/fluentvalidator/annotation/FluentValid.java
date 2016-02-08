@@ -25,4 +25,21 @@ public @interface FluentValid {
      */
     Class<? extends Validator>[] value() default {};
 
+    /**
+     * 作用于Spring AOP时候，用于标示分组验证，作于与属性时不起任何作用
+     */
+    Class<?>[] groups() default {};
+
+    /**
+     * 作用于Spring AOP时候，用于标示分组验证，作于与属性时不起任何作用
+     * <p/>
+     * 和{@link #groups()}意义相反，设置了这个的就不会调用使用了{@link FluentValidate}注解的验证，对于hibernate无效
+     */
+    Class<?>[] excludeGroups() default {};
+
+    /**
+     * 作用于Spring AOP时候，用于标示该参数验证是否启用failfast失败策略
+     */
+    boolean isFailFast() default true;
+
 }

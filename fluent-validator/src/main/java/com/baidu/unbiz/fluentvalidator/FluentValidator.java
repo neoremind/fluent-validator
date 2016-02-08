@@ -75,7 +75,7 @@ public class FluentValidator {
     /**
      * 默认验证回调
      */
-    protected ValidateCallback defaultCb = new DefaulValidateCallback();
+    protected ValidateCallback defaultCb = new DefaultValidateCallback();
 
     /**
      * 如果启用通过{@link com.baidu.unbiz.fluentvalidator.annotation.FluentValidate}注解方式的验证，需要寻找验证器实例，这里为注册中心
@@ -144,6 +144,11 @@ public class FluentValidator {
      * </ul>
      */
     private Class<?>[] groups;
+
+    /**
+     * 排除的Groupings分组，当启用注解声明式验证时，用于区分是否做某次校验
+     */
+    private Class<?>[] excludeGroups;
 
     /**
      * 创建<tt>FluentValidator</tt>
@@ -280,6 +285,15 @@ public class FluentValidator {
                     LOGGER.debug(String.format("Current groups: %s not match %s", Arrays.toString(groups),
                             anntValidatorOfOneField));
                     continue;
+                }
+
+                if (!ArrayUtil.isEmpty(excludeGroups)) {
+                    if (ArrayUtil.hasIntersection(anntValidatorOfOneField.getGroups(), excludeGroups)) {
+                        LOGGER.debug(String.format("Current groups: %s will be ignored because you specify %s",
+                                Arrays.toString(
+                                        excludeGroups), anntValidatorOfOneField));
+                        continue;
+                    }
                 }
 
                 for (final Validator v : anntValidatorOfOneField.getValidators()) {
@@ -522,4 +536,27 @@ public class FluentValidator {
         return this;
     }
 
+    /**
+     * 设置是否快速失败
+     *
+     * @param isFailFast 是否快速失败
+     *
+     * @return FluentValidator
+     */
+    public FluentValidator setIsFailFast(boolean isFailFast) {
+        this.isFailFast = isFailFast;
+        return this;
+    }
+
+    /**
+     * 设置排除的分组
+     *
+     * @param excludeGroups 排除分组
+     *
+     * @return FluentValidator
+     */
+    public FluentValidator setExcludeGroups(Class<?>[] excludeGroups) {
+        this.excludeGroups = excludeGroups;
+        return this;
+    }
 }

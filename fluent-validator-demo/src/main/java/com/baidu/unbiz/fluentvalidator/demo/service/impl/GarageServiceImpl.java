@@ -10,16 +10,14 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.baidu.unbiz.fluentvalidator.ComplexResult;
-import com.baidu.unbiz.fluentvalidator.DefaulValidateCallback;
+import com.baidu.unbiz.fluentvalidator.DefaultValidateCallback;
 import com.baidu.unbiz.fluentvalidator.FluentValidator;
 import com.baidu.unbiz.fluentvalidator.Result;
 import com.baidu.unbiz.fluentvalidator.ValidationError;
 import com.baidu.unbiz.fluentvalidator.Validator;
-import com.baidu.unbiz.fluentvalidator.validator.element.ValidatorElementList;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Car;
 import com.baidu.unbiz.fluentvalidator.demo.dto.Garage;
 import com.baidu.unbiz.fluentvalidator.demo.exception.CarException;
-import com.baidu.unbiz.fluentvalidator.demo.rpc.ManufacturerService;
 import com.baidu.unbiz.fluentvalidator.demo.service.GarageService;
 import com.baidu.unbiz.fluentvalidator.demo.validator.CarLicensePlateValidator;
 import com.baidu.unbiz.fluentvalidator.demo.validator.CarManufacturerValidator;
@@ -28,6 +26,7 @@ import com.baidu.unbiz.fluentvalidator.demo.validator.GarageCarNotExceedLimitVal
 import com.baidu.unbiz.fluentvalidator.jsr303.HibernateSupportedValidator;
 import com.baidu.unbiz.fluentvalidator.registry.Registry;
 import com.baidu.unbiz.fluentvalidator.util.Preconditions;
+import com.baidu.unbiz.fluentvalidator.validator.element.ValidatorElementList;
 
 /**
  * @author zhangxu
@@ -47,7 +46,7 @@ public class GarageServiceImpl implements GarageService {
         Result result = FluentValidator.checkAll()
                 .configure(springApplicationContextRegistry)
                 .onEach(cars)
-                .doValidate(new DefaulValidateCallback() {
+                .doValidate(new DefaultValidateCallback() {
                     @Override
                     public void onFail(ValidatorElementList validatorElementList, List<ValidationError> errors) {
                         throw new CarException(errors.get(0).getErrorMsg());
