@@ -7,6 +7,7 @@ Validating data is a common task that occurs throughout any application, especia
 
 To avoid duplication and do validations as easy as possible, **Fluent Validator** provides the power to support validations with ease by leveraging the [fluent interface](https://en.wikipedia.org/wiki/Fluent_interface) style and [JSR 303 - Bean Validation](http://beanvalidation.org/1.0/spec/) specification, and here we choose [Hibernate Validator](http://hibernate.org/validator/) which probably being the most well known one as the implementation of this JSR.
 
+中文手册[请点这里](http://neoremind.com/2016/02/java%E7%9A%84%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91%E9%AA%8C%E8%AF%81%E6%A1%86%E6%9E%B6fluent-validator/)。
 
 ## 1. Quick Start
 This chapter will show you how to get started with Fluent Validator.
