@@ -276,6 +276,7 @@ For example, ComplexResult output would be:
 Result{isSuccess=false, errors=[ValidationError{errorCode=101, errorMsg='{departmentList} may not be null', field='departmentList', invalidValue=null}, ValidationError{errorCode=99, errorMsg='Company id is not valid, invalid value=-1', field='id', invalidValue=8}], timeElapsed(ms)=164}
 ```
 
+`toSimple()` and `toComplex()` are static methods in `com.baidu.unbiz.fluentvalidator.ResultCollectors`.
 
 ### 2.8 Advanced features
 
