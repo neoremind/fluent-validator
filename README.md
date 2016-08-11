@@ -1,4 +1,5 @@
 # Fluent Validator
+[![Build Status](https://travis-ci.org/neoremind/fluent-validator.svg?branch=master)](https://travis-ci.org/neoremind/fluent-validator)
 ![](https://coveralls.io/repos/neoremind/fluent-validator/badge.svg?branch=master&service=github)
 ![](https://maven-badges.herokuapp.com/maven-central/com.baidu.unbiz/fluent-validator/badge.svg)
 
