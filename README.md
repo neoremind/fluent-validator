@@ -2,6 +2,8 @@
 [![Build Status](https://travis-ci.org/neoremind/fluent-validator.svg?branch=master)](https://travis-ci.org/neoremind/fluent-validator)
 ![](https://coveralls.io/repos/neoremind/fluent-validator/badge.svg?branch=master&service=github)
 ![](https://maven-badges.herokuapp.com/maven-central/com.baidu.unbiz/fluent-validator/badge.svg)
+[![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+
 
 Validating data is a common task that occurs throughout any application, especially the business logic layer. As for some quite complex scenarios, often the same or similar validations are scattered everywhere, thus it is hard to reuse code and break the [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) rule. 
 
