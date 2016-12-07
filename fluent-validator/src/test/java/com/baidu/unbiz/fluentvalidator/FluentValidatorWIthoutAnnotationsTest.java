@@ -1,6 +1,7 @@
 package com.baidu.unbiz.fluentvalidator;
 
 import com.baidu.unbiz.fluentvalidator.annotation.FluentValid;
+import com.baidu.unbiz.fluentvalidator.util.Function;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
@@ -56,39 +57,23 @@ public class FluentValidatorWIthoutAnnotationsTest {
     }
 
     class PassengerValidator extends ValidatorHandler<Passenger> implements Validator<Passenger> {
-        @Override
-        public boolean validate(ValidatorContext context, Passenger passenger) {
-            ComplexResult result = FluentValidator
-                    .checkAll()
-                    .on(passenger.hasSeatbeltOn, new SeatBeltValidator(passenger.name))
-                    .on(passenger.hasSeatbeltOn, new SeatBeltValidatorWithoutError())
-                    .failOver()
-                    .doValidate()
-                    .result(ResultCollectors.toComplex());
-
-            for (ValidationError error : result.getErrors()) {
-                context.addError(error);
-            }
-
-            return result.isSuccess();
+        public boolean validate(ValidatorContext context, final Passenger passenger) {
+            return context.validateWith(new Function<FluentValidator, FluentValidator>() {
+                public FluentValidator apply(FluentValidator input) {
+                    return input.on(passenger.hasSeatbeltOn, new SeatBeltValidator(passenger.name))
+                            .on(passenger.hasSeatbeltOn, new SeatBeltValidatorWithoutError());
+                }
+            });
         }
     }
 
     class CarValidator extends ValidatorHandler<Car> implements Validator<Car> {
-        @Override
-        public boolean validate(ValidatorContext context, Car car) {
-            ComplexResult result = FluentValidator
-                    .checkAll()
-                    .onEach(car.passengers, new PassengerValidator())
-                    .failOver()
-                    .doValidate()
-                    .result(ResultCollectors.toComplex());
-
-            for (ValidationError error : result.getErrors()) {
-                context.addError(error);
-            }
-
-            return result.isSuccess();
+        public boolean validate(ValidatorContext context, final Car car) {
+            return context.validateWith(new Function<FluentValidator, FluentValidator>(){
+                public FluentValidator apply(FluentValidator input) {
+                    return input.onEach(car.passengers, new PassengerValidator());
+                }
+            });
         }
     }
 

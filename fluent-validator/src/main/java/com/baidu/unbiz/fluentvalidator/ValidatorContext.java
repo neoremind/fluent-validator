@@ -2,7 +2,9 @@ package com.baidu.unbiz.fluentvalidator;
 
 import java.util.Map;
 
+import com.baidu.unbiz.fluentvalidator.annotation.FluentValid;
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
+import com.baidu.unbiz.fluentvalidator.util.Function;
 
 /**
  * 验证器执行调用中的上下文
@@ -36,6 +38,19 @@ public class ValidatorContext {
      */
     public ValidationResult result;
 
+    public boolean validateWith(Function<FluentValidator, FluentValidator> configuration) {
+        ComplexResult localResult = configuration.apply(FluentValidator.checkAll())
+                .failOver()
+                .doValidate()
+                .result(ResultCollectors.toComplex());
+
+        for (ValidationError error : localResult.getErrors()) {
+            addError(error);
+        }
+
+        return localResult.isSuccess();
+    }
+
     /**
      * 添加错误信息
      *
@@ -66,6 +81,7 @@ public class ValidatorContext {
             return attributes.get(key);
         }
         return null;
+
     }
 
     /**
