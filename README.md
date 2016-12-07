@@ -831,6 +831,15 @@ All test cases or samples can be found from the below links:
 
 [Spring registry usage](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-spring/src/test/java/com/baidu/unbiz/fluentvalidator/registry/impl/SpringApplicationContextRegistryTest.java)
 
+
+## Contributing
+
+### Running the test suite
+
+```
+$ ./full-test-suite.sh
+```
+
 ## Supports 
 
 ![](http://neoremind.net/imgs/gmail.png)
