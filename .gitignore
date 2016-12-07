@@ -9,3 +9,4 @@
 # Idea
 *.iml
 .idea
+fluent-validator/target/

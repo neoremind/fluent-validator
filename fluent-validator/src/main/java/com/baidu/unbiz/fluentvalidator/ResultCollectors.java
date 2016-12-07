@@ -3,6 +3,8 @@ package com.baidu.unbiz.fluentvalidator;
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 import com.baidu.unbiz.fluentvalidator.util.Function;
 
+import java.util.ArrayList;
+
 /**
  * 框架自身实现的一个简单的验证结果收集器
  *
@@ -43,14 +45,7 @@ public class ResultCollectors {
 
         @Override
         public ComplexResult toResult(ValidationResult result) {
-            ComplexResult ret = new ComplexResult();
-            if (result.isSuccess()) {
-                ret.setIsSuccess(true);
-            } else {
-                ret.setIsSuccess(false);
-                ret.setErrors(result.getErrors());
-            }
-
+            ComplexResult ret = new ComplexResult(result.isSuccess(), result.getErrors());
             ret.setTimeElapsed(result.getTimeElapsed());
             return ret;
         }

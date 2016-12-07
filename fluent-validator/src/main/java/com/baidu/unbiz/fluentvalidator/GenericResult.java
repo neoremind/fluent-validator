@@ -1,5 +1,6 @@
 package com.baidu.unbiz.fluentvalidator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
@@ -22,6 +23,16 @@ public abstract class GenericResult<T> {
      * 错误消息列表
      */
     protected List<T> errors;
+
+    public GenericResult() {
+        isSuccess = true;
+        errors = new ArrayList<T>();
+    }
+
+    public GenericResult(boolean isSuccess, List<T> errors) {
+        this.isSuccess = isSuccess;
+        this.errors = errors;
+    }
 
     @Override
     public String toString() {

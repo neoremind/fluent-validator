@@ -1,5 +1,7 @@
 package com.baidu.unbiz.fluentvalidator;
 
+import java.util.List;
+
 /**
  * 最简单的验证结果
  * <p/>
@@ -8,5 +10,4 @@ package com.baidu.unbiz.fluentvalidator;
  * @author zhangxu
  */
 public class Result extends GenericResult<String> {
-
 }

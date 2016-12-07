@@ -1,5 +1,6 @@
 package com.baidu.unbiz.fluentvalidator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.baidu.unbiz.fluentvalidator.annotation.NotThreadSafe;
@@ -22,7 +23,7 @@ public class ValidationResult {
     /**
      * 验证错误
      */
-    private List<ValidationError> errors;
+    private List<ValidationError> errors = new ArrayList<ValidationError>();
 
     /**
      * 验证总体耗时，指通过<code>FluentValidator.doValidate(..)</code>真正“及时求值”过程中的耗时
