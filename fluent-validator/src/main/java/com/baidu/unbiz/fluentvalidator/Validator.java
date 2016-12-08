@@ -45,4 +45,11 @@ public interface Validator<T> {
      */
     void onException(Exception e, ValidatorContext context, T t);
 
+
+    void setCurrent(FluentValidator current);
+
+    //
+    // Add an extension point for validators to add to the current
+    //
+    void compose(FluentValidator current, ValidatorContext context, T t);
 }

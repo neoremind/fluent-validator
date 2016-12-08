@@ -13,6 +13,8 @@ import com.baidu.unbiz.fluentvalidator.annotation.ThreadSafe;
 @ThreadSafe
 public class ValidatorHandler<T> implements Validator<T> {
 
+    private FluentValidator current;
+
     @Override
     public boolean accept(ValidatorContext context, T t) {
         return true;
@@ -26,6 +28,16 @@ public class ValidatorHandler<T> implements Validator<T> {
     @Override
     public void onException(Exception e, ValidatorContext context, T t) {
 
+    }
+
+    @Override
+    public void setCurrent(FluentValidator current) {
+        this.current = current;
+    }
+
+    @Override
+    public void compose(FluentValidator current, ValidatorContext context, T t) {
+        // extension point for clients to add more validators to the current fluent chain
     }
 
     /**

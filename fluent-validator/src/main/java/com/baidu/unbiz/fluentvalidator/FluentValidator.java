@@ -334,6 +334,9 @@ public class FluentValidator {
      */
     public <T> FluentValidator on(T t, Validator<T> v) {
         Preconditions.checkNotNull(v, "Validator should not be NULL");
+        v.setCurrent(this);
+        v.compose(this, context, t);
+
         doAdd(new ValidatorElement(t, v));
         lastAddCount = 1;
         return this;
@@ -353,6 +356,7 @@ public class FluentValidator {
             lastAddCount = 0;
         } else {
             for (Validator v : chain.getValidators()) {
+                v.setCurrent(this);
                 doAdd(new ValidatorElement(t, v));
             }
             lastAddCount = chain.getValidators().size();
@@ -393,12 +397,16 @@ public class FluentValidator {
      */
     public <T> FluentValidator onEach(Collection<T> t, final Validator<T> v) {
         Preconditions.checkNotNull(v, "Validator should not be NULL");
+        v.setCurrent(this);
+        final FluentValidator self = this;
+
         if (CollectionUtil.isEmpty(t)) {
             lastAddCount = 0;
         } else {
             List<ValidatorElement> elementList = CollectionUtil.transform(t, new Function<T, ValidatorElement>() {
                 @Override
                 public ValidatorElement apply(T elem) {
+                    v.compose(self, context, elem);
                     return new ValidatorElement(elem, v);
                 }
             });
