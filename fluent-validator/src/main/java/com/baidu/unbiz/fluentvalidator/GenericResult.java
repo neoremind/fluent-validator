@@ -1,5 +1,6 @@
 package com.baidu.unbiz.fluentvalidator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
@@ -21,7 +22,7 @@ public abstract class GenericResult<T> {
     /**
      * 错误消息列表
      */
-    protected List<T> errors;
+    protected List<T> errors = new ArrayList<T>();
 
     @Override
     public String toString() {
