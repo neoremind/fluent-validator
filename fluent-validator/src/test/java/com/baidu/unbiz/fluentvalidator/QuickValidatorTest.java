@@ -127,9 +127,6 @@ public class QuickValidatorTest {
 
         @Override
         public boolean validate(ValidatorContext context, final Car car) {
-            // Pass the context to QuickValidator to create a new FluentValidator instance,
-            // so that validation result can be set within the same context,
-            // or you can consider the context to be shared.
             return QuickValidator.doAndGetComplexResult(new Decorator() {
                 @Override
                 public FluentValidator decorate(FluentValidator fv) {
