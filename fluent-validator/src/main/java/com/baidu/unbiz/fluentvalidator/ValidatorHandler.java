@@ -11,7 +11,7 @@ import com.baidu.unbiz.fluentvalidator.annotation.ThreadSafe;
  * @see Validator
  */
 @ThreadSafe
-public class ValidatorHandler<T> implements Validator<T> {
+public class ValidatorHandler<T> implements Validator<T>, Composable<T> {
 
     @Override
     public boolean accept(ValidatorContext context, T t) {
@@ -26,6 +26,11 @@ public class ValidatorHandler<T> implements Validator<T> {
     @Override
     public void onException(Exception e, ValidatorContext context, T t) {
 
+    }
+
+    @Override
+    public void compose(FluentValidator current, ValidatorContext context, T t) {
+        // extension point for clients to add more validators to the current fluent chain
     }
 
     /**

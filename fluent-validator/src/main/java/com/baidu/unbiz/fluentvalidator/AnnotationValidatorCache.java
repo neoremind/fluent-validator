@@ -81,7 +81,7 @@ public class AnnotationValidatorCache {
 
             if (CollectionUtil.isEmpty(annotationValidators)) {
                 LOGGER.warn(String.format("Annotation-based validation enabled for %s, and to-do validators are empty",
-                        clazz.getSimpleName(), annotationValidators));
+                        clazz.getSimpleName()));
             } else {
                 CLASS_2_ANNOTATION_VALIDATOR_MAP.putIfAbsent(clazz, annotationValidators);
                 LOGGER.debug(

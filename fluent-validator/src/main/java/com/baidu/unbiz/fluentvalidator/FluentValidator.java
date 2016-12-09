@@ -162,6 +162,19 @@ public class FluentValidator {
     }
 
     /**
+     * 使用已经存在的一个验证上下文，共享context本身以及验证结果
+     *
+     * @param context 验证上下文
+     *
+     * @return FluentValidator
+     */
+    public FluentValidator withContext(ValidatorContext context) {
+        this.context = context;
+        this.result = context.result;
+        return this;
+    }
+
+    /**
      * 出错即退出
      *
      * @return FluentValidator
@@ -334,6 +347,7 @@ public class FluentValidator {
      */
     public <T> FluentValidator on(T t, Validator<T> v) {
         Preconditions.checkNotNull(v, "Validator should not be NULL");
+        composeIfPossible(v, t);
         doAdd(new ValidatorElement(t, v));
         lastAddCount = 1;
         return this;
@@ -349,10 +363,12 @@ public class FluentValidator {
      */
     public <T> FluentValidator on(T t, ValidatorChain chain) {
         Preconditions.checkNotNull(chain, "ValidatorChain should not be NULL");
+        final FluentValidator self = this;
         if (CollectionUtil.isEmpty(chain.getValidators())) {
             lastAddCount = 0;
         } else {
             for (Validator v : chain.getValidators()) {
+                composeIfPossible(v, t);
                 doAdd(new ValidatorElement(t, v));
             }
             lastAddCount = chain.getValidators().size();
@@ -399,6 +415,7 @@ public class FluentValidator {
             List<ValidatorElement> elementList = CollectionUtil.transform(t, new Function<T, ValidatorElement>() {
                 @Override
                 public ValidatorElement apply(T elem) {
+                    composeIfPossible(v, elem);
                     return new ValidatorElement(elem, v);
                 }
             });
@@ -558,5 +575,19 @@ public class FluentValidator {
     public FluentValidator setExcludeGroups(Class<?>[] excludeGroups) {
         this.excludeGroups = excludeGroups;
         return this;
+    }
+
+    /**
+     * 如果验证器是一个{@link ValidatorHandler}实例，那么可以通过{@link ValidatorHandler#compose(FluentValidator, ValidatorContext, Object)}
+     * 方法增加一些验证逻辑
+     *
+     * @param v 验证器
+     * @param t 待验证对象
+     */
+    private <T>  void composeIfPossible(Validator<T> v, T t) {
+        final FluentValidator self = this;
+        if (v instanceof ValidatorHandler) {
+            ((ValidatorHandler) v).compose(self, context, t);
+        }
     }
 }
