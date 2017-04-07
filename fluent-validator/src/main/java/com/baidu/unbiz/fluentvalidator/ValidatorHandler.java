@@ -43,4 +43,10 @@ public class ValidatorHandler<T> implements Validator<T>, Composable<T> {
         return this.getClass().getSimpleName();
     }
 
+	@Override
+	public boolean validate(ValidatorContext context, T t, String message) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

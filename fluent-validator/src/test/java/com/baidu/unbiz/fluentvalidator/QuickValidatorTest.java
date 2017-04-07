@@ -25,6 +25,23 @@ public class QuickValidatorTest {
         ComplexResult ret = QuickValidator.doAndGetComplexResult(new Decorator() {
             @Override
             public FluentValidator decorate(FluentValidator fv) {
+                return fv.on(car.getLicensePlate(), new CarLicensePlateValidator(),"Car License Plate Validator is Good")
+                        .on(car.getManufacturer(), new CarManufacturerValidator(),"Car Manufacture Validator is Good")
+                        .on(car.getSeatCount(), new CarSeatCountValidator(),"Car Seat  Validator is Good");
+            }
+        });
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(true));
+        assertThat(ret.getErrors(), nullValue());
+    }
+
+    @Test
+    public void testCar1ComplexResult() {
+        final Car car = getValidCar();
+
+        ComplexResult ret = QuickValidator.doAndGetComplexResult(new Decorator() {
+            @Override
+            public FluentValidator decorate(FluentValidator fv) {
                 return fv.on(car.getLicensePlate(), new CarLicensePlateValidator())
                         .on(car.getManufacturer(), new CarManufacturerValidator())
                         .on(car.getSeatCount(), new CarSeatCountValidator());
@@ -34,7 +51,28 @@ public class QuickValidatorTest {
         assertThat(ret.isSuccess(), is(true));
         assertThat(ret.getErrors(), nullValue());
     }
+    
+    
+    @Test
+    public void testPassContextToInnerValidatorWithoutSharedContext1() {
+        Car car = getValidCar();
+        car.setSeatCount(0);
 
+        Result ret = FluentValidator.checkAll()
+                .on(car.getSeatCount(), new CarSeatCountValidator(),"Test")
+                .on(car, new InnerValidatorWithoutSharedContext(),"Test")
+                .failOver()
+                .doCustomValidate().result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(false));
+        assertThat(ret.getErrors(), notNullValue());
+
+        // Sadly only get one error, the InnerValidatorWithoutSharedContext doesn't add error to result
+        assertThat(ret.getErrors().size(), is(0));
+    }
+
+    
+    
     @Test
     public void testCarComplexResult2() {
         final Car car = getValidCar();
@@ -117,6 +155,12 @@ public class QuickValidatorTest {
                         public void onException(Exception e, ValidatorContext context, Car car) {
 
                         }
+
+						@Override
+						public boolean validate(ValidatorContext context, Car t, String message) {
+							// TODO Auto-generated method stub
+							return false;
+						}
                     });
                 }
             }, context).isSuccess();
@@ -152,6 +196,12 @@ public class QuickValidatorTest {
                         public void onException(Exception e, ValidatorContext context, Car car) {
 
                         }
+
+						@Override
+						public boolean validate(ValidatorContext context, Car t, String message) {
+							// TODO Auto-generated method stub
+							return false;
+						}
                     });
                 }
             }).isSuccess();

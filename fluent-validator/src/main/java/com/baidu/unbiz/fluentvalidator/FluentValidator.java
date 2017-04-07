@@ -353,6 +353,15 @@ public class FluentValidator {
         return this;
     }
 
+    
+    public <T> FluentValidator on(T t, Validator<T> v,String message) {
+        Preconditions.checkNotNull(v, "Validator should not be NULL");
+        composeIfPossible(v, t);
+        doAdd(new ValidatorElement(t, v, message));
+        lastAddCount = 1;
+        return this;
+    }
+
     /**
      * 在待验证对象<tt>t</tt>上，使用<tt>chain</tt>验证器链进行验证
      *
@@ -461,6 +470,10 @@ public class FluentValidator {
         return doValidate(defaultCb);
     }
 
+    public FluentValidator doCustomValidate() {
+        return doCustomValidate(defaultCb);
+    }
+
     /**
      * 按照指定验证回调条件，开始使用验证
      *
@@ -527,6 +540,67 @@ public class FluentValidator {
         return this;
     }
 
+    
+    public FluentValidator doCustomValidate(ValidateCallback cb) {
+        Preconditions.checkNotNull(cb, "ValidateCallback should not be NULL");
+        if (validatorElementList.isEmpty()) {
+            LOGGER.debug("Nothing to validate");
+            return this;
+        }
+        context.setResult(result);
+
+        LOGGER.debug("Start to validate through " + validatorElementList);
+        long start = System.currentTimeMillis();
+        try {
+            GroupingHolder.setGrouping(groups);
+            for (ValidatorElement element : validatorElementList.getAllValidatorElements()) {
+                Object target = element.getTarget();
+                Validator v = element.getValidator();
+                String message = element.getMessage();
+                try {
+                    if (v.accept(context, target)) {
+                        if (!v.validate(context, target,message)) {
+                            result.setIsSuccess(false);
+                            if (isFailFast) {
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    try {
+                        v.onException(e, context, target);
+                        cb.onUncaughtException(v, e, target);
+                    } catch (Exception e1) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.error(v + " onException or onUncaughtException throws exception due to " + e1
+                                    .getMessage(), e1);
+                        }
+                        throw new RuntimeValidateException(e1);
+                    }
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.error(v + " failed due to " + e.getMessage(), e);
+                    }
+                    throw new RuntimeValidateException(e);
+                }
+            }
+
+            if (result.isSuccess()) {
+                cb.onSuccess(validatorElementList);
+            } else {
+                cb.onFail(validatorElementList, result.getErrors());
+            }
+        } finally {
+            GroupingHolder.clean();
+            int timeElapsed = (int) (System.currentTimeMillis() - start);
+            LOGGER.debug("End to validate through" + validatorElementList + " costing " + timeElapsed + "ms with "
+                    + "isSuccess=" + result.isSuccess());
+            result.setTimeElapsed(timeElapsed);
+        }
+        return this;
+    }
+
+    
+    
     /**
      * 转换为对外的验证结果，在<code>FluentValidator.on(..).on(..).doValidate()</code>这一连串“<a href="https://en.wikipedia
      * .org/wiki/Lazy_evaluation">惰性求值</a>”计算后的“及时求值”收殓出口。
