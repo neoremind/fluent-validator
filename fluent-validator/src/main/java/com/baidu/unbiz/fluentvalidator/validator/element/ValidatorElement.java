@@ -30,17 +30,31 @@ public class ValidatorElement implements ListAble<ValidatorElement> {
      */
     private ToStringable customizedToString;
 
+    
+    private String message;
+    
+    
     /**
      * create
      *
      * @param target    待验证对象
      * @param validator 验证器
+     * @param message 
      */
+    public ValidatorElement(Object target, Validator validator, String message) {
+        this.target = target;
+        this.validator = validator;
+        this.setMessage(message);
+    }
+
+    
     public ValidatorElement(Object target, Validator validator) {
         this.target = target;
         this.validator = validator;
     }
 
+    
+    
     /**
      * create
      *
@@ -75,5 +89,15 @@ public class ValidatorElement implements ListAble<ValidatorElement> {
         }
         return String.format("%s@%s", target == null ? "null" : target.getClass().getSimpleName(), validator);
     }
+
+
+	public String getMessage() {
+		return message;
+	}
+
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
 }

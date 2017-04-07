@@ -117,6 +117,12 @@ public class QuickValidatorTest {
                         public void onException(Exception e, ValidatorContext context, Car car) {
 
                         }
+
+						@Override
+						public boolean validate(ValidatorContext context, Car t, String message) {
+							// TODO Auto-generated method stub
+							return false;
+						}
                     });
                 }
             }, context).isSuccess();
@@ -152,6 +158,12 @@ public class QuickValidatorTest {
                         public void onException(Exception e, ValidatorContext context, Car car) {
 
                         }
+
+						@Override
+						public boolean validate(ValidatorContext context, Car t, String message) {
+							// TODO Auto-generated method stub
+							return false;
+						}
                     });
                 }
             }).isSuccess();

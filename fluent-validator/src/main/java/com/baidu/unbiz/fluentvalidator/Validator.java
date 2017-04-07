@@ -33,6 +33,8 @@ public interface Validator<T> {
      * @return 是否验证通过
      */
     boolean validate(ValidatorContext context, T t);
+    
+    boolean validate(ValidatorContext context, T t,String message);
 
     /**
      * 异常回调
