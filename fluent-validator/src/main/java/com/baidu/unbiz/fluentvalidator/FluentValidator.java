@@ -467,12 +467,16 @@ public class FluentValidator {
      * @return FluentValidator
      */
     public FluentValidator doValidate() {
-        return doValidate(defaultCb);
+        return doValidate(defaultCb,false);
     }
 
-    public FluentValidator doCustomValidate() {
-        return doCustomValidate(defaultCb);
+    public FluentValidator doValidate(Boolean isCustomValidator) {
+    	  return doValidate(defaultCb,true);
     }
+    
+    public FluentValidator doValidate(ValidateCallback callback) {
+  	  return doValidate(callback,false);
+  }
 
     /**
      * 按照指定验证回调条件，开始使用验证
@@ -483,7 +487,7 @@ public class FluentValidator {
      *
      * @see ValidateCallback
      */
-    public FluentValidator doValidate(ValidateCallback cb) {
+    public FluentValidator doValidate(ValidateCallback cb ,boolean isCustomValidator) {
         Preconditions.checkNotNull(cb, "ValidateCallback should not be NULL");
         if (validatorElementList.isEmpty()) {
             LOGGER.debug("Nothing to validate");
@@ -498,14 +502,31 @@ public class FluentValidator {
             for (ValidatorElement element : validatorElementList.getAllValidatorElements()) {
                 Object target = element.getTarget();
                 Validator v = element.getValidator();
+                String message = "";
+                if(isCustomValidator)
+                {
+                	message = element.getMessage();
+                }
                 try {
                     if (v.accept(context, target)) {
-                        if (!v.validate(context, target)) {
-                            result.setIsSuccess(false);
-                            if (isFailFast) {
-                                break;
+                    	if(isCustomValidator)
+                    	{
+                    		if (!v.validate(context, target,message)) {
+                                 result.setIsSuccess(false);
+                                 if (isFailFast) {
+                                     break;
+                                 }
+                             }
+                    	}
+                    	else
+                    	{
+                    		if (!v.validate(context, target)) {
+                                result.setIsSuccess(false);
+                                if (isFailFast) {
+                                    break;
+                                }
                             }
-                        }
+                    	}
                     }
                 } catch (Exception e) {
                     try {
@@ -540,67 +561,6 @@ public class FluentValidator {
         return this;
     }
 
-    
-    public FluentValidator doCustomValidate(ValidateCallback cb) {
-        Preconditions.checkNotNull(cb, "ValidateCallback should not be NULL");
-        if (validatorElementList.isEmpty()) {
-            LOGGER.debug("Nothing to validate");
-            return this;
-        }
-        context.setResult(result);
-
-        LOGGER.debug("Start to validate through " + validatorElementList);
-        long start = System.currentTimeMillis();
-        try {
-            GroupingHolder.setGrouping(groups);
-            for (ValidatorElement element : validatorElementList.getAllValidatorElements()) {
-                Object target = element.getTarget();
-                Validator v = element.getValidator();
-                String message = element.getMessage();
-                try {
-                    if (v.accept(context, target)) {
-                        if (!v.validate(context, target,message)) {
-                            result.setIsSuccess(false);
-                            if (isFailFast) {
-                                break;
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    try {
-                        v.onException(e, context, target);
-                        cb.onUncaughtException(v, e, target);
-                    } catch (Exception e1) {
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.error(v + " onException or onUncaughtException throws exception due to " + e1
-                                    .getMessage(), e1);
-                        }
-                        throw new RuntimeValidateException(e1);
-                    }
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.error(v + " failed due to " + e.getMessage(), e);
-                    }
-                    throw new RuntimeValidateException(e);
-                }
-            }
-
-            if (result.isSuccess()) {
-                cb.onSuccess(validatorElementList);
-            } else {
-                cb.onFail(validatorElementList, result.getErrors());
-            }
-        } finally {
-            GroupingHolder.clean();
-            int timeElapsed = (int) (System.currentTimeMillis() - start);
-            LOGGER.debug("End to validate through" + validatorElementList + " costing " + timeElapsed + "ms with "
-                    + "isSuccess=" + result.isSuccess());
-            result.setTimeElapsed(timeElapsed);
-        }
-        return this;
-    }
-
-    
-    
     /**
      * 转换为对外的验证结果，在<code>FluentValidator.on(..).on(..).doValidate()</code>这一连串“<a href="https://en.wikipedia
      * .org/wiki/Lazy_evaluation">惰性求值</a>”计算后的“及时求值”收殓出口。

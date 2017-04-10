@@ -52,27 +52,6 @@ public class QuickValidatorTest {
         assertThat(ret.getErrors(), nullValue());
     }
     
-    
-    @Test
-    public void testPassContextToInnerValidatorWithoutSharedContext1() {
-        Car car = getValidCar();
-        car.setSeatCount(0);
-
-        Result ret = FluentValidator.checkAll()
-                .on(car.getSeatCount(), new CarSeatCountValidator(),"Test")
-                .on(car, new InnerValidatorWithoutSharedContext(),"Test")
-                .failOver()
-                .doCustomValidate().result(toSimple());
-        System.out.println(ret);
-        assertThat(ret.isSuccess(), is(false));
-        assertThat(ret.getErrors(), notNullValue());
-
-        // Sadly only get one error, the InnerValidatorWithoutSharedContext doesn't add error to result
-        assertThat(ret.getErrors().size(), is(0));
-    }
-
-    
-    
     @Test
     public void testCarComplexResult2() {
         final Car car = getValidCar();
@@ -212,4 +191,6 @@ public class QuickValidatorTest {
         return new Car("BMW", "LA1234", 5);
     }
 
+
+    
 }

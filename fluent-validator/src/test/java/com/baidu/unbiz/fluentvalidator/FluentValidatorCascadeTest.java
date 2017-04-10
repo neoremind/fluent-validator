@@ -2,6 +2,7 @@ package com.baidu.unbiz.fluentvalidator;
 
 import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toSimple;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -13,6 +14,7 @@ import com.baidu.unbiz.fluentvalidator.dto.Car;
 import com.baidu.unbiz.fluentvalidator.dto.Garage;
 import com.baidu.unbiz.fluentvalidator.error.CarError;
 import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
+import com.baidu.unbiz.fluentvalidator.validator.CustomNullCheckValidator;
 import com.baidu.unbiz.fluentvalidator.validator.NotNullValidator;
 import com.google.common.collect.Lists;
 
@@ -191,6 +193,38 @@ public class FluentValidatorCascadeTest {
 
     private Car getValidCar() {
         return new Car("BMW", "LA1234", 5);
+    }
+    
+    @Test
+    public void testGaragedoValidateWithParameters() {
+        Garage garage = null;
+
+        Result ret = FluentValidator.checkAll()
+                .on(garage,new CustomNullCheckValidator(),"Garage Object is Null")
+                .doValidate(true)
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(false));
+        assertEquals(ret.errors.toString(),"[Garage Object is Null]");
+        
+    }
+
+    
+    @Test
+    public void testGaragedoValidateWithParametersAdd() {
+       Car c = new Car(null,null, 10);
+       
+        Result ret = FluentValidator.checkAll().failOver()
+                .on(c,new CustomNullCheckValidator(),"Car Object is Null")
+                .on(c.getLicensePlate() ,new CustomNullCheckValidator(),"Car License is Null")
+                .on(c.getManufacturer(),new CustomNullCheckValidator(),"Car Manufactur is Null")
+                .on(c.getSeatCount())
+                .doValidate(true)
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(false));
+        assertEquals(ret.errors.toString(),"[Car License is Null, Car Manufactur is Null]");
+        
     }
 
 }
