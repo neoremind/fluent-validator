@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.baidu.unbiz.fluentvalidator.FluentValidator;
 import com.baidu.unbiz.fluentvalidator.Validator;
+import com.baidu.unbiz.fluentvalidator.ValidatorContext;
 import com.baidu.unbiz.fluentvalidator.able.ListAble;
 import com.baidu.unbiz.fluentvalidator.able.ToStringable;
 
@@ -31,6 +32,16 @@ public class ValidatorElement implements ListAble<ValidatorElement> {
     private ToStringable customizedToString;
 
     /**
+     * 默认的错误信息，用于直接在fluent的链条上直接指定错误，如下所示
+     * <pre>
+     *     fv.on(car.getLicensePlate(), new CarLicensePlateValidator(),"Car License Plate Validator is Good")
+     * </pre>
+     * 在{@link Validator#validate(ValidatorContext, Object)}可以直接通过context获取message，
+     * 例如{@link ValidatorContext#getDefaultMessage()}。
+     */
+    private String message;
+
+    /**
      * create
      *
      * @param target    待验证对象
@@ -39,6 +50,19 @@ public class ValidatorElement implements ListAble<ValidatorElement> {
     public ValidatorElement(Object target, Validator validator) {
         this.target = target;
         this.validator = validator;
+    }
+
+    /**
+     * create
+     *
+     * @param target    待验证对象
+     * @param validator 验证器
+     * @param message   默认的关联此validator的信息，一般是默认的错误信息
+     */
+    public ValidatorElement(Object target, Validator validator, String message) {
+        this.target = target;
+        this.validator = validator;
+        this.message = message;
     }
 
     /**
@@ -61,6 +85,10 @@ public class ValidatorElement implements ListAble<ValidatorElement> {
 
     public Validator getValidator() {
         return validator;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     @Override

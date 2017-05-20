@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.baidu.unbiz.fluentvalidator.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,16 +18,11 @@ import com.baidu.unbiz.fluentvalidator.exception.RuntimeValidateException;
 import com.baidu.unbiz.fluentvalidator.registry.Registry;
 import com.baidu.unbiz.fluentvalidator.registry.impl.SimpleRegistry;
 import com.baidu.unbiz.fluentvalidator.support.GroupingHolder;
-import com.baidu.unbiz.fluentvalidator.util.ArrayUtil;
-import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
-import com.baidu.unbiz.fluentvalidator.util.Function;
-import com.baidu.unbiz.fluentvalidator.util.Preconditions;
-import com.baidu.unbiz.fluentvalidator.util.ReflectionUtil;
 import com.baidu.unbiz.fluentvalidator.validator.element.IterableValidatorElement;
 import com.baidu.unbiz.fluentvalidator.validator.element.MultiValidatorElement;
 import com.baidu.unbiz.fluentvalidator.validator.element.ValidatorElement;
 import com.baidu.unbiz.fluentvalidator.validator.element.ValidatorElementList;
-
+import static com.baidu.unbiz.fluentvalidator.util.ThreadContext.VALIDATOR_MESSAGE;
 /**
  * 链式调用验证器
  * <p/>
@@ -346,9 +342,23 @@ public class FluentValidator {
      * @return FluentValidator
      */
     public <T> FluentValidator on(T t, Validator<T> v) {
+        return on(t, v, null);
+    }
+
+    /**
+     * 在待验证对象<tt>t</tt>上，使用<tt>v</tt>验证器进行验证，
+     * 同时往context中注入默认的消息，一般是默认错误
+     *
+     * @param t         待验证对象
+     * @param v         验证器
+     * @param message   一般是默认错误消息
+     *
+     * @return FluentValidator
+     */
+    public <T> FluentValidator on(T t, Validator<T> v, String message) {
         Preconditions.checkNotNull(v, "Validator should not be NULL");
         composeIfPossible(v, t);
-        doAdd(new ValidatorElement(t, v));
+        doAdd(new ValidatorElement(t, v, message));
         lastAddCount = 1;
         return this;
     }
@@ -363,7 +373,6 @@ public class FluentValidator {
      */
     public <T> FluentValidator on(T t, ValidatorChain chain) {
         Preconditions.checkNotNull(chain, "ValidatorChain should not be NULL");
-        final FluentValidator self = this;
         if (CollectionUtil.isEmpty(chain.getValidators())) {
             lastAddCount = 0;
         } else {
@@ -480,11 +489,13 @@ public class FluentValidator {
 
         LOGGER.debug("Start to validate through " + validatorElementList);
         long start = System.currentTimeMillis();
+        ThreadContext.init();
         try {
             GroupingHolder.setGrouping(groups);
             for (ValidatorElement element : validatorElementList.getAllValidatorElements()) {
                 Object target = element.getTarget();
                 Validator v = element.getValidator();
+                ThreadContext.putContext(VALIDATOR_MESSAGE, element.getMessage());
                 try {
                     if (v.accept(context, target)) {
                         if (!v.validate(context, target)) {
@@ -518,6 +529,7 @@ public class FluentValidator {
                 cb.onFail(validatorElementList, result.getErrors());
             }
         } finally {
+            ThreadContext.clean();
             GroupingHolder.clean();
             int timeElapsed = (int) (System.currentTimeMillis() - start);
             LOGGER.debug("End to validate through" + validatorElementList + " costing " + timeElapsed + "ms with "

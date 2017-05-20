@@ -2,8 +2,11 @@ package com.baidu.unbiz.fluentvalidator;
 
 import java.util.Map;
 
+import com.baidu.unbiz.fluentvalidator.annotation.Nullable;
 import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
+import com.baidu.unbiz.fluentvalidator.util.ThreadContext;
 
+import static com.baidu.unbiz.fluentvalidator.util.ThreadContext.VALIDATOR_MESSAGE;
 /**
  * 验证器执行调用中的上下文
  * <p/>
@@ -121,5 +124,18 @@ public class ValidatorContext {
      */
     public void setResult(ValidationResult result) {
         this.result = result;
+    }
+
+    /**
+     * 返回默认的一些message，一般通过如下形式注入到context中使用
+     * <pre>
+     *     fv.on(car.getLicensePlate(), new CarLicensePlateValidator(),"Car License Plate Validator is Good")
+     * </pre>
+     *
+     * @return 默认信息，可为null
+     */
+    @Nullable
+    public String getDefaultMessage() {
+        return ThreadContext.getContext(VALIDATOR_MESSAGE);
     }
 }
