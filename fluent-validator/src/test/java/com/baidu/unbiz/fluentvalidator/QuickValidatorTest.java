@@ -1,6 +1,7 @@
 package com.baidu.unbiz.fluentvalidator;
 
 import com.baidu.unbiz.fluentvalidator.dto.Car;
+import com.baidu.unbiz.fluentvalidator.error.CarError;
 import com.baidu.unbiz.fluentvalidator.util.Decorator;
 import com.baidu.unbiz.fluentvalidator.validator.CarLicensePlateValidator;
 import com.baidu.unbiz.fluentvalidator.validator.CarManufacturerValidator;
@@ -33,6 +34,34 @@ public class QuickValidatorTest {
         System.out.println(ret);
         assertThat(ret.isSuccess(), is(true));
         assertThat(ret.getErrors(), nullValue());
+    }
+
+    @Test
+    public void testCarComplexResultWithDefaultErrorMessage() {
+        final Car car = getValidCar();
+        car.setSeatCount(0);
+        ComplexResult ret = QuickValidator.doAndGetComplexResult(new Decorator() {
+            @Override
+            public FluentValidator decorate(FluentValidator fv) {
+                return fv.on(car.getLicensePlate(), new CarLicensePlateValidator())
+                        .on(car.getManufacturer(), new CarManufacturerValidator())
+                        .on(car.getSeatCount(), new ValidatorHandler<Integer>() {
+                            @Override
+                            public boolean validate(ValidatorContext context, Integer t) {
+                                if (t != 2 && t != 5 && t != 7) {
+                                    context.addErrorMsg(context.getDefaultMessage());
+                                    return false;
+                                }
+                                return true;
+                            }
+                        }, "Car seat is invalid");
+            }
+        });
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(false));
+        assertThat(ret.getErrors(), notNullValue());
+        assertThat(ret.getErrors().size(), is(1));
+        assertThat(ret.getErrors().get(0).getErrorMsg(), is("Car seat is invalid"));
     }
 
     @Test

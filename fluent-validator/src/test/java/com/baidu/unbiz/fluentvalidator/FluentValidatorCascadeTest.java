@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import com.baidu.unbiz.fluentvalidator.validator.CustomNullCheckValidator;
 import org.junit.Test;
 
 import com.baidu.unbiz.fluentvalidator.dto.Car;
@@ -90,7 +91,7 @@ public class FluentValidatorCascadeTest {
         Garage garage = getGarage();
         List<Car> cars = getValidCars();
         cars.get(0).setLicensePlate("BEIJING123");
-        garage.setArrayCar(cars.toArray(new Car[] {}));
+        garage.setArrayCar(cars.toArray(new Car[]{}));
 
         Result ret = FluentValidator.checkAll()
                 .on(garage)
@@ -111,7 +112,7 @@ public class FluentValidatorCascadeTest {
 
         List<Car> cars2 = getValidCars();
         cars2.get(0).setSeatCount(0);
-        garage.setArrayCar(cars2.toArray(new Car[] {}));
+        garage.setArrayCar(cars2.toArray(new Car[]{}));
 
         Result ret = FluentValidator.checkAll().failOver()
                 .on(garage)
@@ -174,10 +175,42 @@ public class FluentValidatorCascadeTest {
         assertThat(ret.isSuccess(), is(false));
     }
 
+    @Test
+    public void testGarageWithDefaultErrorMessage() {
+        Garage garage = null;
+        Result ret = FluentValidator.checkAll()
+                .on(garage, new CustomNullCheckValidator(), "Garage Object is Null")
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(false));
+        assertThat(ret.errors, is((List) Lists.newArrayList(
+                "Garage Object is Null"
+        )));
+    }
+
+    @Test
+    public void testGarageWithMultipleDefaultErrorMessage() {
+        Car c = new Car(null, null, 10);
+        Result ret = FluentValidator.checkAll().failOver()
+                .on(c, new CustomNullCheckValidator(), "Car Object is Null")
+                .on(c.getLicensePlate(), new CustomNullCheckValidator(), "Car License is Null")
+                .on(c.getManufacturer(), new CustomNullCheckValidator(), "Car Manufacture is Null")
+                .on(c.getSeatCount())
+                .doValidate()
+                .result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(false));
+        assertThat(ret.errors, is((List) Lists.newArrayList(
+                "Car License is Null",
+                "Car Manufacture is Null"
+        )));
+    }
+
     private Garage getGarage() {
         Garage garage = new Garage();
         garage.setCollectionCar(getValidCars());
-        garage.setArrayCar(getValidCars().toArray(new Car[] {}));
+        garage.setArrayCar(getValidCars().toArray(new Car[]{}));
         garage.setSingleCar(getValidCar());
         garage.setStr("abc");
         return garage;
