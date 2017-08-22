@@ -140,10 +140,8 @@ public class AnnotationValidatorCache {
                     VALIDATOR_MAP.putIfAbsent(validatorClass, validatorsFound.get(0));
                     validators.add(VALIDATOR_MAP.get(validatorClass));
                     LOGGER.info(String.format("Cached validator %s", validatorClass.getSimpleName()));
-                } else {
-                	//直接获取已实例化的validator
-                	validators.add(VALIDATOR_MAP.get(validatorClass));
                 }
+            	validators.add(VALIDATOR_MAP.get(validatorClass));
             }
 
             if (CollectionUtil.isEmpty(validators)) {
