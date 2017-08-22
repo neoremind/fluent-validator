@@ -138,10 +138,9 @@ public class AnnotationValidatorCache {
                                 validatorClass.getSimpleName(), clazz.getSimpleName(), field.getName()));
                     }
                     VALIDATOR_MAP.putIfAbsent(validatorClass, validatorsFound.get(0));
-                    //validators.add(VALIDATOR_MAP.get(validatorClass));
                     LOGGER.info(String.format("Cached validator %s", validatorClass.getSimpleName()));
                 }
-            	validators.add(VALIDATOR_MAP.get(validatorClass));
+                validators.add(VALIDATOR_MAP.get(validatorClass));
             }
 
             if (CollectionUtil.isEmpty(validators)) {

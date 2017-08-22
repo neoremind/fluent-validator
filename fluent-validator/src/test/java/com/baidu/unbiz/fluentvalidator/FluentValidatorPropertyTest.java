@@ -5,7 +5,11 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
+import java.util.Map;
 
+import com.baidu.unbiz.fluentvalidator.dto.CollectionWrapper;
+import com.baidu.unbiz.fluentvalidator.dto.Person;
+import com.google.common.collect.Maps;
 import org.junit.Test;
 
 import com.baidu.unbiz.fluentvalidator.dto.Car;
@@ -239,6 +243,25 @@ public class FluentValidatorPropertyTest {
             assertThat(e.getCause().toString(), is("java.lang.NullPointerException"));
         }
 
+    }
+
+    @Test
+    public void testCollectionWrapper() {
+        CollectionWrapper collectionWrapper = new CollectionWrapper();
+        Map<Integer, Person> map = Maps.newHashMap();
+        map.put(1, new Person("jack", "johns", 1));
+        collectionWrapper.setId2PersonMap(map);
+
+        Result ret = FluentValidator.checkAll()
+                .on(collectionWrapper.getId2PersonMap(), new ValidatorHandler<Map<Integer, Person>>() {
+                    @Override
+                    public boolean validate(ValidatorContext context, Map<Integer, Person> integerPersonMap) {
+                        return integerPersonMap != null && integerPersonMap.size() == 1;
+                    }
+                })
+                .doValidate().result(toSimple());
+        System.out.println(ret);
+        assertThat(ret.isSuccess(), is(true));
     }
 
     private Car getValidCar() {

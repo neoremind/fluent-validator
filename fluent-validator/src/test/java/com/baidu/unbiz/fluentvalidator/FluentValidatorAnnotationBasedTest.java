@@ -7,6 +7,8 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import com.baidu.unbiz.fluentvalidator.annotation.FluentValidate;
+import com.baidu.unbiz.fluentvalidator.validator.NotNullValidator;
 import org.junit.Test;
 
 import com.baidu.unbiz.fluentvalidator.dto.Car;
@@ -93,7 +95,7 @@ public class FluentValidatorAnnotationBasedTest {
 
     @Test
     public void testCarArray() {
-        Car[] cars = getValidCars().toArray(new Car[] {});
+        Car[] cars = getValidCars().toArray(new Car[]{});
 
         Result ret = FluentValidator.checkAll().configure(new SimpleRegistry())
                 .onEach(cars)
@@ -105,7 +107,7 @@ public class FluentValidatorAnnotationBasedTest {
 
     @Test
     public void testCarArrayNegative() {
-        Car[] cars = getValidCars().toArray(new Car[] {});
+        Car[] cars = getValidCars().toArray(new Car[]{});
         cars[0].setSeatCount(0);
         cars[1].setLicensePlate("BEIJING123");
 
@@ -169,7 +171,7 @@ public class FluentValidatorAnnotationBasedTest {
         Car car = getValidCar();
         car.setManufacturer("XXXX");
 
-        Result ret = FluentValidator.checkAll(new Class<?>[] {CheckManufacturer.class})
+        Result ret = FluentValidator.checkAll(new Class<?>[]{CheckManufacturer.class})
                 .configure(new SimpleRegistry())
                 .on(car)
                 .doValidate()
@@ -184,7 +186,7 @@ public class FluentValidatorAnnotationBasedTest {
         Car car = getValidCar();
         car.setManufacturer("XXXX");
 
-        Result ret = FluentValidator.checkAll(new Class<?>[] {})
+        Result ret = FluentValidator.checkAll(new Class<?>[]{})
                 .configure(new SimpleRegistry())
                 .on(car)
                 .doValidate()
@@ -199,7 +201,7 @@ public class FluentValidatorAnnotationBasedTest {
         Car car = getValidCar();
         car.setSeatCount(11111);
 
-        Result ret = FluentValidator.checkAll(new Class<?>[] {CheckManufacturer.class})
+        Result ret = FluentValidator.checkAll(new Class<?>[]{CheckManufacturer.class})
                 .configure(new SimpleRegistry())
                 .on(car)
                 .doValidate()
@@ -239,6 +241,22 @@ public class FluentValidatorAnnotationBasedTest {
         fail();
     }
 
+    /**
+     * 验证Issue: https://github.com/neoremind/fluent-validator/issues/22。
+     * 如果两个Bean使用了{@link AnnotationValidator}，那么第二个bean不会做验证。
+     */
+    @Test
+    public void testMultiCarTypeWithSameValidator() {
+        CarA carA = new CarA();
+        CarB carB = new CarB();
+        Result retA = FluentValidator.checkAll().on(carA).doValidate().result(ResultCollectors.toSimple());
+        assertThat(retA.isSuccess(), is(false));
+        assertThat(retA.getErrors().get(0), is("Null is not expected!"));
+        Result retB = FluentValidator.checkAll().on(carB).doValidate().result(ResultCollectors.toSimple());
+        assertThat(retB.isSuccess(), is(false));
+        assertThat(retB.getErrors().get(0), is("Null is not expected!"));
+    }
+
     private Car getValidCar() {
         return new Car("BMW", "LA1234", 5);
     }
@@ -256,4 +274,32 @@ public class FluentValidatorAnnotationBasedTest {
     private Person2 getValidPerson2() {
         return new Person2("Jack", "Johns", 5);
     }
+
+    class CarA {
+        @FluentValidate({NotNullValidator.class})
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+    }
+
+    class CarB {
+        @FluentValidate({NotNullValidator.class})
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
 }
