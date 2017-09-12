@@ -80,7 +80,7 @@ public class AnnotationValidatorCache {
             List<AnnotationValidator> annotationValidators = getAllAnnotationValidators(registry, clazz);
 
             if (CollectionUtil.isEmpty(annotationValidators)) {
-                LOGGER.warn(String.format("Annotation-based validation enabled for %s, and to-do validators are empty",
+                LOGGER.debug(String.format("Annotation-based validation enabled for %s, and to-do validators are empty",
                         clazz.getSimpleName()));
             } else {
                 CLASS_2_ANNOTATION_VALIDATOR_MAP.putIfAbsent(clazz, annotationValidators);
@@ -112,7 +112,7 @@ public class AnnotationValidatorCache {
             Class<? extends Validator>[] validatorClasses = fluentValidateAnnt.value();
             Class<?>[] groups = fluentValidateAnnt.groups();
             if (validatorClasses == null || validatorClasses.length == 0) {
-                LOGGER.warn(String.format("No validator annotation bound %s#%s", clazz.getSimpleName(),
+                LOGGER.debug(String.format("No validator annotation bound %s#%s", clazz.getSimpleName(),
                         field.getName()));
                 continue;
             }
@@ -144,7 +144,7 @@ public class AnnotationValidatorCache {
             }
 
             if (CollectionUtil.isEmpty(validators)) {
-                LOGGER.warn(String.format("Annotation-based validation enabled but none of the validators is "
+                LOGGER.debug(String.format("Annotation-based validation enabled but none of the validators is "
                         + "applicable for %s#%s", clazz.getSimpleName(), field.getName()));
                 continue;
             }
