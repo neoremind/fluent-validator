@@ -21,7 +21,7 @@ In order to use Fluent Validator within a Maven project, simply add the followin
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator</artifactId>
-    	<version>1.0.8</version>
+    	<version>1.0.9</version>
 	</dependency>
 
 *Check out the lastest version on [Maven Central](https://search.maven.org/#search%7Cga%7C1%7Cfluent-validator).*
@@ -527,7 +527,7 @@ Add the following dependency to your pom.xml.
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator-jsr303</artifactId>
-    	<version>1.0.8</version>
+    	<version>1.0.9</version>
 	</dependency>
 	
 By default, the following dependencies are what fluent-validator-jsr303 will bring into your project. 
@@ -668,7 +668,7 @@ To use `SpringApplicationContextRegistry`, add the following dependency to your 
 	<dependency>
     	<groupId>com.baidu.unbiz</groupId>
     	<artifactId>fluent-validator-spring</artifactId>
-    	<version>1.0.8</version>
+    	<version>1.0.9</version>
 	</dependency>
 	
 By default, the following dependencies are what fluent-validator-spring will bring into your project. 
@@ -831,6 +831,12 @@ All test cases or samples can be found from the below links:
 
 [Spring registry usage](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-spring/src/test/java/com/baidu/unbiz/fluentvalidator/registry/impl/SpringApplicationContextRegistryTest.java)
 
+## Release Notes
+
+Click the link [Release Notes](https://github.com/neoremind/fluent-validator/blob/master/ReleaseNotes.md)
+
 ## Supports 
 
-![](http://neoremind.com/imgs/gmail.png)
+Email: ![](http://neoremind.com/imgs/gmail.png)
+
+Wechat: First add author as friend `xucdlzh`, then will be invited to group chat.
