@@ -600,7 +600,7 @@ To perform validation, one can use `FluentValidator` without any problem. Just u
 
 ```
 Result ret = FluentValidator.checkAll()
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHibernateValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
         System.out.println(ret);
@@ -619,7 +619,7 @@ For example, when Company name is invalid, the result would be:
 Also HibernateSupportedValidator works well with other custom validators, you can add validators through `on()` as much as you want like below:
 
     Result ret = FluentValidator.checkAll()
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHibernateValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
 
@@ -639,14 +639,14 @@ When using `FluentValidator.checkAll()`, ceo will not be validated at all. Only 
 Below is an example if one just needs to validate the ceo property.
 
     Result ret = FluentValidator.checkAll(AddCompany.class)
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHibernateValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
 
 Below is another example if one needs to validate both the ceo property and other default annotation-based properties. By default, constraints are evaluated in no particular order, regardless of which groups they belong to.
 
     Result ret = FluentValidator.checkAll(Default.class, AddCompany.class)
-                .on(company, new HibernateSupportedValidator<Company>().setValidator(validator))
+                .on(company, new HibernateSupportedValidator<Company>().setHibernateValidator(validator))
                 .on(company, new CompanyCustomValidator())
                 .doValidate().result(toSimple());
 

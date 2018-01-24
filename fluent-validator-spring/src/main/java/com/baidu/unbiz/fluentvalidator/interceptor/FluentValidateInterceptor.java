@@ -169,7 +169,7 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
                                         .onEach((Collection) arguments[i],
                                                 new HibernateSupportedValidator()
                                                         .setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
-                                                        .setHiberanteValidator(validator))
+                                                        .setHibernateValidator(validator))
                                         .when(arguments[i] != null)
                                         .onEach((Collection) arguments[i])
                                         .doValidate(callback)
@@ -180,7 +180,7 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
                                         .onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]),
                                                 new HibernateSupportedValidator()
                                                         .setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
-                                                        .setHiberanteValidator(validator))
+                                                        .setHibernateValidator(validator))
                                         .when(arguments[i] != null)
                                         .onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]))
                                         .doValidate(callback)
@@ -191,7 +191,7 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
                                         .on(arguments[i],
                                                 new HibernateSupportedValidator()
                                                         .setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
-                                                        .setHiberanteValidator(validator))
+                                                        .setHibernateValidator(validator))
                                         .when(arguments[i] != null)
                                         .on(arguments[i])
                                         .doValidate(callback)

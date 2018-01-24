@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.baidu.unbiz</groupId>
     <artifactId>fluent-validator-parent</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10-SNAPSHOT</version>
     <name>fluent-validator-parent</name>
     <packaging>pom</packaging>
     <description>A simple Java validation framework leveraging fluent interface style and JSR 303 specification

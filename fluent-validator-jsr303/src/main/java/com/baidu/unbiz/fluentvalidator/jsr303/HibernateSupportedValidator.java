@@ -25,7 +25,7 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
      * A Validator instance is thread-safe and may be reused multiple times. It thus can safely be stored in a static
      * field and be used in the test methods to validate the different Car instances.
      */
-    private static javax.validation.Validator HIBERANTE_VALIDATOR;
+    private static javax.validation.Validator HIBERNATE_VALIDATOR;
 
     /**
      * hibernate默认的错误码
@@ -47,9 +47,9 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
         Class<?>[] groups = GroupingHolder.getGrouping();
         Set<ConstraintViolation<T>> constraintViolations;
         if (ArrayUtil.isEmpty(groups)) {
-            constraintViolations = HIBERANTE_VALIDATOR.validate(t);
+            constraintViolations = HIBERNATE_VALIDATOR.validate(t);
         } else {
-            constraintViolations = HIBERANTE_VALIDATOR.validate(t, groups);
+            constraintViolations = HIBERNATE_VALIDATOR.validate(t, groups);
         }
         if (CollectionUtil.isEmpty(constraintViolations)) {
             return true;
@@ -68,11 +68,20 @@ public class HibernateSupportedValidator<T> extends ValidatorHandler<T> implemen
     }
 
     public javax.validation.Validator getHiberanteValidator() {
-        return HIBERANTE_VALIDATOR;
+        return HIBERNATE_VALIDATOR;
     }
 
+    /**
+     * This is typo method, should use {@link #setHibernateValidator(javax.validation.Validator)}
+     */
+    @Deprecated
     public HibernateSupportedValidator<T> setHiberanteValidator(javax.validation.Validator validator) {
-        HibernateSupportedValidator.HIBERANTE_VALIDATOR = validator;
+        HibernateSupportedValidator.HIBERNATE_VALIDATOR = validator;
+        return this;
+    }
+
+    public HibernateSupportedValidator<T> setHibernateValidator(javax.validation.Validator validator) {
+        HibernateSupportedValidator.HIBERNATE_VALIDATOR = validator;
         return this;
     }
 
