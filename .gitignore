@@ -1,11 +1,16 @@
-/target
-/bin
-
-# Eclipse
-/.classpath
-/.project
-/.settings
-
 # Idea
 *.iml
-.idea
+*.idea
+
+*/target
+
+*/.settings
+.settings
+
+*/.classpath
+
+*/.project
+.project
+
+*/.vscode
+.vscode
