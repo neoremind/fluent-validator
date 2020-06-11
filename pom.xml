@@ -27,7 +27,7 @@
         <junit.version>4.11</junit.version>
         <commons.lang.version>2.6</commons.lang.version>
         <commons.lang3.version>3.2.1</commons.lang3.version>
-        <commons.beanutils.version>1.8.3</commons.beanutils.version>
+        <commons.beanutils.version>1.9.2</commons.beanutils.version>
         <commons.io.version>2.4</commons.io.version>
         <commons.collections.version>3.2.1</commons.collections.version>
     </properties>
