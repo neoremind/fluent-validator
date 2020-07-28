@@ -10,97 +10,97 @@ import org.junit.Test;
 public class ClassUtilTest {
 
     @Test
-    public void getWrapperTypeIfPrimitive_int() {
+    public void getWrapperTypeIfPrimitiveInt() {
         assertEquals(Integer.class, ClassUtil.getWrapperTypeIfPrimitive(int.class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_long() {
+    public void getWrapperTypeIfPrimitiveLong() {
         assertEquals(Long.class, ClassUtil.getWrapperTypeIfPrimitive(long.class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_short() {
+    public void getWrapperTypeIfPrimitiveShort() {
         assertEquals(Short.class, ClassUtil.getWrapperTypeIfPrimitive(short.class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_double() {
+    public void getWrapperTypeIfPrimitiveDouble() {
         assertEquals(Double.class, ClassUtil.getWrapperTypeIfPrimitive(double.class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_float() {
+    public void getWrapperTypeIfPrimitiveFloat() {
         assertEquals(Float.class, ClassUtil.getWrapperTypeIfPrimitive(float.class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_char() {
+    public void getWrapperTypeIfPrimitiveChar() {
         assertEquals(Character.class, ClassUtil.getWrapperTypeIfPrimitive(char.class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_byte() {
+    public void getWrapperTypeIfPrimitiveByte() {
         assertEquals(Byte.class, ClassUtil.getWrapperTypeIfPrimitive(byte.class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_boolean() {
+    public void getWrapperTypeIfPrimitiveBoolean() {
         assertEquals(Boolean.class, ClassUtil.getWrapperTypeIfPrimitive(boolean.class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_void() {
+    public void getWrapperTypeIfPrimitiveVoid() {
         assertEquals(Void.class, ClassUtil.getWrapperTypeIfPrimitive(void.class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_String() {
+    public void getWrapperTypeIfPrimitiveString() {
         assertEquals(String.class, ClassUtil.getWrapperTypeIfPrimitive(String.class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_int2dArray() {
+    public void getWrapperTypeIfPrimitiveInt2dArray() {
         assertEquals(int[][].class, ClassUtil.getWrapperTypeIfPrimitive(int[][].class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_long2dArray() {
+    public void getWrapperTypeIfPrimitiveLong2dArray() {
         assertEquals(long[][].class, ClassUtil.getWrapperTypeIfPrimitive(long[][].class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_short2dArray() {
+    public void getWrapperTypeIfPrimitiveShort2dArray() {
         assertEquals(short[][].class, ClassUtil.getWrapperTypeIfPrimitive(short[][].class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_double2dArray() {
+    public void getWrapperTypeIfPrimitiveDouble2dArray() {
         assertEquals(double[][].class, ClassUtil.getWrapperTypeIfPrimitive(double[][].class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_float2dArray() {
+    public void getWrapperTypeIfPrimitiveFloat2dArray() {
         assertEquals(float[][].class, ClassUtil.getWrapperTypeIfPrimitive(float[][].class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_char2dArray() {
+    public void getWrapperTypeIfPrimitiveChar2dArray() {
         assertEquals(char[][].class, ClassUtil.getWrapperTypeIfPrimitive(char[][].class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_byte2dArray() {
+    public void getWrapperTypeIfPrimitiveByte2dArray() {
         assertEquals(byte[][].class, ClassUtil.getWrapperTypeIfPrimitive(byte[][].class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_boolean2dArray() {
+    public void getWrapperTypeIfPrimitiveBoolean2dArray() {
         assertEquals(boolean[][].class, ClassUtil.getWrapperTypeIfPrimitive(boolean[][].class));
     }
 
     @Test
-    public void getWrapperTypeIfPrimitive_String2dArray() {
+    public void getWrapperTypeIfPrimitiveString2dArray() {
         assertEquals(String[][].class, ClassUtil.getWrapperTypeIfPrimitive(String[][].class));
     }
 }
