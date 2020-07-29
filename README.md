@@ -18,11 +18,13 @@ This chapter will show you how to get started with Fluent Validator.
 
 In order to use Fluent Validator within a Maven project, simply add the following dependency to your pom.xml. There are no other dependencies for Fluent Validator, which means other unwanted libraries will not overwhelm your project. 
 
-	<dependency>
-    	<groupId>com.baidu.unbiz</groupId>
-    	<artifactId>fluent-validator</artifactId>
-    	<version>1.0.9</version>
-	</dependency>
+```
+<dependency>
+    <groupId>com.baidu.unbiz</groupId>
+    <artifactId>fluent-validator</artifactId>
+    <version>1.0.9</version>
+</dependency>
+```
 
 *Check out the lastest version on [Maven Central](https://search.maven.org/#search%7Cga%7C1%7Cfluent-validator).*
 
@@ -32,14 +34,14 @@ You can switch to other slf4j implementation such as logback and exclude log4j l
 
 ```
 <dependency>
-	<groupId>com.baidu.unbiz</groupId>
-	<artifactId>fluent-validator</artifactId>
-	<exclusions>
-		<exclusion>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</exclusion>
-	</exclusions>
+    <groupId>com.baidu.unbiz</groupId>
+    <artifactId>fluent-validator</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+    </exclusions>
 </dependency>
 ```
 
@@ -139,13 +141,9 @@ Afterwards we will learn how to use the different methods of the FluentValidator
 Create validator by implementing `Validator` interface. 
 
     public interface Validator<T> {
-
         boolean accept(ValidatorContext context, T t);
-
         boolean validate(ValidatorContext context, T t);
-    
         void onException(Exception e, ValidatorContext context, T t);
-
     }
 
 `accept()` method is where you can determine whether to perform validation on the target, thus if false is returned, the validate method will not be called. 
@@ -524,12 +522,14 @@ The following paragraphs will guide you through the steps required to integrate 
 ### 3.1 Prerequisite
 Add the following dependency to your pom.xml. 
 
-	<dependency>
-    	<groupId>com.baidu.unbiz</groupId>
-    	<artifactId>fluent-validator-jsr303</artifactId>
-    	<version>1.0.9</version>
-	</dependency>
-	
+```
+<dependency>
+    <groupId>com.baidu.unbiz</groupId>
+    <artifactId>fluent-validator-jsr303</artifactId>
+    <version>1.0.9</version>
+</dependency>
+```
+
 By default, the following dependencies are what fluent-validator-jsr303 will bring into your project. 
 
 ```	
@@ -548,14 +548,14 @@ You can exclude any of them but be sure to have *fluent-validator* left by confi
 
 ```
 <dependency>
-	<groupId>com.baidu.unbiz</groupId>
-	<artifactId>fluent-validator-jsr303</artifactId>
-	<exclusions>
-		<exclusion>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</exclusion>
-	</exclusions>
+    <groupId>com.baidu.unbiz</groupId>
+    <artifactId>fluent-validator-jsr303</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </exclusion>
+    </exclusions>
 </dependency>
 ```
 		
@@ -665,12 +665,14 @@ As constraints can be expressed by annotating a field of a class of `@FluentVali
 
 To use `SpringApplicationContextRegistry`, add the following dependency to your pom.xml. 
 
-	<dependency>
-    	<groupId>com.baidu.unbiz</groupId>
-    	<artifactId>fluent-validator-spring</artifactId>
-    	<version>1.0.9</version>
-	</dependency>
-	
+```
+<dependency>
+    <groupId>com.baidu.unbiz</groupId>
+    <artifactId>fluent-validator-spring</artifactId>
+    <version>1.0.9</version>
+</dependency>
+```
+
 By default, the following dependencies are what fluent-validator-spring will bring into your project. 
 
 ```	
@@ -690,14 +692,14 @@ You can exclude any of them but be sure to have *fluent-validator* left by confi
 
 ```
 <dependency>
-	<groupId>com.baidu.unbiz</groupId>
-	<artifactId>fluent-validator-spring</artifactId>
-	<exclusions>
-		<exclusion>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-		</exclusion>
-	</exclusions>
+    <groupId>com.baidu.unbiz</groupId>
+    <artifactId>fluent-validator-spring</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </exclusion>
+    </exclusions>
 </dependency>
 ```
 
@@ -816,7 +818,6 @@ Moreover, one can configure some add-on validators within the @FluentValid annot
     }
 
 
-
 ## Examples
 
 All test cases or samples can be found from the below links:
@@ -831,12 +832,6 @@ All test cases or samples can be found from the below links:
 
 [Spring registry usage](https://github.com/neoremind/fluent-validator/blob/master/fluent-validator-spring/src/test/java/com/baidu/unbiz/fluentvalidator/registry/impl/SpringApplicationContextRegistryTest.java)
 
-## Release Notes
-
-Click the link [Release Notes](https://github.com/neoremind/fluent-validator/blob/master/ReleaseNotes.md)
-
 ## Supports 
 
 Email: ![](http://neoremind.com/imgs/gmail.png)
-
-Wechat: First add author as friend `xucdlzh`, then will be invited to group chat.
